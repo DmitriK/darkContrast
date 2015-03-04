@@ -24,8 +24,9 @@ function checkElementContrast(element)
 
     var isFgDefined = (getComputedStyle(element).color
                       != getDefaultComputedStyle(element).color);
-    var isBgDefined = getComputedStyle(element).backgroundColor
-                      != 'transparent';
+    var isBgDefined = (getComputedStyle(element).backgroundColor
+                       != 'transparent')
+                      || (getComputedStyle(element).backgroundColor != 'none');
 
     if (!isFgDefined && !isBgDefined) {
         // Both undefined, continue with children
