@@ -16,6 +16,8 @@ function checkElementContrast(element)
             return;
     }
 
+    //console.log("Checking: " + element.tagName);
+
     var isFgDefined = (getComputedStyle(element).color
                       != getDefaultComputedStyle(element).color);
     var isBgDefined = getComputedStyle(element).backgroundColor
@@ -25,17 +27,12 @@ function checkElementContrast(element)
         // Both undefined, continue with children
         var children = element.children
         for (var i=0; i < children.length; i++) {
-            console.log("Recursing into: " + element.children[i]);
             checkElementContrast(element.children[i]);
         }
     } else if (!isFgDefined) {
-        console.log("Setting text color of " + element);
-        element.style.color = "black";
+        element.style.color = darkColor;
     } else if (!isBgDefined) {
-        console.log("Setting background color of " + element);
-        element.style.backgroundColor = "white";
-    } else {
-        console.log("Element " + element + " ok, stopping.");
+        element.style.backgroundColor = lightColor;
     }
 
     return;
