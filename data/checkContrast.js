@@ -12,7 +12,11 @@ function checkElementContrast(element)
     // Don't look at non-renderable elements
     switch (element.tagName) {
         case "HEAD":
+        case "TITLE":
+        case "META":
         case "SCRIPT":
+        case "IMG":
+        case "STYLE":
             return;
     }
 
