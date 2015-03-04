@@ -1,9 +1,9 @@
 var darkColor;
 var lightColor;
 
-self.port.on("colors", function(dark, light) {
-    darkColor = dark;
-    lightColor = light;
+self.port.on("colors", function(colors) {
+    darkColor = colors[0];
+    lightColor = colors[1];
     checkElementContrast(document.getElementsByTagName("html")[0]);
 });
 
