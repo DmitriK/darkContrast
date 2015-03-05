@@ -22,21 +22,22 @@ function checkElementContrast(element)
 
     //console.log("Checking: " + element.tagName);
 
-    var isFgDefined = (getComputedStyle(element).color
-                      != getDefaultComputedStyle(element).color);
-    var isBgDefined = (getComputedStyle(element).backgroundColor
-                       != 'transparent')
-                      || (getComputedStyle(element).backgroundColor != 'none');
+    var isFgUndefined = (getComputedStyle(element).color
+                      == getDefaultComputedStyle(element).color);
+    var isBgUndefined = (getComputedStyle(element).backgroundColor
+                         == 'transparent')
+                      || (getComputedStyle(element).backgroundColor == 'none');
 
-    if (!isFgDefined && !isBgDefined) {
+    if (isFgUndefined && isBgUndefined) {
+        console.log("Both undefined, recursing");
         // Both undefined, continue with children
         var children = element.children
         for (var i=0; i < children.length; i++) {
             checkElementContrast(element.children[i]);
         }
-    } else if (!isFgDefined) {
+    } else if (isFgUndefined) {
         element.style.color = darkColor;
-    } else if (!isBgDefined) {
+    } else if (isBgUndefined) {
         element.style.backgroundColor = lightColor;
     }
 
