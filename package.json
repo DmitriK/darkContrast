@@ -1,9 +1,9 @@
 {
   "name": "textcontrast",
-  "title": "textContrast",
+  "title": "Text Contrast for Dark Themes",
   "id": "jid1-nMVE2oP40qeQDQ",
-  "description": "a basic add-on",
-  "author": "",
+  "description": "Fixes low-contrast text when using system colors with a dark desktop theme.",
+  "author": "Dmitri Kourennyi",
   "license": "MPL 2.0",
-  "version": "0.1"
+  "version": "0.1.1"
 }
