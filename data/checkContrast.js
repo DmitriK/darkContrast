@@ -26,10 +26,9 @@ function checkElementContrast(element)
                       == getDefaultComputedStyle(element).color);
     var isBgUndefined = (getComputedStyle(element).backgroundColor
                          == 'transparent')
-                      || (getComputedStyle(element).backgroundColor == 'none');
+                      && (getComputedStyle(element).backgroundImage == 'none');
 
     if (isFgUndefined && isBgUndefined) {
-        console.log("Both undefined, recursing");
         // Both undefined, continue with children
         var children = element.children
         for (var i=0; i < children.length; i++) {
