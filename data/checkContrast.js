@@ -4,24 +4,11 @@ var lightColor;
 self.port.on("colors", function(colors) {
     darkColor = colors[0];
     lightColor = colors[1];
-    checkElementContrast(document.getElementsByTagName("html")[0]);
+    checkElementContrast(document.all[0]);
 });
 
 function checkElementContrast(element)
 {
-    // Don't look at non-renderable elements
-    switch (element.tagName) {
-        case "HEAD":
-        case "TITLE":
-        case "META":
-        case "SCRIPT":
-        case "IMG":
-        case "STYLE":
-            return;
-    }
-
-    //console.log("Checking: " + element.tagName);
-
     var isFgUndefined = (getComputedStyle(element).color
                       == getDefaultComputedStyle(element).color);
     var isBgUndefined = (getComputedStyle(element).backgroundColor
@@ -32,7 +19,18 @@ function checkElementContrast(element)
         // Both undefined, continue with children
         var children = element.children
         for (var i=0; i < children.length; i++) {
-            checkElementContrast(element.children[i]);
+            // Don't look at non-renderable elements
+            switch (element.children[i]) {
+                case "HEAD":
+                case "TITLE":
+                case "META":
+                case "SCRIPT":
+                case "IMG":
+                case "STYLE":
+                    return;
+                default:
+                    checkElementContrast(element.children[i]);
+            }
         }
     } else if (isFgUndefined) {
         element.style.color = darkColor;
