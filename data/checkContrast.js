@@ -4,7 +4,19 @@ var lightColor;
 self.port.on("colors", function(colors) {
     darkColor = colors[0];
     lightColor = colors[1];
+    // Now replace document colors
     checkElementContrast(document.all[0]);
+
+    // Seperately check input and textarea nodes
+    var inputs = document.getElementsByTagName("input");
+    for (var i=0; i < inputs.length; i++) {
+        checkElementContrast(inputs[i]);
+    }
+
+    var texts = document.getElementsByTagName("textarea");
+    for (var i=0; i < texts.length; i++) {
+        checkElementContrast(texts[i]);
+    }
 });
 
 function checkElementContrast(element)
