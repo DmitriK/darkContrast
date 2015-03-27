@@ -4,6 +4,8 @@ var lightColor;
 self.port.on("colors", function(colors) {
     darkColor = colors[0];
     lightColor = colors[1];
+    //console.log("Contrast: got colors, checking elements");
+
     // Now replace document colors
     checkElementContrast(document.all[0]);
 
@@ -25,6 +27,11 @@ function checkElementContrast(element)
     var isBgUndefined = (getComputedStyle(element).backgroundColor == getDefaultComputedStyle(element).backgroundColor)
                       && (getComputedStyle(element).backgroundImage == 'none'); //Background image is not set
 
+    //console.log("Contrast: checking \"" + element.tagName + '#' + element.id + '"');
+    //console.log("color: " + getComputedStyle(element).color + "default: " + getDefaultComputedStyle(element).color
+                      //+ "background: " + getComputedStyle(element).backgroundColor + "default: " + getDefaultComputedStyle(element).backgroundColor
+                      //+ "image:" + getComputedStyle(element).backgroundImage)
+
     if (isFgUndefined && isBgUndefined) {
         // Both undefined, continue with children
         var children = element.children
@@ -39,12 +46,15 @@ function checkElementContrast(element)
                 case "STYLE":
                     break;
                 default:
+                    //console.log("Contrast: recursing");
                     checkElementContrast(element.children[i]);
             }
         }
     } else if (isFgUndefined) {
+        //console.log("Contrast: setting color");
         element.style.color = darkColor;
     } else if (isBgUndefined) {
+        //console.log("Contrast: setting background");
         element.style.backgroundColor = lightColor;
     }
 
