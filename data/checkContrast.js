@@ -19,6 +19,11 @@ self.port.on("colors", function(colors) {
     for (var i=0; i < texts.length; i++) {
         checkElementContrast(texts[i]);
     }
+
+    var selects = document.getElementsByTagName("select");
+    for (var i=0; i < selects.length; i++) {
+        checkElementContrast(selects[i]);
+    }
 });
 
 function checkElementContrast(element)
