@@ -5,5 +5,5 @@
   "description": "Fixes low-contrast text when using system colors with a dark desktop theme.",
   "author": "Dmitri Kourennyi",
   "license": "MPL 2.0",
-  "version": "0.2.1"
+  "version": "0.2.2"
 }
