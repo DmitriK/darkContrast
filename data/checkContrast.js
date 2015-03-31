@@ -24,6 +24,16 @@ self.port.on("colors", function(colors) {
     for (var i=0; i < selects.length; i++) {
         checkElementContrast(selects[i]);
     }
+
+    // Other checks required when browser is in quirks mode
+    if (document.compatMode == "BackCompat") {
+        // tables don't inherit color
+        var tables = document.getElementsByTagName("table");
+        for (var i=0; i < tables.length; i++) {
+            checkElementContrast(tables[i]);
+        }
+    }
+
 });
 
 function checkElementContrast(element)
