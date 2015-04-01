@@ -30,7 +30,11 @@ self.port.on("colors", function(colors) {
         // tables don't inherit color
         var tables = document.getElementsByTagName("table");
         for (var i=0; i < tables.length; i++) {
-            checkElementContrast(tables[i]);
+            if (getComputedStyle(tables[i]).color
+                == getDefaultComputedStyle(tables[i]).color) {
+                //if color has not been set explicitely, then force inherit
+                tables[i].style.color = "inherit";
+            }
         }
     }
 
