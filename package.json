@@ -5,5 +5,12 @@
   "description": "Fixes low-contrast text when using system colors with a dark desktop theme.",
   "author": "Dmitri Kourennyi",
   "license": "MPL 2.0",
-  "version": "0.3.3"
+  "version": "0.4.0",
+  "preferences": [{
+        "name": "allColors",
+        "title": "Replace all colors",
+        "description": "Replace all page colors, instead of only input elements. Recommend turn this on if \"Use system colors\" option is set.",
+        "type": "bool",
+        "value": false
+    }]
 }

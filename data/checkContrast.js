@@ -4,12 +4,28 @@ var lightColor;
 self.port.on("colors", function(colors) {
     darkColor = colors[0];
     lightColor = colors[1];
+    allColors = colors[2];
 //     console.log("Contrast: got colors, checking elements");
 
-    // Now replace document colors
-    checkElementContrast(document.all[0]);
+    if (allColors == true) {
+        // Now replace document colors
+        checkElementContrast(document.all[0]);
 
-    // Seperately check input and textarea nodes
+        // Other checks required when browser is in quirks mode
+        if (document.compatMode == "BackCompat") {
+            // tables don't inherit color
+            var tables = document.getElementsByTagName("table");
+            for (var i=0; i < tables.length; i++) {
+                if (getComputedStyle(tables[i]).color
+                    == getDefaultComputedStyle(tables[i]).color) {
+                    //if color has not been set explicitely, then force inherit
+                    tables[i].style.color = "inherit";
+                }
+            }
+        }
+    }
+
+    // Seperately check input-like elements
     var inputs = document.getElementsByTagName("input");
     for (var i=0; i < inputs.length; i++) {
         checkElementContrast(inputs[i]);
@@ -25,19 +41,10 @@ self.port.on("colors", function(colors) {
         checkElementContrast(selects[i]);
     }
 
-    // Other checks required when browser is in quirks mode
-    if (document.compatMode == "BackCompat") {
-        // tables don't inherit color
-        var tables = document.getElementsByTagName("table");
-        for (var i=0; i < tables.length; i++) {
-            if (getComputedStyle(tables[i]).color
-                == getDefaultComputedStyle(tables[i]).color) {
-                //if color has not been set explicitely, then force inherit
-                tables[i].style.color = "inherit";
-            }
-        }
+    var buttons = document.getElementsByTagName("button");
+    for (var i=0; i < buttons.length; i++) {
+        checkElementContrast(buttons[i]);
     }
-
 });
 
 function checkElementContrast(element)
