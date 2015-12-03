@@ -83,8 +83,8 @@ function checkElementContrast(element)
     if (bg_img_defined) {
         //No FG or BG color, but possibly transparent image, so need
         //to set both
-        //element.style.color = darkColor;
-        //element.style.backgroundColor = lightColor;
+        element.style.color = darkColor;
+        element.style.backgroundColor = lightColor;
         return;
     }
 
