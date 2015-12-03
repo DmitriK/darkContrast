@@ -51,38 +51,59 @@ function checkElementContrast(element)
 {
     var isFgUndefined = (getComputedStyle(element).color == getDefaultComputedStyle(element).color);
     var isBgUndefined = (getComputedStyle(element).backgroundColor == getDefaultComputedStyle(element).backgroundColor)
-                      && (getComputedStyle(element).backgroundImage == 'none'); //Background image is not set
 
-//     console.log("Contrast: checking \"" + element.tagName + '#' + element.id + '"');
-//     console.log("color: " + getComputedStyle(element).color + "default: " + getDefaultComputedStyle(element).color
-//                       + "background: " + getComputedStyle(element).backgroundColor + "default: " + getDefaultComputedStyle(element).backgroundColor
-//                       + "image:" + getComputedStyle(element).backgroundImage)
+    var hasBgImg = (getComputedStyle(element).backgroundImage != 'none'); //Background image is not set
 
-    if (isFgUndefined && isBgUndefined) {
-        // Both undefined, continue with children
-        var children = element.children
-        for (var i=0; i < children.length; i++) {
-            // Don't look at non-renderable elements
-            switch (element.children[i].nodeName) {
-                case "HEAD":
-                case "TITLE":
-                case "META":
-                case "SCRIPT":
-                case "IMG":
-                case "STYLE":
-                    break;
-                default:
-                    //console.log("Contrast: recursing");
-                    checkElementContrast(element.children[i]);
-            }
-        }
-    } else if (isFgUndefined) {
-        //console.log("Contrast: setting color");
-        element.style.color = darkColor;
-    } else if (isBgUndefined) {
-        //console.log("Contrast: setting background");
-        element.style.backgroundColor = lightColor;
+    isBgUndefined = isBgUndefined && !hasBgImg;
+
+    var fg_color_defined = getComputedStyle(element).color
+                        != getDefaultComputedStyle(element).color;
+    var bg_color_defined = getComputedStyle(element).backgroundColor
+                        != getDefaultComputedStyle(element).backgroundColor;
+    var bg_img_defined = getComputedStyle(element).backgroundImage != 'none';
+
+    if (fg_color_defined && bg_color_defined) {
+        //Both colors explicitely defined, nothing to do
+        return;
     }
 
+    if (!fg_color_defined && bg_color_defined) {
+        // always set fg if only bg color defined
+        element.style.color = darkColor;
+        return;
+    }
+
+    if (fg_color_defined && !bg_color_defined) {
+        //since bg images might be transparent, set the bg color no
+        //matter what
+        element.style.backgroundColor = lightColor;
+        return;
+    }
+
+    if (bg_img_defined) {
+        //No FG or BG color, but possibly transparent image, so need
+        //to set both
+        //element.style.color = darkColor;
+        //element.style.backgroundColor = lightColor;
+        return;
+    }
+
+    //Nothing defined, recurse through children
+    var children = element.children
+    for (var i=0; i < children.length; i++) {
+        // Don't look at non-renderable elements
+        switch (element.children[i].nodeName) {
+            case "HEAD":
+            case "TITLE":
+            case "META":
+            case "SCRIPT":
+            case "IMG":
+            case "STYLE":
+                break;
+            default:
+                //console.log("Contrast: recursing");
+                checkElementContrast(element.children[i]);
+        }
+    }
     return;
 }
