@@ -1,11 +1,12 @@
 {
   "name": "textcontrast",
   "title": "Text Contrast for Dark Themes",
-  "id": "jid1-nMVE2oP40qeQDQ",
+  "id": "jid1-nMVE2oP40qeQDQ@jetpack",
   "description": "Fixes low-contrast text when using system colors with a dark desktop theme.",
   "author": "Dmitri Kourennyi",
   "license": "MPL 2.0",
   "version": "0.4.2",
+  "main":"lib/main.js",
   "preferences": [{
         "name": "allColors",
         "title": "Replace all colors",
