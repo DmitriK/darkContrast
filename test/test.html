@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    .sections {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+    }
+
+    section {
+      margin: 0.5em 1em;
+    }
+
+    .fg {
+      color:#543210;
+    }
+
+    .bgImg {
+      background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAABKVBMVEWXuduXudyYutyYut2Zu9yZu92Zu96avN6avN+bvd6bvd+bveCcvuCcvuGdv+Cdv+Gdv+KewOKewOOfweKfweOfweSgwuSgwuWhw+Whw+aixOWixOaixOejxeajxeejxeikxuekxuikxumlx+ilx+mlx+qmyOmmyOqmyOunyeqnyeunyeyoyuuoyuypy+ypy+2qzO2qzO6qzO+rze2rze6rze+rzfCszu+szvCszvGtz/Ctz/Gu0PGu0PKu0POv0fKv0fOv0fSw0vSx0/Wy1PWy1Paz1faz1fe01va01ve01vi01vm11/i11/m11/q22Pq22Pu32fq32fu42vu42vy52/252/663Py63P263P673f673f+83v283v683v+93/693/++4P+/4f9Be+X9AAADHElEQVQYGQXBAYPWJBgA4NfZwpAkPMQpRkdSFIYLk1ziDJmLpD6/nN9Vl96d5///ET0P/HTnzhQnon63ZccvMw0x24eFfzK1bl5+PP4Bnn53L+fn7Ju3+Ja9WnU/KC/EwwGn1pXFDMdAAOAaBvCAFdoFrFO6KybHnsydt7RHQD/vrnsN+I/Btny5V7Hu85PtN7s0su5jHIEohL7icGUmxLrFM7O04Pf7uZ3K9koMDHz5AmkJff3a120LlA4KISEI1Z2Mg1RANMWPEiLNuuV105wpc2Nw9kvusJwUwwAEd8rAVUcwe2C4DXU37vbtpO3HuboegGsG9CYAR1j84ri2cRrKZEoUTC7NeRhzwENgvIS0/l3HkkIya2Cedz3TI7sNQKzIF2s6rLVtRUbLpYgce4mYsQYAgJhPicFAML4pGGIcscFxuiQirNLQQz1sjIzi+r3bei7FzSOTMeuhzIiGWKYFdKycN89HYVOapZGI+0jRoJHYb//uFhCxYjyzXlEdnCXSsNjqwHQSrESFESynl8qcj2LRec2RxcWsp5vRsTlseA8UaM+6z/JAJh6iEej7kfrkCTc1iRfZ2gDCBMRfWj6Fw0nNbreqMCpEeHLdmMw0w3z+MR0+vktru9zKbGtxua5G+1XDLdZxA7nM1JVAeayOcjJ6GfzICC8Sfg5DznD+arFjdj3SkeKBaMU5kRS7QxLb6/b+DEh/xJmV0LsshuanyXsReK8K7wTpOALcHwniDRb7d2W8WHfbdoi7EdlCgJGbXsKHlx/fxfOd9K0eozgwN0aeR7ZdTKEtZxdn8JTPHj8LdNxvgVdPOUWAOpAzouHe8zYB7ZxGaUBmXQ3bpSFGTWbX54oHTbUXEPVpPlo4MuXJwFtgcfLy9MRuJ1xKrJyESR+i+pDH7fIwT6cPiZL0ygMHxPaUk7Em0HzmtCqqV4mI7EFwAjF1dLE2+/omgeK+R48p3FgYYN6BoKh7sV3jJ5Mqc6sGUmgivE98+C/r/T/PTHOM1L8Aiuvdr8u390HL6dajvaJ33+b79e00FC/tn28A9nP/eI3q/v93Xp/XUF/AxAAAAABJRU5ErkJggg==);
+    }
+
+    .transparentImg {
+      background-image:url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
+    }
+  </style>
+</head>
+
+<body>
+  <h1>DarkContrast Check Page</h1>
+  <p class="fg">Explicit foreground color</p>
+  <p style="background-color:#ABCDEF">Explicit background color</p>
+  <div class="sections">
+    <section>
+      <h2>Nothing defined</h2>
+      <form>
+        <input value="Input"></input>
+        <br/>
+        <textarea>Textarea</textarea>
+        <br/>
+        <select>
+          <option>Select</option>
+        </select>
+        <br/>
+        <button>Button</button>
+        <br/>
+      </form>
+    </section>
+    <section>
+      <h2 style="color:#543210;">FG only</h2>
+      <form>
+        <input value="Input" style="color:#543210;"></input>
+        <br/>
+        <textarea style="color:#543210;">Textarea</textarea>
+        <br/>
+        <select style="color:#543210;">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button style="color:#543210;">Button</button>
+        <br/>
+      </form>
+    </section>
+    <section>
+      <h2>BG only</h2>
+      <form>
+        <input value="Input" style="background-color:#ABCDEF;"></input>
+        <br/>
+        <textarea style="background-color:#ABCDEF;">Textarea</textarea>
+        <br/>
+        <select style="background-color:#ABCDEF;">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button style="background-color:#ABCDEF;">Button</button>
+        <br/>
+      </form>
+    </section>
+    <section>
+      <h2>FG and BG</h2>
+      <form>
+        <input value="Input" style="color:#543210;background-color:#ABCDEF;"></input>
+        <br/>
+        <textarea style="color:#543210;background-color:#ABCDEF;">Textarea</textarea>
+        <br/>
+        <select style="color:#543210;background-color:#ABCDEF;">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button style="color:#543210;background-color:#ABCDEF;">Button</button>
+        <br/>
+      </form>
+    </section>
+    <section>
+      <h2>BG image only</h2>
+      <form>
+        <input class="bgImg" value="Input"></input>
+        <br/>
+        <textarea class="bgImg">Textarea</textarea>
+        <br/>
+        <select class="bgImg">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button class="bgImg">Button</button>
+        <br/>
+      </form>
+    </section>
+    <section>
+      <h2>Transparent BG image only</h2>
+      <form>
+        <input class="transparentImg" value="Input"></input>
+        <br/>
+        <textarea class="transparentImg">Textarea</textarea>
+        <br/>
+        <select class="transparentImg">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button class="transparentImg">Button</button>
+        <br/>
+      </form>
+    </section>
+    <section>
+      <h2>FG and BG image</h2>
+      <form>
+        <input class="fg bgImg" value="Input"></input>
+        <br/>
+        <textarea class="fg bgImg">Textarea</textarea>
+        <br/>
+        <select class="fg bgImg">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button class="fg bgImg">Button</button>
+        <br/>
+      </form>
+    </section>
+    <section>
+      <h2>FG and Transparent BG image only</h2>
+      <form>
+        <input class="fg transparentImg" value="Input"></input>
+        <br/>
+        <textarea class="fg transparentImg">Textarea</textarea>
+        <br/>
+        <select class="fg transparentImg">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button class="fg transparentImg">Button</button>
+        <br/>
+      </form>
+    </section>
+  </div>
+</body>
+
+</html>
