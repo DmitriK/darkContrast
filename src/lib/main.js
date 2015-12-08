@@ -18,7 +18,7 @@ require('sdk/simple-prefs').on('allColors', cacheColors);
 
 // Create page mod to fix colors
 pageMod.PageMod({
-  include: ["*", "file://*", "about:*"],
+  include: ["*", "file://*", "about:*", "resource://*"],
   contentScriptFile : './checkContrast.js',
   onAttach: function(worker) {
     //console.log("Contrast: added pagemod for: " + worker.tab.title);
