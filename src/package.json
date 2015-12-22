@@ -10,7 +10,7 @@
   "preferences": [{
         "name": "allColors",
         "title": "Replace all colors",
-        "description": "EXPERIMENTAL. Replace all page colors, instead of only input elements. Not recommend if \"Use system colors\" option is not set.",
+        "description": "EXPERIMENTAL. Replace all page colors, instead of only input elements. Not recommend if \"Use system colors\" option is not set. Requires refresh of affected pages.",
         "type": "bool",
         "value": false
     }]
