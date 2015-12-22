@@ -49,10 +49,16 @@ self.port.on("colors", function(colors) {
 
 function checkElementContrast(element)
 {
-    var isFgUndefined = (getComputedStyle(element).color == getDefaultComputedStyle(element).color);
-    var isBgUndefined = (getComputedStyle(element).backgroundColor == getDefaultComputedStyle(element).backgroundColor)
+    try {
+        var isFgUndefined = (getComputedStyle(element).color == getDefaultComputedStyle(element).color);
+        var isBgUndefined = (getComputedStyle(element).backgroundColor == getDefaultComputedStyle(element).backgroundColor)
 
-    var hasBgImg = (getComputedStyle(element).backgroundImage != 'none'); //Background image is not set
+        var hasBgImg = (getComputedStyle(element).backgroundImage != 'none');
+    }
+    catch (e) {
+        console.log("Got exception " + e.message + " when parsing element " + element.tagName + "." + element.className + "#"  + element.id);
+        return;
+    }
 
     isBgUndefined = isBgUndefined && !hasBgImg;
 
