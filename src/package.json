@@ -4,8 +4,8 @@
   "id": "jid1-nMVE2oP40qeQDQ@jetpack",
   "description": "Fixes low-contrast text when using system colors with a dark desktop theme.",
   "author": "Dmitri Kourennyi",
-  "license": "MPL 2.0",
-  "version": "0.5.1",
+  "license": "MIT",
+  "version": "0.6.0",
   "main":"lib/main.js",
   "preferences": [{
         "name": "allColors",

@@ -1,3 +1,7 @@
+/* Copyright (c) 2016 Dmitri Kourennyi
+   See the file COPYING for copying permission.
+*/
+
 // Import the page-mod API
 var pageMod = require("sdk/page-mod");
 var prefs = require("sdk/preferences/service");
