@@ -5,7 +5,6 @@ self.port.on("colors", function (colors) {
     darkColor = colors[0];
     lightColor = colors[1];
     allColors = colors[2];
-    //     console.log("Contrast: got colors, checking elements");
 
     if (allColors == true) {
         // Now replace document colors
@@ -97,7 +96,6 @@ function checkElementContrast(element) {
         case "STYLE":
             break;
         default:
-            //console.log("Contrast: recursing");
             checkElementContrast(element.children[i]);
         }
     }

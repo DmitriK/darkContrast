@@ -21,7 +21,6 @@ pageMod.PageMod({
   include: /.*/,
   contentScriptFile : './checkContrast.js',
   onAttach: function(worker) {
-    //console.log("Contrast: added pagemod for: " + worker.tab.title);
     worker.port.emit("colors", [darkColor, lightColor, allColors]);
   }
 });
@@ -40,6 +39,4 @@ function cacheColors()
     } else {
         allColors = false;
     }
-
-    //console.log("Contrast: caching colors, dark:" + darkColor + ", light:" + lightColor);
 }
