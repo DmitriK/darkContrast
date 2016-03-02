@@ -26,25 +26,14 @@ self.port.on("colors", function (colors) {
     }
 
     // Seperately check input-like elements
-    var inputs = document.getElementsByTagName("input");
-    for (var i=0; i < inputs.length; i++) {
-        checkElementContrast(inputs[i]);
-    }
-
-    var texts = document.getElementsByTagName("textarea");
-    for (var i=0; i < texts.length; i++) {
-        checkElementContrast(texts[i]);
-    }
-
-    var selects = document.getElementsByTagName("select");
-    for (var i=0; i < selects.length; i++) {
-        checkElementContrast(selects[i]);
-    }
-
-    var buttons = document.getElementsByTagName("button");
-    for (var i=0; i < buttons.length; i++) {
-        checkElementContrast(buttons[i]);
-    }
+    ["input", "textarea", "select", "button", "toolbarbutton"].forEach(
+        function (val) {
+            var elements = document.getElementsByTagName(val),
+                i;
+            for (i = 0; i < elements.length; i += 1) {
+                checkElementContrast(elements[i]);
+            }
+        });
 });
 
 function checkElementContrast(element) {
