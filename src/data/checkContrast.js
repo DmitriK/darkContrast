@@ -6,6 +6,12 @@ var darkColor;
 var lightColor;
 var allColors;
 
+const kInputElems = ["INPUT", "TEXTAREA", "SELECT", "BUTTON", "TOOLBARBUTTON"];
+
+function isInputNode(node) {
+    return kInputElems.indexOf(node.nodeName) > -1;
+}
+
 self.port.on("colors", function (colors) {
     'use strict';
 
@@ -19,7 +25,25 @@ self.port.on("colors", function (colors) {
     }
 
     var observer = new MutationObserver(function (mutations) {
-        schedule_check();
+        mutations.forEach(function (mutation) {
+            for (var newNode of mutation.addedNodes) {
+                // Get all input-like elements
+                var nodeIterator = document.createNodeIterator(
+                    newNode, NodeFilter.SHOW_ELEMENT, {
+                        acceptNode: isInputNode
+                    });
+                var node;
+                while ((node = nodeIterator.nextNode())) {
+                    checkElementContrast(node);
+                }
+
+                if (allColors === true) {
+                    // Recurse though new node
+                    checkElementContrast(newNode);
+                }
+            }
+        });
+        // schedule_check();
     });
     var config = {
         childList: true,
@@ -65,7 +89,7 @@ function checkDoc() {
 
 function checkInputs() {
     'use strict';
-    ["input", "textarea", "select", "button", "toolbarbutton"].forEach(
+    kInputElems.forEach(
         function (val) {
             var elements = document.getElementsByTagName(val),
                 i;
