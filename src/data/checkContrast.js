@@ -6,11 +6,13 @@ var darkColor;
 var lightColor;
 
 self.port.on("colors", function (colors) {
+    'use strict';
+
     darkColor = colors[0];
     lightColor = colors[1];
     allColors = colors[2];
 
-    if (allColors == true) {
+    if (allColors === true) {
         // Now replace document colors
         checkElementContrast(document.all[0]);
 
@@ -40,13 +42,17 @@ self.port.on("colors", function (colors) {
 });
 
 function checkElementContrast(element) {
+    'use strict';
+
+    var isBgUndefined, hasBgImg;
+
     try {
         var isFgUndefined = (getComputedStyle(element).color ==
             getDefaultComputedStyle(element).color);
-        var isBgUndefined = (getComputedStyle(element).backgroundColor ==
-            getDefaultComputedStyle(element).backgroundColor)
+        isBgUndefined = (getComputedStyle(element).backgroundColor ==
+            getDefaultComputedStyle(element).backgroundColor);
 
-        var hasBgImg = (getComputedStyle(element).backgroundImage != 'none');
+        hasBgImg = (getComputedStyle(element).backgroundImage != 'none');
     } catch (e) {
         console.log("Got exception " + e.message + " when parsing element " +
             element.tagName + "." + element.className + "#" + element.id);
@@ -88,7 +94,7 @@ function checkElementContrast(element) {
     }
 
     //Nothing defined, recurse through children
-    var children = element.children
+    var children = element.children;
     for (var i = 0; i < children.length; i++) {
         // Don't look at non-renderable elements
         switch (element.children[i].nodeName) {
