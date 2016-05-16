@@ -4,6 +4,7 @@
 
 var darkColor;
 var lightColor;
+var allColors;
 
 self.port.on("colors", function (colors) {
     'use strict';
@@ -12,25 +13,58 @@ self.port.on("colors", function (colors) {
     lightColor = colors[1];
     allColors = colors[2];
 
+    checkInputs();
     if (allColors === true) {
-        // Now replace document colors
-        checkElementContrast(document.all[0]);
+        checkDoc();
+    }
 
-        // Other checks required when browser is in quirks mode
-        if (document.compatMode == "BackCompat") {
-            // tables don't inherit color
-            var tables = document.getElementsByTagName("table");
-            for (var i = 0; i < tables.length; i++) {
-                if (getComputedStyle(tables[i]).color ==
-                    getDefaultComputedStyle(tables[i]).color) {
-                    //if color has not been set explicitely, then force inherit
-                    tables[i].style.color = "inherit";
-                }
+    var observer = new MutationObserver(function (mutations) {
+        schedule_check();
+    });
+    var config = {
+        childList: true,
+        subtree: true,
+    };
+    observer.observe(document, config);
+});
+
+var tmr;
+var queued = false;
+
+function schedule_check() {
+    if (queued) {
+        window.clearTimeout(tmr);
+    }
+    tmr = window.setTimeout(function () {
+        checkInputs();
+        if (allColors === true) {
+            checkDoc();
+        }
+        queued = true;
+    }, 100);
+    queued = true;
+
+}
+
+function checkDoc() {
+    checkElementContrast(document.all[0]);
+
+    // Other checks required when browser is in quirks mode
+    if (document.compatMode == "BackCompat") {
+        // tables don't inherit color
+        var tables = document.getElementsByTagName("table");
+        for (var i = 0; i < tables.length; i++) {
+            if (getComputedStyle(tables[i]).color ==
+                getDefaultComputedStyle(tables[i]).color) {
+                //if color has not been set explicitely, then force inherit
+                tables[i].style.color = "inherit";
             }
         }
     }
+}
 
-    // Seperately check input-like elements
+function checkInputs() {
+    'use strict';
     ["input", "textarea", "select", "button", "toolbarbutton"].forEach(
         function (val) {
             var elements = document.getElementsByTagName(val),
@@ -39,7 +73,7 @@ self.port.on("colors", function (colors) {
                 checkElementContrast(elements[i]);
             }
         });
-});
+}
 
 function checkElementContrast(element) {
     'use strict';
