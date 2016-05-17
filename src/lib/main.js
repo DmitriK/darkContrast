@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Dmitri Kourennyi
+/* Copyright © 2016 Dmitri Kourennyi
    See the file COPYING for copying permission.
 */
 
@@ -31,14 +31,9 @@ pageMod.PageMod({
 
 function cacheColors()
 {
-    if (prefs.get("browser.display.use_system_colors")) {
-        darkColor = "WindowFrame";
-        lightColor = "WindowText";
-    } else {
-        darkColor = prefs.get("browser.display.foreground_color");
-        lightColor = prefs.get("browser.display.background_color");
-    }
-    if (require('sdk/simple-prefs').prefs['allColors'] == true) {
+    darkColor = prefs.get("browser.display.foreground_color");
+    lightColor = prefs.get("browser.display.background_color");
+    if (require('sdk/simple-prefs').prefs.allColors === true) {
         allColors = true;
     } else {
         allColors = false;
