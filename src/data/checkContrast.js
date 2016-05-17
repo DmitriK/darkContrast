@@ -38,8 +38,22 @@ self.port.on("colors", function (colors) {
                 }
 
                 if (allColors === true) {
-                    // Recurse though new node
-                    checkElementContrast(newNode);
+                    var parent = newNode.parentElement;
+                    var defined = false;
+                    while (parent !== null) {
+                        if (is_fg_defined(parent) ||
+                            is_bg_defined(parent) ||
+                            is_bg_img_defined(parent)) {
+                            // If any parents' color property is defined,
+                            // new elements don't need recolor.
+                            defined = true;
+                            break;
+                        }
+                        parent = parent.parentElement;
+                    }
+                    if (!defined) {
+                        checkElementContrast(newNode);
+                    }
                 }
             }
         });
