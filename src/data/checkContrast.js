@@ -43,7 +43,6 @@ self.port.on("colors", function (colors) {
                 }
             }
         });
-        // schedule_check();
     });
     var config = {
         childList: true,
@@ -51,24 +50,6 @@ self.port.on("colors", function (colors) {
     };
     observer.observe(document, config);
 });
-
-var tmr;
-var queued = false;
-
-function schedule_check() {
-    if (queued) {
-        window.clearTimeout(tmr);
-    }
-    tmr = window.setTimeout(function () {
-        checkInputs();
-        if (allColors === true) {
-            checkDoc();
-        }
-        queued = true;
-    }, 100);
-    queued = true;
-
-}
 
 function checkDoc() {
     checkElementContrast(document.all[0]);
@@ -99,31 +80,26 @@ function checkInputs() {
         });
 }
 
+function is_fg_defined(element) {
+    return getComputedStyle(element).color !=
+        getDefaultComputedStyle(element).color;
+}
+
+function is_bg_defined(element) {
+    return (getComputedStyle(element).backgroundColor !=
+        getDefaultComputedStyle(element).backgroundColor);
+}
+
+function is_bg_img_defined(element) {
+    return (getComputedStyle(element).backgroundImage != 'none');
+}
+
 function checkElementContrast(element) {
     'use strict';
 
-    var isBgUndefined, hasBgImg;
-
-    try {
-        var isFgUndefined = (getComputedStyle(element).color ==
-            getDefaultComputedStyle(element).color);
-        isBgUndefined = (getComputedStyle(element).backgroundColor ==
-            getDefaultComputedStyle(element).backgroundColor);
-
-        hasBgImg = (getComputedStyle(element).backgroundImage != 'none');
-    } catch (e) {
-        console.log("Got exception " + e.message + " when parsing element " +
-            element.tagName + "." + element.className + "#" + element.id);
-        return;
-    }
-
-    isBgUndefined = isBgUndefined && !hasBgImg;
-
-    var fg_color_defined = getComputedStyle(element).color !=
-        getDefaultComputedStyle(element).color;
-    var bg_color_defined = getComputedStyle(element).backgroundColor !=
-        getDefaultComputedStyle(element).backgroundColor;
-    var bg_img_defined = getComputedStyle(element).backgroundImage != 'none';
+    var fg_color_defined = is_fg_defined(element);
+    var bg_color_defined = is_bg_defined(element);
+    var bg_img_defined = is_bg_img_defined(element);
 
     if (fg_color_defined && bg_color_defined) {
         //Both colors explicitely defined, nothing to do
