@@ -164,8 +164,8 @@ function checkElementContrast(element) {
         var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
         if (is_light(bg_color) || is_transparent(bg_color)) {
             element.style.color = darkColor;
+            return;
         }
-        return;
     }
 
     if (fg_color_defined && !bg_color_defined) {
@@ -173,8 +173,8 @@ function checkElementContrast(element) {
         var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
         if (is_dark(fg_color)) {
             element.style.backgroundColor = lightColor;
+            return;
         }
-        return;
     }
 
     if (bg_img_defined) {
