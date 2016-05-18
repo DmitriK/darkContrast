@@ -115,8 +115,29 @@ function is_bg_img_defined(e) {
     return (getComputedStyle(e).backgroundImage != 'none');
 }
 
-function checkElementContrast(element) {
+function colorstyle_to_rgb(s) {
+    var parts = s.split(',', 3);
+    var color = {};
+    color.r = parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1));
+    color.g = parseInt(parts[1].trim());
+    color.b = parseInt(parts[2].trim());
+    return color;
+}
 
+function get_intensity(rgb) {
+    // Use Rec. 709 chromaticity luma, matching sRGB
+    return Math.round(0.21 * rgb.r + 0.72 * rgb.g + 0.07 * rgb.b);
+}
+
+function is_dark(rgb) {
+    return get_intensity(rgb) < 75;
+}
+
+function is_light(rgb) {
+    return get_intensity(rgb) > 180;
+}
+
+function checkElementContrast(element) {
     var fg_color_defined = is_fg_defined(element);
     var bg_color_defined = is_bg_defined(element);
     var bg_img_defined = is_bg_img_defined(element);
@@ -127,15 +148,20 @@ function checkElementContrast(element) {
     }
 
     if (!fg_color_defined && bg_color_defined) {
-        // always set fg if only bg color defined
-        element.style.color = darkColor;
+        // only set fg if it will improve contrast
+        var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
+        if (is_light(bg_color)) {
+            element.style.color = darkColor;
+        }
         return;
     }
 
     if (fg_color_defined && !bg_color_defined) {
-        //since bg images might be transparent, set the bg color no
-        //matter what
-        element.style.backgroundColor = lightColor;
+        // only set bg if it will improve contrast
+        var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
+        if (is_dark(fg_color)) {
+            element.style.backgroundColor = lightColor;
+        }
         return;
     }
 
