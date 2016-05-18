@@ -138,11 +138,11 @@ function get_intensity(rgb) {
 }
 
 function is_dark(rgb) {
-    return get_intensity(rgb) < 75;
+    return get_intensity(rgb) < 94;
 }
 
 function is_light(rgb) {
-    return get_intensity(rgb) > 180;
+    return get_intensity(rgb) > 145;
 }
 
 function is_transparent(rgb) {
