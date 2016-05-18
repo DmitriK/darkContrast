@@ -116,11 +116,19 @@ function is_bg_img_defined(e) {
 }
 
 function colorstyle_to_rgb(s) {
-    var parts = s.split(',', 3);
     var color = {};
+    if (s == 'transparent') {
+        color.r = 0;
+        color.g = 0;
+        color.b = 0;
+        color.a = 0;
+        return color;
+    }
+    var parts = s.split(',', 3);
     color.r = parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1));
     color.g = parseInt(parts[1].trim());
     color.b = parseInt(parts[2].trim());
+    color.a = 1;
     return color;
 }
 
@@ -137,6 +145,10 @@ function is_light(rgb) {
     return get_intensity(rgb) > 180;
 }
 
+function is_transparent(rgb) {
+    return rgb.a === 0;
+}
+
 function checkElementContrast(element) {
     var fg_color_defined = is_fg_defined(element);
     var bg_color_defined = is_bg_defined(element);
@@ -150,7 +162,7 @@ function checkElementContrast(element) {
     if (!fg_color_defined && bg_color_defined) {
         // only set fg if it will improve contrast
         var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
-        if (is_light(bg_color)) {
+        if (is_light(bg_color) || is_transparent(bg_color)) {
             element.style.color = darkColor;
         }
         return;
