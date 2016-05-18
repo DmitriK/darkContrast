@@ -1,6 +1,9 @@
 /* Copyright © 2016 Dmitri Kourennyi
    See the file COPYING for copying permission.
 */
+/* jshint moz: true, strict: global, browser: true, devel:true */
+/* globals require */
+'use strict';
 
 // Import the page-mod API
 var pageMod = require("sdk/page-mod");

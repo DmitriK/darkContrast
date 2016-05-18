@@ -1,6 +1,9 @@
 /* Copyright (c) 2016 Dmitri Kourennyi
    See the file COPYING for copying permission.
 */
+/* jshint moz: true, strict: global, browser: true, devel:true */
+/* globals self, getDefaultComputedStyle*/
+'use strict';
 
 var darkColor;
 var lightColor;
@@ -13,8 +16,6 @@ function isInputNode(node) {
 }
 
 self.port.on("colors", function (colors) {
-    'use strict';
-
     darkColor = colors[0];
     lightColor = colors[1];
     allColors = colors[2];
@@ -83,7 +84,6 @@ function checkDoc() {
 }
 
 function checkInputs() {
-    'use strict';
     kInputElems.forEach(
         function (val) {
             var elements = document.getElementsByTagName(val),
@@ -109,7 +109,6 @@ function is_bg_img_defined(element) {
 }
 
 function checkElementContrast(element) {
-    'use strict';
 
     var fg_color_defined = is_fg_defined(element);
     var bg_color_defined = is_bg_defined(element);
