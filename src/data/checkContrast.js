@@ -9,6 +9,8 @@ var darkColor;
 var lightColor;
 var allColors;
 
+var defaultFg;
+
 const kInputElems = ["INPUT", "TEXTAREA", "SELECT", "BUTTON", "TOOLBARBUTTON"];
 
 function isInputNode(node) {
@@ -19,6 +21,11 @@ self.port.on("colors", function (colors) {
     darkColor = colors[0];
     lightColor = colors[1];
     allColors = colors[2];
+
+    // Get default fg as computed style by making a dummy element
+    var dummy = document.createElement('p');
+    defaultFg = getComputedStyle(dummy).color;
+
 
     checkInputs();
     if (allColors === true) {
@@ -94,18 +101,18 @@ function checkInputs() {
         });
 }
 
-function is_fg_defined(element) {
-    return getComputedStyle(element).color !=
-        getDefaultComputedStyle(element).color;
+function is_fg_defined(e) {
+    return (getComputedStyle(e).color != getDefaultComputedStyle(e).color) &&
+        (getComputedStyle(e).color != defaultFg);
 }
 
-function is_bg_defined(element) {
-    return (getComputedStyle(element).backgroundColor !=
-        getDefaultComputedStyle(element).backgroundColor);
+function is_bg_defined(e) {
+    return (getComputedStyle(e).backgroundColor !=
+        getDefaultComputedStyle(e).backgroundColor);
 }
 
-function is_bg_img_defined(element) {
-    return (getComputedStyle(element).backgroundImage != 'none');
+function is_bg_img_defined(e) {
+    return (getComputedStyle(e).backgroundImage != 'none');
 }
 
 function checkElementContrast(element) {
