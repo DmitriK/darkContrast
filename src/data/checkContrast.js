@@ -24,7 +24,7 @@ self.port.on("colors", function (colors) {
 
     // Get default fg as computed style by making a dummy element
     var dummy = document.createElement('p');
-    defaultFg = getComputedStyle(dummy).color;
+    defaultFg = getDefaultComputedStyle(dummy).color;
 
 
     checkInputs();
