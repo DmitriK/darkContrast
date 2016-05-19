@@ -190,6 +190,7 @@ function checkElementContrast(element) {
         case "SCRIPT":
         case "IMG":
         case "STYLE":
+        case "BR":
             break;
         default:
             checkElementContrast(element.children[i]);
