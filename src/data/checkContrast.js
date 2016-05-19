@@ -22,11 +22,6 @@ self.port.on("colors", function (colors) {
     lightColor = colors[1];
     allColors = colors[2];
 
-    // Get default fg as computed style by making a dummy element
-    var dummy = document.createElement('p');
-    defaultFg = getDefaultComputedStyle(dummy).color;
-
-
     checkInputs();
     if (allColors === true) {
         checkDoc();
@@ -102,8 +97,7 @@ function checkInputs() {
 }
 
 function is_fg_defined(e) {
-    return (getComputedStyle(e).color != getDefaultComputedStyle(e).color) &&
-        (getComputedStyle(e).color != defaultFg);
+    return getComputedStyle(e).color != getDefaultComputedStyle(e).color;
 }
 
 function is_bg_defined(e) {
