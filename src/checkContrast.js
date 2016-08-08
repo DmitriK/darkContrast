@@ -4,13 +4,23 @@
 /* globals self, getDefaultComputedStyle*/
 'use strict';
 
-var darkColor;
-var lightColor;
+var darkColor = "black";
+var lightColor = "white";
 var allColors;
+var userInverted;
 
 var defaultFg = getDefaultComputedStyle(document.documentElement).color;
-var defaultBg =
-    getDefaultComputedStyle(document.documentElement).backgroundColor;
+
+if (is_light(colorstyle_to_rgb(defaultFg))) {
+  // Default foreground color is light, so user most likely has 'Use system
+  // colors' on
+  userInverted = true;
+} else {
+  userInverted = false;
+}
+
+console.log(darkColor);
+console.log(lightColor);
 
 const kInputElems = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'TOOLBARBUTTON'];
 
@@ -18,7 +28,6 @@ checkInputs(document.documentElement);
 
 var observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
-        console.log("Got mutation " + mutation.type);
         if (mutation.type == 'attributes') {
           // This mutation represents a change to class or style of element
           // so this element also needs re-checking
@@ -72,7 +81,7 @@ function checkElementContrast(element) {
     // Only set fg if it will improve contrast
     var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
     if (is_light(bg_color) || is_transparent(bg_color)) {
-      element.style.color = defaultFg;
+      element.style.color = darkColor;
       return;
     }
   }
@@ -81,7 +90,7 @@ function checkElementContrast(element) {
     // Only set bg if it will improve contrast
     var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
     if (is_dark(fg_color)) {
-      element.style.backgroundColor = defaultBg;
+      element.style.backgroundColor = lightColor;
       return;
     }
   }
@@ -89,8 +98,8 @@ function checkElementContrast(element) {
   if (bg_img_defined) {
     //No FG or BG color, but possibly transparent image, so need
     //to set both
-    element.style.color = defaultFg;
-    element.style.backgroundColor = defaultBg;
+    element.style.color = darkColor;
+    element.style.backgroundColor = lightColor;
     return;
   }
 }
