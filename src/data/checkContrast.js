@@ -17,51 +17,56 @@ function isInputNode(node) {
     return kInputElems.indexOf(node.nodeName) > -1;
 }
 
+function recolor_parent_check(elem) {
+  if (allColors === true) {
+    var parent = elem.parentElement;
+    var defined = false;
+    while (parent !== null) {
+        if (is_fg_defined(parent) ||
+            is_bg_defined(parent) ||
+            is_bg_img_defined(parent)) {
+            // If any parents' color property is defined,
+            // new elements don't need recolor.
+            defined = true;
+            break;
+        }
+        parent = parent.parentElement;
+    }
+    if (!defined) {
+        checkElementContrast(newNode);
+    }
+  }
+}
+
 self.port.on("colors", function (colors) {
     darkColor = colors[0];
     lightColor = colors[1];
     allColors = colors[2];
 
-    checkInputs();
+    checkInputs(document.documentElement);
     if (allColors === true) {
         checkDoc();
     }
 
     var observer = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
-            for (var newNode of mutation.addedNodes) {
-                // Get all input-like elements
-                var nodeIterator = document.createNodeIterator(
-                    newNode, NodeFilter.SHOW_ELEMENT, {
-                        acceptNode: isInputNode
-                    });
-                var node;
-                while ((node = nodeIterator.nextNode())) {
-                    checkElementContrast(node);
-                }
-
-                if (allColors === true) {
-                    var parent = newNode.parentElement;
-                    var defined = false;
-                    while (parent !== null) {
-                        if (is_fg_defined(parent) ||
-                            is_bg_defined(parent) ||
-                            is_bg_img_defined(parent)) {
-                            // If any parents' color property is defined,
-                            // new elements don't need recolor.
-                            defined = true;
-                            break;
-                        }
-                        parent = parent.parentElement;
-                    }
-                    if (!defined) {
-                        checkElementContrast(newNode);
-                    }
+            if (mtype == mutation.type) {
+                // This mutation represents a change to class or style of element
+                // so this element also needs re-checking
+                var changedNode = mutation.target;
+                checkInputs(changedNode);
+                recolor_parent_check(changedNode);
+            } else {
+                for (var newNode of mutation.addedNodes) {
+                    checkInputs(newNode);
+                    recolor_parent_check(newNode);
                 }
             }
         });
     });
     var config = {
+        attributes: true,
+        attributeFilter: ["class"],
         childList: true,
         subtree: true,
     };
@@ -85,15 +90,16 @@ function checkDoc() {
     }
 }
 
-function checkInputs() {
-    kInputElems.forEach(
-        function (val) {
-            var elements = document.getElementsByTagName(val),
-                i;
-            for (i = 0; i < elements.length; i += 1) {
-                checkElementContrast(elements[i]);
-            }
-        });
+function checkInputs(elem) {
+  // Check all input elements under elem
+  var nodeIterator = document.createNodeIterator(
+      elem, NodeFilter.SHOW_ELEMENT, {
+          acceptNode: isInputNode
+      });
+  var node;
+  while ((node = nodeIterator.nextNode())) {
+      checkElementContrast(node);
+  }
 }
 
 function is_fg_defined(e) {

@@ -14,7 +14,7 @@ function test_dynamic() {
   'use strict';
   var sec = document.createElement('section');
   var hdr = document.createElement('h2');
-  hdr.textContent = 'Dynamic, background only';
+  hdr.textContent = 'Dynamically added elements, background only';
   var frm = document.createElement('form');
 
   var inp = document.createElement('input');
@@ -46,6 +46,16 @@ function test_dynamic() {
   sec.appendChild(hdr);
   sec.appendChild(frm);
   document.getElementById('sections').appendChild(sec);
+
+
+  // Do dynamic class addition test
+  //document.getElementById("dyn_input").classlist.add("fg");
+
+
+  for (var dyn_id of ["dyn_input", "dyn_texta", "dyn_select", "dyn_btn"]) {
+    document.getElementById(dyn_id).classList.add("fg");
+  }
+
 }
 
   </script>
@@ -65,7 +75,8 @@ section {
 }
 
 .bgImg {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAABKVBMVEWXuduXudyYutyYut2Zu9yZu92Zu96avN6avN+bvd6bvd+bveCcvuCcvuGdv+Cdv+Gdv+KewOKewOOfweKfweOfweSgwuSgwuWhw+Whw+aixOWixOaixOejxeajxeejxeikxuekxuikxumlx+ilx+mlx+qmyOmmyOqmyOunyeqnyeunyeyoyuuoyuypy+ypy+2qzO2qzO6qzO+rze2rze6rze+rzfCszu+szvCszvGtz/Ctz/Gu0PGu0PKu0POv0fKv0fOv0fSw0vSx0/Wy1PWy1Paz1faz1fe01va01ve01vi01vm11/i11/m11/q22Pq22Pu32fq32fu42vu42vy52/252/663Py63P263P673f673f+83v283v683v+93/693/++4P+/4f9Be+X9AAADHElEQVQYGQXBAYPWJBgA4NfZwpAkPMQpRkdSFIYLk1ziDJmLpD6/nN9Vl96d5///ET0P/HTnzhQnon63ZccvMw0x24eFfzK1bl5+PP4Bnn53L+fn7Ju3+Ja9WnU/KC/EwwGn1pXFDMdAAOAaBvCAFdoFrFO6KybHnsydt7RHQD/vrnsN+I/Btny5V7Hu85PtN7s0su5jHIEohL7icGUmxLrFM7O04Pf7uZ3K9koMDHz5AmkJff3a120LlA4KISEI1Z2Mg1RANMWPEiLNuuV105wpc2Nw9kvusJwUwwAEd8rAVUcwe2C4DXU37vbtpO3HuboegGsG9CYAR1j84ri2cRrKZEoUTC7NeRhzwENgvIS0/l3HkkIya2Cedz3TI7sNQKzIF2s6rLVtRUbLpYgce4mYsQYAgJhPicFAML4pGGIcscFxuiQirNLQQz1sjIzi+r3bei7FzSOTMeuhzIiGWKYFdKycN89HYVOapZGI+0jRoJHYb//uFhCxYjyzXlEdnCXSsNjqwHQSrESFESynl8qcj2LRec2RxcWsp5vRsTlseA8UaM+6z/JAJh6iEej7kfrkCTc1iRfZ2gDCBMRfWj6Fw0nNbreqMCpEeHLdmMw0w3z+MR0+vktru9zKbGtxua5G+1XDLdZxA7nM1JVAeayOcjJ6GfzICC8Sfg5DznD+arFjdj3SkeKBaMU5kRS7QxLb6/b+DEh/xJmV0LsshuanyXsReK8K7wTpOALcHwniDRb7d2W8WHfbdoi7EdlCgJGbXsKHlx/fxfOd9K0eozgwN0aeR7ZdTKEtZxdn8JTPHj8LdNxvgVdPOUWAOpAzouHe8zYB7ZxGaUBmXQ3bpSFGTWbX54oHTbUXEPVpPlo4MuXJwFtgcfLy9MRuJ1xKrJyESR+i+pDH7fIwT6cPiZL0ygMHxPaUk7Em0HzmtCqqV4mI7EFwAjF1dLE2+/omgeK+R48p3FgYYN6BoKh7sV3jJ5Mqc6sGUmgivE98+C/r/T/PTHOM1L8Aiuvdr8u390HL6dajvaJ33+b79e00FC/tn28A9nP/eI3q/v93Xp/XUF/AxAAAAABJRU5ErkJggg==);
+  /*background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAABKVBMVEWXuduXudyYutyYut2Zu9yZu92Zu96avN6avN+bvd6bvd+bveCcvuCcvuGdv+Cdv+Gdv+KewOKewOOfweKfweOfweSgwuSgwuWhw+Whw+aixOWixOaixOejxeajxeejxeikxuekxuikxumlx+ilx+mlx+qmyOmmyOqmyOunyeqnyeunyeyoyuuoyuypy+ypy+2qzO2qzO6qzO+rze2rze6rze+rzfCszu+szvCszvGtz/Ctz/Gu0PGu0PKu0POv0fKv0fOv0fSw0vSx0/Wy1PWy1Paz1faz1fe01va01ve01vi01vm11/i11/m11/q22Pq22Pu32fq32fu42vu42vy52/252/663Py63P263P673f673f+83v283v683v+93/693/++4P+/4f9Be+X9AAADHElEQVQYGQXBAYPWJBgA4NfZwpAkPMQpRkdSFIYLk1ziDJmLpD6/nN9Vl96d5///ET0P/HTnzhQnon63ZccvMw0x24eFfzK1bl5+PP4Bnn53L+fn7Ju3+Ja9WnU/KC/EwwGn1pXFDMdAAOAaBvCAFdoFrFO6KybHnsydt7RHQD/vrnsN+I/Btny5V7Hu85PtN7s0su5jHIEohL7icGUmxLrFM7O04Pf7uZ3K9koMDHz5AmkJff3a120LlA4KISEI1Z2Mg1RANMWPEiLNuuV105wpc2Nw9kvusJwUwwAEd8rAVUcwe2C4DXU37vbtpO3HuboegGsG9CYAR1j84ri2cRrKZEoUTC7NeRhzwENgvIS0/l3HkkIya2Cedz3TI7sNQKzIF2s6rLVtRUbLpYgce4mYsQYAgJhPicFAML4pGGIcscFxuiQirNLQQz1sjIzi+r3bei7FzSOTMeuhzIiGWKYFdKycN89HYVOapZGI+0jRoJHYb//uFhCxYjyzXlEdnCXSsNjqwHQSrESFESynl8qcj2LRec2RxcWsp5vRsTlseA8UaM+6z/JAJh6iEej7kfrkCTc1iRfZ2gDCBMRfWj6Fw0nNbreqMCpEeHLdmMw0w3z+MR0+vktru9zKbGtxua5G+1XDLdZxA7nM1JVAeayOcjJ6GfzICC8Sfg5DznD+arFjdj3SkeKBaMU5kRS7QxLb6/b+DEh/xJmV0LsshuanyXsReK8K7wTpOALcHwniDRb7d2W8WHfbdoi7EdlCgJGbXsKHlx/fxfOd9K0eozgwN0aeR7ZdTKEtZxdn8JTPHj8LdNxvgVdPOUWAOpAzouHe8zYB7ZxGaUBmXQ3bpSFGTWbX54oHTbUXEPVpPlo4MuXJwFtgcfLy9MRuJ1xKrJyESR+i+pDH7fIwT6cPiZL0ygMHxPaUk7Em0HzmtCqqV4mI7EFwAjF1dLE2+/omgeK+R48p3FgYYN6BoKh7sV3jJ5Mqc6sGUmgivE98+C/r/T/PTHOM1L8Aiuvdr8u390HL6dajvaJ33+b79e00FC/tn28A9nP/eI3q/v93Xp/XUF/AxAAAAABJRU5ErkJggg==);*/
+  background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEWrze+83v+32CWOAAAAEElEQVR4AWNk+I8d/WfEigCAsxAJdjDJwwAAAABJRU5ErkJggg==);
 }
 
 .transparentImg {
@@ -190,6 +201,20 @@ section {
         </select>
         <br/>
         <button class="fg transparentImg">Button</button>
+      </form>
+    </section>
+    <section>
+      <h2>Dynamic class change</h2>
+      <form>
+        <input id="dyn_input" class="" value="Input" />
+        <br/>
+        <textarea id="dyn_texta" class="">Textarea</textarea>
+        <br/>
+        <select id="dyn_select" class="">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button id="dyn_btn" class="">Button</button>
       </form>
     </section>
   </div>
