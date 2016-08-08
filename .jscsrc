@@ -1,0 +1,5 @@
+{
+    "preset":"node-style-guide",
+    "maxErrors":-1,
+    "disallowSpacesInFunction":false,
+}
