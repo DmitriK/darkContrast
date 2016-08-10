@@ -4,8 +4,8 @@
 /* globals self, getDefaultComputedStyle*/
 'use strict';
 
-var darkColor = "black";
-var lightColor = "white";
+var darkColor = 'black';
+var lightColor = 'white';
 var allColors;
 var userInverted;
 
@@ -19,12 +19,15 @@ if (is_light(colorstyle_to_rgb(defaultFg))) {
   userInverted = false;
 }
 
-console.log(darkColor);
-console.log(lightColor);
-
 const kInputElems = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'TOOLBARBUTTON'];
+const kInvisibleElems = ['HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE',
+                         'BR', ];
 
 checkInputs(document.documentElement);
+
+if (userInverted === true) {
+  checkDoc();
+}
 
 var observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
@@ -33,11 +36,11 @@ var observer = new MutationObserver(function (mutations) {
           // so this element also needs re-checking
           var changedNode = mutation.target;
           checkInputs(changedNode);
-          // Recolor_parent_check(changedNode);
+          recolor_parent_check(changedNode);
         } else {
           for (var newNode of mutation.addedNodes) {
             checkInputs(newNode);
-            // Recolor_parent_check(newNode);
+            recolor_parent_check(newNode);
           }
         }
       });
@@ -50,6 +53,24 @@ var config = {
   };
 observer.observe(document, config);
 
+function checkDoc() {
+  // Check from root recursively
+  checkElementContrast(document.documentElement, true);
+
+  // Other checks required when browser is in quirks mode
+  if (document.compatMode == 'BackCompat') {
+    // Tables don't inherit color
+    var tables = document.getElementsByTagName('table');
+    for (var i = 0; i < tables.length; i++) {
+      if (getComputedStyle(tables[i]).color ==
+          getDefaultComputedStyle(tables[i]).color) {
+        // If color has not been set explicitely, then force inherit
+        tables[i].style.color = 'inherit';
+      }
+    }
+  }
+}
+
 function checkInputs(elem) {
   // Check all input elements under elem
   var nodeIterator = document.createNodeIterator(
@@ -58,7 +79,9 @@ function checkInputs(elem) {
         });
   var node;
   while ((node = nodeIterator.nextNode())) {
-    checkElementContrast(node);
+    // Don't recurse when checkign input elements, as they don't really have a
+    // hierarchy
+    checkElementContrast(node, false);
   }
 }
 
@@ -66,8 +89,8 @@ function isInputNode(node) {
   return kInputElems.indexOf(node.nodeName) > -1;
 }
 
-// Non-recursive version
-function checkElementContrast(element) {
+
+function checkElementContrast(element, recurse) {
   var fg_color_defined = is_fg_defined(element);
   var bg_color_defined = is_bg_defined(element);
   var bg_img_defined = is_bg_img_defined(element);
@@ -101,6 +124,17 @@ function checkElementContrast(element) {
     element.style.color = darkColor;
     element.style.backgroundColor = lightColor;
     return;
+  }
+
+  if (recurse === true) {
+    var children = element.children;
+    for (var i = 0; i < children.length; i++) {
+      // Don't look at non-renderable elements
+      if (kInvisibleElems.indexOf(element.children[i].nodeName) > -1) {
+        continue;
+      }
+      checkElementContrast(element.children[i], true);
+    }
   }
 }
 
@@ -149,4 +183,25 @@ function is_light(rgb) {
 
 function is_transparent(rgb) {
   return rgb.a === 0;
+}
+
+function recolor_parent_check(elem) {
+  if (userInverted === true) {
+    var parent = elem.parentElement;
+    var defined = false;
+    while (parent !== null) {
+      if (is_fg_defined(parent) ||
+          is_bg_defined(parent) ||
+          is_bg_img_defined(parent)) {
+        // If any parents' color property is defined,
+        // new elements don't need recolor.
+        defined = true;
+        break;
+      }
+      parent = parent.parentElement;
+    }
+    if (!defined) {
+      checkElementContrast(elem, true);
+    }
+  }
 }
