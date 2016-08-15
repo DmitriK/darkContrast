@@ -13,7 +13,6 @@
     "homepage": "https://github.com/DmitriK/darkContrast",
     "license": "MIT",
     "manifest_version": 2,
-    "name": "textcontrast",
-    "title": "Text Contrast for Dark Themes",
+    "name": "Text Contrast for Dark Themes",
     "version": "1.0.0"
 }
