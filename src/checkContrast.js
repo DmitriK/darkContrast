@@ -168,6 +168,12 @@ function colorstyle_to_rgb(s) {
   return color;
 }
 
+/// @todo Use WCAG 2.0 color specifications for determining contrast. Entails:
+///       - Use linear RGB instead of sRGB for determining luminosity
+///       - Luminosity scaling factors are: [0.2126, 0.7152, 0.0722]
+///       - Luminosity ratio is defined as (L1 + 0.05) / (L2 + 0.05) where L1 is
+///         the light color and L2 is the dark
+///       - Ratio should be ≥7:1 for small text, ≥4.5:1 for large
 function getIntensity(rgb) {
   // Use Rec. 709 chromaticity luma, matching sRGB
   return Math.round(0.21 * rgb.r + 0.72 * rgb.g + 0.07 * rgb.b);
