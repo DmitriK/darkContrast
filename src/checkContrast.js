@@ -4,8 +4,8 @@
 /* globals self, getDefaultComputedStyle*/
 'use strict';
 
-var darkColor = 'black';
-var lightColor = 'white';
+var darkColor = 'rgb(0, 0, 0)';
+var lightColor = 'rgb(255, 255, 255)';
 var allColors;
 var userInverted;
 
@@ -111,9 +111,10 @@ function checkElementContrast(element, recurse) {
   }
 
   if (!fg_color_defined && bg_color_defined) {
-    // Only set fg if it will improve contrast
+    // Only set fg if original contrast is poor
+    var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
     var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
-    if (is_light(bg_color) || is_transparent(bg_color)) {
+    if (is_transparent(bg_color) || !isContrastyWCAG(fg_color, bg_color)) {
       element.style.color = darkColor;
       return;
     }
@@ -122,7 +123,8 @@ function checkElementContrast(element, recurse) {
   if (fg_color_defined && !bg_color_defined) {
     // Only set bg if it will improve contrast
     var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
-    if (is_dark(fg_color)) {
+    var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
+    if (!isContrastyWCAG(fg_color, bg_color)) {
       element.style.backgroundColor = lightColor;
       return;
     }
@@ -178,23 +180,35 @@ function colorstyle_to_rgb(s) {
   return color;
 }
 
-/// @todo Use WCAG 2.0 color specifications for determining contrast. Entails:
-///       - Use linear RGB instead of sRGB for determining luminosity
-///       - Luminosity scaling factors are: [0.2126, 0.7152, 0.0722]
-///       - Luminosity ratio is defined as (L1 + 0.05) / (L2 + 0.05) where L1 is
-///         the light color and L2 is the dark
-///       - Ratio should be ≥7:1 for small text, ≥4.5:1 for large
-function getIntensity(rgb) {
-  // Use Rec. 709 chromaticity luma, matching sRGB
-  return Math.round(0.21 * rgb.r + 0.72 * rgb.g + 0.07 * rgb.b);
+function getIntensityWCAG(srgb) {
+  let rgbNormalized = [srgb.r / 255.0, srgb.g / 255.0, srgb.b / 255.0]
+  let rgbLin = rgbNormalized.map(function(v) {
+    if (v <= 0.03928 ) {
+      return v / 12.92
+    } else {
+      return Math.pow((v + 0.055) / 1.055, 2.4)
+    }
+  });
+
+  return 0.2126 * rgbLin[0] + 0.7152 * rgbLin[1] + 0.0722 * rgbLin[2];
+}
+
+function isContrastyWCAG(fore, back) {
+  let lumF = getIntensityWCAG(fore);
+  let lumB = getIntensityWCAG(back);
+
+  let L1 = Math.max(lumF, lumB);
+  let L2 = Math.min(lumF, lumB);
+
+  return (L1 + 0.05) / (L2 + 0.05) > 7;
 }
 
 function is_dark(rgb) {
-  return getIntensity(rgb) < 94;
+  return getIntensityWCAG(rgb) < 0.25;
 }
 
 function is_light(rgb) {
-  return getIntensity(rgb) > 145;
+  return getIntensityWCAG(rgb) > 0.75;
 }
 
 function is_transparent(rgb) {
