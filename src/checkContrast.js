@@ -42,10 +42,9 @@ var observer = new MutationObserver(function (mutations) {
           recolor_parent_check(changedNode);
         } else {
           for (var newNode of mutation.addedNodes) {
-            // Do early check of new nodes to see if they are worth inspecting
-            if (isInputNode(newNode)) {
-              checkElementContrast(newNode, false)
-            } else if (!isInVisibleNode(newNode)) {
+            // Check visibility of new nodes before furhter processing
+            if (!isInVisibleNode(newNode)) {
+              checkInputs(newNode);
               recolor_parent_check(newNode);
             }
           }
