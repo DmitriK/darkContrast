@@ -2,7 +2,8 @@
     "content_scripts": [{
         "matches": ["<all_urls>"],
         "include_globs": ["*://*"],
-        "js": ["checkContrast.js"]
+        "js": ["checkContrast.js"],
+        "css": ["fixContrast.css"]
     }],
     "description": "Fixes low-contrast text when using system colors with a dark desktop theme.",
     "manifest_version": 2,

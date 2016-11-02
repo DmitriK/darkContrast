@@ -1,0 +1,12 @@
+[data-_extension-text-contrast='fg'] {
+  color: rgb(0, 0, 0);
+}
+
+[data-_extension-text-contrast='bg'] {
+  background-color: rgb(255, 255, 255);
+}
+
+[data-_extension-text-contrast='both'] {
+  color: rgb(0, 0, 0);
+  background-color: rgb(255, 255, 255);
+}

@@ -4,9 +4,6 @@
 /* globals self, getDefaultComputedStyle*/
 'use strict';
 
-var darkColor = 'rgb(0, 0, 0)';
-var lightColor = 'rgb(255, 255, 255)';
-var allColors;
 var userInverted;
 
 var defaultFg = getDefaultComputedStyle(document.documentElement).color;
@@ -101,12 +98,18 @@ function isInVisibleNode(node) {
 
 
 function checkElementContrast(element, recurse) {
+  // If element has already been examined before, don't do any processing
+  if (element.dataset._extensionTextContrast !== undefined) {
+    return;
+  }
+
   var fg_color_defined = is_fg_defined(element);
   var bg_color_defined = is_bg_defined(element);
   var bg_img_defined = is_bg_img_defined(element);
 
   if (fg_color_defined && bg_color_defined) {
     //Both colors explicitely defined, nothing to do
+    element.dataset._extensionTextContrast="";
     return;
   }
 
@@ -115,7 +118,7 @@ function checkElementContrast(element, recurse) {
     var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
     var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
     if (is_transparent(bg_color) || !isContrastyWCAG(fg_color, bg_color)) {
-      element.style.color = darkColor;
+      element.dataset._extensionTextContrast="fg";
       return;
     }
   }
@@ -125,7 +128,7 @@ function checkElementContrast(element, recurse) {
     var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
     var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
     if (!isContrastyWCAG(fg_color, bg_color)) {
-      element.style.backgroundColor = lightColor;
+      element.dataset._extensionTextContrast="bg";
       return;
     }
   }
@@ -133,8 +136,7 @@ function checkElementContrast(element, recurse) {
   if (bg_img_defined) {
     //No FG or BG color, but possibly transparent image, so need
     //to set both
-    element.style.color = darkColor;
-    element.style.backgroundColor = lightColor;
+    element.dataset._extensionTextContrast="both";
     return;
   }
 
