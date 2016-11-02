@@ -21,7 +21,7 @@ if (is_light(colorstyle_to_rgb(defaultFg))) {
 
 const kInputElems = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'TOOLBARBUTTON'];
 const kInvisibleElems = ['HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE',
-                         'BR', ];
+                         'BR', 'LINK'];
 
 checkInputs(document.documentElement);
 
