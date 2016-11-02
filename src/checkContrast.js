@@ -31,7 +31,7 @@ if (userInverted === true) {
 
 var observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
-        if (mutation.type == 'attributes') {
+        if (mutation.type === 'attributes') {
           // This mutation represents a change to class or style of element
           // so this element also needs re-checking
           var changedNode = mutation.target;
@@ -65,11 +65,11 @@ function checkDoc() {
   checkElementContrast(document.documentElement, true);
 
   // Other checks required when browser is in quirks mode
-  if (document.compatMode == 'BackCompat') {
+  if (document.compatMode === 'BackCompat') {
     // Tables don't inherit color
     var tables = document.getElementsByTagName('table');
     for (var i = 0; i < tables.length; i++) {
-      if (getComputedStyle(tables[i]).color ==
+      if (getComputedStyle(tables[i]).color ===
           getDefaultComputedStyle(tables[i]).color) {
         // If color has not been set explicitely, then force inherit
         tables[i].style.color = 'inherit';
@@ -150,21 +150,21 @@ function checkElementContrast(element, recurse) {
 }
 
 function is_fg_defined(e) {
-  return getComputedStyle(e).color != getDefaultComputedStyle(e).color;
+  return getComputedStyle(e).color !== getDefaultComputedStyle(e).color;
 }
 
 function is_bg_defined(e) {
-  return (getComputedStyle(e).backgroundColor !=
+  return (getComputedStyle(e).backgroundColor !==
       getDefaultComputedStyle(e).backgroundColor);
 }
 
 function is_bg_img_defined(e) {
-  return (getComputedStyle(e).backgroundImage != 'none');
+  return (getComputedStyle(e).backgroundImage !== 'none');
 }
 
 function colorstyle_to_rgb(s) {
   var color = {};
-  if (s == 'transparent') {
+  if (s === 'transparent') {
     color.r = 0;
     color.g = 0;
     color.b = 0;
