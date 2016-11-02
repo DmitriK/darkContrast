@@ -35,12 +35,19 @@ var observer = new MutationObserver(function (mutations) {
           // This mutation represents a change to class or style of element
           // so this element also needs re-checking
           var changedNode = mutation.target;
-          checkInputs(changedNode);
+
+          if (isInputNode(changedNode)) {
+            checkElementContrast(changedNode, false)
+          }
           recolor_parent_check(changedNode);
         } else {
           for (var newNode of mutation.addedNodes) {
-            checkInputs(newNode);
-            recolor_parent_check(newNode);
+            // Do early check of new nodes to see if they are worth inspecting
+            if (isInputNode(newNode)) {
+              checkElementContrast(newNode, false)
+            } else if (!isInVisibleNode(newNode)) {
+              recolor_parent_check(newNode);
+            }
           }
         }
       });
@@ -89,6 +96,10 @@ function isInputNode(node) {
   return kInputElems.indexOf(node.nodeName) > -1;
 }
 
+function isInVisibleNode(node) {
+  return kInvisibleElems.indexOf(node.nodeName) > -1;
+}
+
 
 function checkElementContrast(element, recurse) {
   var fg_color_defined = is_fg_defined(element);
@@ -130,7 +141,7 @@ function checkElementContrast(element, recurse) {
     var children = element.children;
     for (var i = 0; i < children.length; i++) {
       // Don't look at non-renderable elements
-      if (kInvisibleElems.indexOf(element.children[i].nodeName) > -1) {
+      if (isInVisibleNode(element.children[i])) {
         continue;
       }
       checkElementContrast(element.children[i], true);
