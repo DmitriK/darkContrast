@@ -1,24 +1,27 @@
-# darkContrast
-Firefox addon that fixes low contrast text when using dark desktop theme
+# Text Contrast for Dark Themes
 
-This addon is intended for Firefox users that have a light text/dark background system theme.
+Firefox extension that fixes low contrast text when using dark desktop theme
 
-The primary purpose of this addon is to fix input elements, which are drawn with
-a native dark style, but may have an explicit foreground or background color
-which assumes a light style, resulting in low contrast text. This addon checks
-if only one of the colors has been defined (foreground color, or background
-color/image), and defines the unset property as needed. Elements with both
-colors defined or both colors undefined remain unchanged.
+This extension is intended for Firefox users that have a light text/dark
+background system theme.
 
-An experimental option can also attempt to adjust all page colors if the "use
-system colors" Firefox option is set. The option makes this addon recurse
-through the elements of any page visited and taking the following actions:
+The primary purpose of this extension is to fix input elements, which are drawn
+with native widgets in a dark style, but may have an explicit foreground or
+background color set by the page author which assumes a light style, resulting
+in low contrast text. Th extension checks if only one of the colors has been
+defined (foreground color, or background color/image), and defines the unset
+property as needed. Elements with both colors defined or both colors undefined
+remain unchanged.
 
-- If all colors defined, stops recursing in that element
-- If neither color is defined, then recurse through element's render-able
-  children
-- If only one color is defined, set the other color as needed to maintain
-  contrast
+The colors are set using a custom data attribute and a small stylesheet that
+selects on the data attribute.
 
-This option does not always seem to work correctly, and can misbehave on
-websites rendering in quirks mode, and thus should be considered experimental.
+The extension also listens for DOM changes (element additions, class changes,
+style changes) and fixes newly added or changed elements as needed. Elements
+that have already been checked (evidenced by the existence of the data
+attribute) are skipped, resulting in good performance even for site that
+heavily rely on updating style via Javascript.
+
+The extension will detect if the user has set the "use system colors" option in
+Firefox. If set, the extension will additionally recuse through all elements
+(independently of input elements) and apply color fixes.
