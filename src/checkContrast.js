@@ -127,7 +127,7 @@ function checkElementContrast(element, recurse) {
 
   if (fg_color_defined && bg_color_defined) {
     //Both colors explicitely defined, nothing to do
-    element.dataset._extensionTextContrast="";
+    element.dataset._extensionTextContrast = '';
     return;
   }
 
@@ -136,7 +136,7 @@ function checkElementContrast(element, recurse) {
     var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
     var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
     if (is_transparent(bg_color) || !isContrastyWCAG(fg_color, bg_color)) {
-      element.dataset._extensionTextContrast="fg";
+      element.dataset._extensionTextContrast = 'fg';
       return;
     }
   }
@@ -146,7 +146,7 @@ function checkElementContrast(element, recurse) {
     var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
     var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
     if (!isContrastyWCAG(fg_color, bg_color)) {
-      element.dataset._extensionTextContrast="bg";
+      element.dataset._extensionTextContrast = 'bg';
       return;
     }
   }
@@ -154,7 +154,7 @@ function checkElementContrast(element, recurse) {
   if (bg_img_defined) {
     //No FG or BG color, but possibly transparent image, so need
     //to set both
-    element.dataset._extensionTextContrast="both";
+    element.dataset._extensionTextContrast = 'both';
     return;
   }
 
@@ -203,7 +203,7 @@ function colorstyle_to_rgb(s) {
 function getIntensityWCAG(srgb) {
   let rgbNormalized = [srgb.r / 255.0, srgb.g / 255.0, srgb.b / 255.0]
   let rgbLin = rgbNormalized.map(function(v) {
-    if (v <= 0.03928 ) {
+    if (v <= 0.03928) {
       return v / 12.92
     } else {
       return Math.pow((v + 0.055) / 1.055, 2.4)
