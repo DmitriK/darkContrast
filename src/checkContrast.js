@@ -4,6 +4,12 @@
 /* globals self, getDefaultComputedStyle*/
 'use strict';
 
+const kInputElems = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'TOOLBARBUTTON'];
+const kInvisibleElems = ['HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE',
+                         'BR', 'LINK',];
+
+var bgPort = browser.runtime.connect({name: 'port-from-cs'});
+
 var userInverted;
 
 var defaultFg = getDefaultComputedStyle(document.documentElement).color;
@@ -16,9 +22,21 @@ if (is_light(colorstyle_to_rgb(defaultFg))) {
   userInverted = false;
 }
 
-const kInputElems = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'TOOLBARBUTTON'];
-const kInvisibleElems = ['HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE',
-                         'BR', 'LINK'];
+bgPort.onMessage.addListener(function(m) {
+  if (m.request === 'toggle') {
+    let elems = document.querySelectorAll('[data-_extension-text-contrast]');
+    if (elems.length == 0) {
+      checkInputs(document.documentElement);
+      if (userInverted === true) {
+        checkDoc();
+      }
+    } else {
+      for (let e of elems) {
+        e.removeAttribute('data-_extension-text-contrast');
+      }
+    }
+  }
+});
 
 checkInputs(document.documentElement);
 
