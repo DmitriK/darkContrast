@@ -224,11 +224,11 @@ function isContrastyWCAG(fore, back) {
 }
 
 function is_dark(rgb) {
-  return getIntensityWCAG(rgb) < 0.25;
+  return getIntensityWCAG(rgb) < 0.5;
 }
 
 function is_light(rgb) {
-  return getIntensityWCAG(rgb) > 0.75;
+  return getIntensityWCAG(rgb) > 0.5;
 }
 
 function is_transparent(rgb) {
