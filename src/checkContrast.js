@@ -6,7 +6,7 @@
 
 const kInputElems = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'TOOLBARBUTTON'];
 const kInvisibleElems = ['HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE',
-                         'BR', 'LINK',];
+                         'BR', 'LINK', '#text',];
 
 var bgPort = browser.runtime.connect({name: 'port-from-cs'});
 
