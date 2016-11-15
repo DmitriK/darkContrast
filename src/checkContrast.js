@@ -240,10 +240,8 @@ function recolor_parent_check(elem) {
     var parent = elem.parentElement;
     var defined = false;
     while (parent !== null) {
-      if (is_fg_defined(parent) ||
-          is_bg_defined(parent) ||
-          is_bg_img_defined(parent)) {
-        // If any parents' color property is defined,
+      if (parent.dataset._extensionTextContrast !== undefined) {
+        // If any parents' were already handled,
         // new elements don't need recolor.
         defined = true;
         break;

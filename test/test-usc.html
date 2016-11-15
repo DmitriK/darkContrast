@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+Copyright ©2016 Dmitri Kourennyi
+See the file COPYING for copying permission.
+-->
+
+<html>
+
+<head>
+  <title>Test Use System Colors fixes</title>
+  <meta charset="utf-8" />
+  <script>
+  window.setTimeout(test_dynamic, 500);
+
+  function test_dynamic() {
+    'use strict';
+    let div = document.createElement('div');
+    div.classList.add('bg');
+    div.textContent = 'Dyanmic - Light background child on dark background parent.';
+    document.getElementById('dynamic_dark_bg').appendChild(div);
+  }
+  </script>
+  <style>
+body {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+body> div {
+  margin:1rem;
+}
+.fg {
+  color: black;
+}
+.bg {
+  background-color: white;
+}
+.bgimg {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEWrze+83v+32CWOAAAAEElEQVR4AWNk+I8d/WfEigCAsxAJdjDJwwAAAABJRU5ErkJggg==);
+}
+
+  </style>
+</head>
+
+<body>
+  <div>
+    Nothing defined.
+  </div>
+  <div class="fg">
+    Foreground only.
+  </div>
+  <div class="bg">
+    Background only.
+  </div>
+  <div class="bgimg">
+    Background image.
+  </div>
+
+  <div id="dynamic_dark_bg" style="background-color:black;">
+  </div>
+
+</body>
+
+</html>
