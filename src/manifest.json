@@ -10,7 +10,8 @@
         "matches": ["<all_urls>"],
         "include_globs": ["*://*"],
         "js": ["checkContrast.js"],
-        "css": ["fixContrast.css"]
+        "css": ["fixContrast.css"],
+        "all_frames": true
     }],
     "description": "Fixes low-contrast text when using system colors with a dark desktop theme.",
     "manifest_version": 2,
