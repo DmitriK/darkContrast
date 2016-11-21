@@ -129,9 +129,7 @@ function checkElementContrast(element, recurse) {
     //Both colors explicitely defined, nothing to do
     element.dataset._extensionTextContrast = '';
     return;
-  }
-
-  if (!fg_color_defined && bg_color_defined) {
+  } else if (!fg_color_defined && bg_color_defined) {
     // Only set fg if original contrast is poor
     var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
     var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
@@ -139,9 +137,7 @@ function checkElementContrast(element, recurse) {
       element.dataset._extensionTextContrast = 'fg';
       return;
     }
-  }
-
-  if (fg_color_defined && !bg_color_defined) {
+  } else if (fg_color_defined && !bg_color_defined) {
     // Only set bg if it will improve contrast
     var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
     var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
@@ -149,9 +145,7 @@ function checkElementContrast(element, recurse) {
       element.dataset._extensionTextContrast = 'bg';
       return;
     }
-  }
-
-  if (bg_img_defined) {
+  } else if (bg_img_defined) {
     //No FG or BG color, but possibly transparent image, so need
     //to set both
     element.dataset._extensionTextContrast = 'both';
