@@ -1,7 +1,6 @@
 var csPort;
 
 function connected(p) {
-  console.log("Content script connected");
   csPort = p;
 }
 
