@@ -22,7 +22,7 @@ if (is_light(colorstyle_to_rgb(defaultFg))) {
   userInverted = false;
 }
 
-bgPort.onMessage.addListener(function(m) {
+bgPort.onMessage.addListener(function (m) {
   if (m.request === 'toggle') {
     let elems = document.querySelectorAll('[data-_extension-text-contrast]');
     if (elems.length == 0) {
@@ -30,10 +30,12 @@ bgPort.onMessage.addListener(function(m) {
       if (userInverted === true) {
         checkDoc();
       }
+      bgPort.postMessage({toggle: true});
     } else {
       for (let e of elems) {
         e.removeAttribute('data-_extension-text-contrast');
       }
+      bgPort.postMessage({toggle: false});
     }
   }
 });
