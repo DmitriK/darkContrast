@@ -1,20 +1,18 @@
-var csPort;
+"use strict";
 
-function connected(p) {
-  csPort = p;
-
-  csPort.onMessage.addListener(function (m, sender) {
-    let tab = csPort.sender.tab.id;
+function sendToggle(tabs) {
+  let id = tabs[0].id;
+  console.log(id);
+  browser.tabs.sendMessage(id, {request: 'toggle'}).then(m => {
+    console.log("got response?", m, id);
     if (m.toggle) {
-      browser.browserAction.setBadgeText({text:"", tabId:tab});
+      browser.browserAction.setBadgeText({text: "", tabId: id});
     } else {
-      browser.browserAction.setBadgeText({text:"🞬", tabId:tab});
+      browser.browserAction.setBadgeText({text: "🞬", tabId: id});
     }
   });
 }
 
-browser.runtime.onConnect.addListener(connected);
-
-browser.browserAction.onClicked.addListener(function () {
-  csPort.postMessage({request: 'toggle'});
+browser.browserAction.onClicked.addListener(() => {
+  browser.tabs.query({currentWindow: true, active: true}).then(sendToggle);
 });

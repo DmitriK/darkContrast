@@ -8,8 +8,6 @@ const kInputElems = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'TOOLBARBUTTON'];
 const kInvisibleElems = ['HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE',
                          'BR', 'LINK', '#text', 'FRAMESET'];
 
-var bgPort = browser.runtime.connect({name: 'port-from-cs'});
-
 var userInverted;
 
 var defaultFg = getDefaultComputedStyle(document.documentElement).color;
@@ -22,7 +20,7 @@ if (is_light(colorstyle_to_rgb(defaultFg))) {
   userInverted = false;
 }
 
-bgPort.onMessage.addListener(function (m) {
+browser.runtime.onMessage.addListener(m => {
   if (m.request === 'toggle') {
     let elems = document.querySelectorAll('[data-_extension-text-contrast]');
     if (elems.length == 0) {
@@ -30,12 +28,12 @@ bgPort.onMessage.addListener(function (m) {
       if (userInverted === true) {
         checkDoc();
       }
-      bgPort.postMessage({toggle: true});
+      return Promise.resolve({toggle: true});
     } else {
       for (let e of elems) {
         e.removeAttribute('data-_extension-text-contrast');
       }
-      bgPort.postMessage({toggle: false});
+      return Promise.resolve({toggle: false});
     }
   }
 });
