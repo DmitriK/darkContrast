@@ -38,12 +38,6 @@ browser.runtime.onMessage.addListener(m => {
   }
 });
 
-checkInputs(document.documentElement);
-
-if (userInverted === true) {
-  checkDoc();
-}
-
 var observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
         if (mutation.type === 'attributes') {
@@ -72,7 +66,15 @@ var config = {
     childList: true,
     subtree: true,
   };
-observer.observe(document, config);
+
+// Delay action slightly to allow other addons to inject css (e.g. dotjs)
+setTimeout(function () {
+  checkInputs(document.documentElement);
+  if (userInverted === true) {
+    checkDoc();
+  }
+  observer.observe(document, config);
+}, 32);
 
 function checkDoc() {
   // Check from root recursively
