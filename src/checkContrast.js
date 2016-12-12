@@ -28,12 +28,18 @@ browser.runtime.onMessage.addListener(m => {
       if (userInverted === true) {
         checkDoc();
       }
-      return Promise.resolve({toggle: true});
+      if (window.self === window.top) {
+        // Only respond if top-level window, not frame
+        return Promise.resolve({toggle: true});
+      }
     } else {
       for (let e of elems) {
         e.removeAttribute('data-_extension-text-contrast');
       }
-      return Promise.resolve({toggle: false});
+      if (window.self === window.top) {
+        // Only respond if top-level window, not frame
+        return Promise.resolve({toggle: false});
+      }
     }
   }
 });
@@ -115,7 +121,6 @@ function isInputNode(node) {
 function isInVisibleNode(node) {
   return kInvisibleElems.indexOf(node.nodeName) > -1;
 }
-
 
 function checkElementContrast(element, recurse) {
   // If element has already been examined before, don't do any processing
