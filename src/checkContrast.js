@@ -41,6 +41,37 @@ browser.runtime.onMessage.addListener(m => {
         return Promise.resolve({toggle: false});
       }
     }
+  } else if (m.request === 'std') {
+    if (document.documentElement.dataset._extensionTextContrast === 'std') {
+      // Clear overrides
+      let elems = document.querySelectorAll('[data-_extension-text-contrast]');
+      for (let e of elems) {
+        e.removeAttribute('data-_extension-text-contrast');
+      }
+      // Re-check everything
+      checkInputs(document.documentElement);
+      if (userInverted === true) {
+        checkDoc();
+      }
+      if (window.self === window.top) {
+        // Only respond if top-level window, not frame
+        return Promise.resolve({std: false});
+      }
+    } else {
+      // Clear overrides
+      let elems = document.querySelectorAll('[data-_extension-text-contrast]');
+      for (let e of elems) {
+          e.removeAttribute('data-_extension-text-contrast');
+      }
+      // Force override on root element
+      document.documentElement.dataset._extensionTextContrast = 'std';
+      // Re-check all inputs
+      checkInputs(document.documentElement);
+      if (window.self === window.top) {
+          // Only respond if top-level window, not frame
+          return Promise.resolve({std: true});
+      }
+    }
   }
 });
 

@@ -3,8 +3,9 @@
         "scripts": ["bg.js"]
     },
     "browser_action": {
-        "browser_style": true,
+        "browser_style": false,
         "default_icon": "icons/icon-vec.svg",
+        "default_popup": "popup/toggles.html",
         "default_title": "Toggle text contrast fix"
     },
     "content_scripts": [{
