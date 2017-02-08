@@ -18,5 +18,5 @@
     "description": "Fixes low-contrast text when using system colors with a dark desktop theme.",
     "manifest_version": 2,
     "name": "Text Contrast for Dark Themes",
-    "version": "1.1.0"
+    "version": "1.2.0"
 }
