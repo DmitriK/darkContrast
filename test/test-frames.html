@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!--
+Copyright ©2016 Dmitri Kourennyi
+See the file COPYING for copying permission.
+-->
+
+<html>
+
+<head>
+  <title>Test Use System Colors fixes</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="test.css"/>
+  <style>
+body {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+body> div {
+  margin:1rem;
+}
+  </style>
+</head>
+
+<body>
+  <div>Nothing:<br/><iframe src="frame-src.html"></iframe></div>
+  <div>FG only:<br/><iframe class="fg" src="frame-src.html"></iframe></div>
+  <div>BG only:<br/><iframe class="bg" src="frame-src.html"></iframe></div>
+  <div>BG image:<br/><iframe class="bgimg" src="frame-src.html"></iframe></div>
+  <div>Both:<br/><iframe class="fg bg" src="frame-src.html"></iframe></div>
+</body>
+
+</html>

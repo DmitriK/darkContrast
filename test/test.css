@@ -1,0 +1,9 @@
+.fg {
+  color: black;
+}
+.bg {
+  background-color: white;
+}
+.bgimg {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEWrze+83v+32CWOAAAAEElEQVR4AWNk+I8d/WfEigCAsxAJdjDJwwAAAABJRU5ErkJggg==);
+}
