@@ -8,6 +8,7 @@ module.exports = {
   "rules": {
     "arrow-parens": "error",
     "comma-dangle": ["warn", "always-multiline"],
+    "consistent-return": "error",
     "eqeqeq": ["error", "smart"],
     "func-names": ["warn", "as-needed"],
     "indent": ["error", 2],

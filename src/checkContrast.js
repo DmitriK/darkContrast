@@ -156,8 +156,8 @@ function recolor_parent_check(elem) {
   }
 }
 
-browser.runtime.onMessage.addListener((m) => {
-  if (m.request === 'toggle') {
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.request === 'toggle') {
     const elems = document.querySelectorAll('[data-_extension-text-contrast]');
 
     if (elems.length === 0) {
@@ -167,7 +167,7 @@ browser.runtime.onMessage.addListener((m) => {
       }
       if (window.self === window.top) {
         // Only respond if top-level window, not frame
-        return Promise.resolve({toggle: true});
+        sendResponse({toggle: true});
       }
     } else {
       for (const e of elems) {
@@ -175,10 +175,10 @@ browser.runtime.onMessage.addListener((m) => {
       }
       if (window.self === window.top) {
         // Only respond if top-level window, not frame
-        return Promise.resolve({toggle: false});
+        sendResponse({toggle: false});
       }
     }
-  } else if (m.request === 'std') {
+  } else if (message.request === 'std') {
     if (document.documentElement.dataset._extensionTextContrast === 'std') {
       // Clear overrides
       const elems =
@@ -194,7 +194,7 @@ browser.runtime.onMessage.addListener((m) => {
       }
       if (window.self === window.top) {
         // Only respond if top-level window, not frame
-        return Promise.resolve({std: false});
+        sendResponse({std: false});
       }
     } else {
       // Clear overrides
@@ -210,7 +210,7 @@ browser.runtime.onMessage.addListener((m) => {
       checkInputs(document.documentElement);
       if (window.self === window.top) {
         // Only respond if top-level window, not frame
-        return Promise.resolve({std: true});
+        sendResponse({std: true});
       }
     }
   }
