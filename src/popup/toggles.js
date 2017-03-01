@@ -1,32 +1,33 @@
-"use strict";
+/* Copyright (c) 2017 Dmitri Kourennyi */
+/* See the file COPYING for copying permission. */
+/* global getDefaultComputedStyle:false, color:false */
+'use strict';
 
 function sendToggle(tabs) {
-  let id = tabs[0].id;
-  browser.tabs.sendMessage(id, {request: 'toggle'}).then(m => {
+  const [{id}] = tabs;
+
+  browser.tabs.sendMessage(id, {request: 'toggle'}).then((m) => {
     if (m.toggle) {
-      browser.browserAction.setBadgeText({text: "", tabId: id});
+      browser.browserAction.setBadgeText({text: '', tabId: id});
     } else {
-      browser.browserAction.setBadgeText({text: "off", tabId: id});
+      browser.browserAction.setBadgeText({text: 'off', tabId: id});
     }
   });
 }
 
 function togg_std(tabs) {
-  let id = tabs[0].id;
-  browser.tabs.sendMessage(id, {request: 'std'}).then(m => {
+  const [{id}] = tabs;
+
+  browser.tabs.sendMessage(id, {request: 'std'}).then((m) => {
     if (m.std) {
-      browser.browserAction.setBadgeText({text: "std", tabId: id});
+      browser.browserAction.setBadgeText({text: 'std', tabId: id});
     } else {
-      browser.browserAction.setBadgeText({text: "", tabId: id});
+      browser.browserAction.setBadgeText({text: '', tabId: id});
     }
   });
 }
 
-function is_light(rgb) {
-  return color.get_intensity(rgb) > 0.5;
-}
-
-window.addEventListener('load', function () {
+window.addEventListener('load', () => {
   const defaultFg = color.to_rgb(getDefaultComputedStyle(
     document.documentElement).color);
   const defaultBg = color.to_rgb(getDefaultComputedStyle(
@@ -40,11 +41,11 @@ window.addEventListener('load', function () {
     document.getElementById('tog_std').style.display = 'block';
   }
 
-  document.getElementById('tog_main').addEventListener('click', function() {
+  document.getElementById('tog_main').addEventListener('click', () => {
     browser.tabs.query({currentWindow: true, active: true}).then(sendToggle);
   });
 
-  document.getElementById('tog_std').addEventListener('click', function() {
+  document.getElementById('tog_std').addEventListener('click', () => {
     browser.tabs.query({currentWindow: true, active: true}).then(togg_std);
   });
 });
