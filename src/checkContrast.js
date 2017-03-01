@@ -1,7 +1,6 @@
 /* Copyright (c) 2016 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
-/* jshint moz: true, strict: global, browser: true, devel:true */
-/* globals self, getDefaultComputedStyle*/
+/* global getDefaultComputedStyle:false, color:false */
 'use strict';
 
 const kInputElems = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'TOOLBARBUTTON'];
@@ -12,13 +11,13 @@ const kInvisibleElems = [
 
 var userInverted;
 
-let defaultFg = colorstyle_to_rgb(getDefaultComputedStyle(
+let defaultFg = color.to_rgb(getDefaultComputedStyle(
   document.documentElement).color);
-let defaultBg = colorstyle_to_rgb(getDefaultComputedStyle(
+let defaultBg = color.to_rgb(getDefaultComputedStyle(
   document.documentElement).backgroundColor);
 
-if (!isContrastyWCAG(defaultFg, {r:255, g:255, b:255, a:1}) ||
-    !isContrastyWCAG({r:0, g:0, b:0, a:1}, defaultBg)) {
+if (!color.is_contrasty(defaultFg, {r:255, g:255, b:255, a:1}) ||
+    !color.is_contrasty({r:0, g:0, b:0, a:1}, defaultBg)) {
   // Contrast check against what sites will assume to be default
   // (black fg, white bg) failed, so user most likely has 'Use system
   // colors' on
@@ -177,17 +176,18 @@ function checkElementContrast(element, recurse) {
     return;
   } else if (!fg_color_defined && bg_color_defined) {
     // Only set fg if original contrast is poor
-    let fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
-    let bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
-    if (is_transparent(bg_color) || !isContrastyWCAG(fg_color, bg_color)) {
+    let fg_color = color.to_rgb(getComputedStyle(element).color);
+    let bg_color = color.to_rgb(getComputedStyle(element).backgroundColor);
+    if (color.is_transparent(bg_color) ||
+        !color.is_contrasty(fg_color, bg_color)) {
       element.dataset._extensionTextContrast = 'fg';
       return;
     }
   } else if (fg_color_defined && !bg_color_defined) {
     // Only set bg if it will improve contrast
-    let fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
-    let bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
-    if (!isContrastyWCAG(fg_color, bg_color)) {
+    let fg_color = color.to_rgb(getComputedStyle(element).color);
+    let bg_color = color.to_rgb(getComputedStyle(element).backgroundColor);
+    if (!color.is_contrasty(fg_color, bg_color)) {
       element.dataset._extensionTextContrast = 'bg';
       return;
     }
@@ -221,50 +221,6 @@ function is_bg_defined(e) {
 
 function is_bg_img_defined(e) {
   return (getComputedStyle(e).backgroundImage !== 'none');
-}
-
-function colorstyle_to_rgb(s) {
-  var color = {};
-  if (s === 'transparent') {
-    color.r = 0;
-    color.g = 0;
-    color.b = 0;
-    color.a = 0;
-    return color;
-  }
-  var parts = s.split(',', 3);
-  color.r = parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1));
-  color.g = parseInt(parts[1].trim());
-  color.b = parseInt(parts[2].trim());
-  color.a = 1;
-  return color;
-}
-
-function getIntensityWCAG(srgb) {
-  let rgbNormalized = [srgb.r / 255.0, srgb.g / 255.0, srgb.b / 255.0];
-  let rgbLin = rgbNormalized.map(function(v) {
-    if (v <= 0.03928) {
-      return v / 12.92;
-    } else {
-      return Math.pow((v + 0.055) / 1.055, 2.4);
-    }
-  });
-
-  return 0.2126 * rgbLin[0] + 0.7152 * rgbLin[1] + 0.0722 * rgbLin[2];
-}
-
-function isContrastyWCAG(fore, back) {
-  let lumF = getIntensityWCAG(fore);
-  let lumB = getIntensityWCAG(back);
-
-  let L1 = Math.max(lumF, lumB);
-  let L2 = Math.min(lumF, lumB);
-
-  return (L1 + 0.05) / (L2 + 0.05) > 7;
-}
-
-function is_transparent(rgb) {
-  return rgb.a === 0;
 }
 
 function recolor_parent_check(elem) {

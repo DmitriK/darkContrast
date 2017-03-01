@@ -11,12 +11,12 @@
     "content_scripts": [{
         "matches": ["<all_urls>"],
         "include_globs": ["*://*"],
-        "js": ["checkContrast.js"],
+        "js": ["color.js", "checkContrast.js"],
         "css": ["fixContrast.css"],
         "all_frames": true
     }],
     "description": "Fixes low-contrast text when using system colors with a dark desktop theme.",
     "manifest_version": 2,
     "name": "Text Contrast for Dark Themes",
-    "version": "1.2.0"
+    "version": "1.2.1"
 }
