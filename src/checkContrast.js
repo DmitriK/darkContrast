@@ -5,8 +5,10 @@
 'use strict';
 
 const kInputElems = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'TOOLBARBUTTON'];
-const kInvisibleElems = ['HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE',
-                         'BR', 'LINK', '#text', 'FRAMESET'];
+const kInvisibleElems = [
+  'HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE', 'BR', 'LINK', '#text',
+  'FRAMESET'
+];
 
 var userInverted;
 
@@ -66,48 +68,49 @@ browser.runtime.onMessage.addListener(m => {
       // Clear overrides
       let elems = document.querySelectorAll('[data-_extension-text-contrast]');
       for (let e of elems) {
-          e.removeAttribute('data-_extension-text-contrast');
+        e.removeAttribute('data-_extension-text-contrast');
       }
       // Force override on root element
       document.documentElement.dataset._extensionTextContrast = 'std';
       // Re-check all inputs
       checkInputs(document.documentElement);
       if (window.self === window.top) {
-          // Only respond if top-level window, not frame
-          return Promise.resolve({std: true});
+        // Only respond if top-level window, not frame
+        return Promise.resolve({std: true});
       }
     }
   }
 });
 
 var observer = new MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
-        if (mutation.type === 'attributes') {
-          // This mutation represents a change to class or style of element
-          // so this element also needs re-checking
-          var changedNode = mutation.target;
+  mutations.forEach(function (mutation) {
+    if (mutation.type === 'attributes') {
+      // This mutation represents a change to class or style of element
+      // so this element also needs re-checking
+      var changedNode = mutation.target;
 
-          if (isInputNode(changedNode)) {
-            checkElementContrast(changedNode, false)
-          }
-          recolor_parent_check(changedNode);
-        } else {
-          for (var newNode of mutation.addedNodes) {
-            // Check visibility of new nodes before furhter processing
-            if (!isInVisibleNode(newNode)) {
-              checkInputs(newNode);
-              recolor_parent_check(newNode);
-            }
-          }
+      if (isInputNode(changedNode)) {
+        checkElementContrast(changedNode, false);
+      }
+      recolor_parent_check(changedNode);
+    } else {
+      for (var newNode of mutation.addedNodes) {
+        // Check visibility of new nodes before furhter processing
+        if (!isInVisibleNode(newNode)) {
+          checkInputs(newNode);
+          recolor_parent_check(newNode);
         }
-      });
+      }
+    }
   });
+});
+
 var config = {
-    attributes: true,
-    attributeFilter: ['class'],
-    childList: true,
-    subtree: true,
-  };
+  attributes: true,
+  attributeFilter: ['class'],
+  childList: true,
+  subtree: true,
+};
 
 // Delay action slightly to allow other addons to inject css (e.g. dotjs)
 setTimeout(function () {
@@ -140,8 +143,8 @@ function checkInputs(elem) {
   // Check all input elements under elem
   var nodeIterator = document.createNodeIterator(
       elem, NodeFilter.SHOW_ELEMENT, {
-          acceptNode: isInputNode,
-        });
+        acceptNode: isInputNode,
+      });
   var node;
   while ((node = nodeIterator.nextNode())) {
     // Don't recurse when checkign input elements, as they don't really have a
@@ -174,16 +177,16 @@ function checkElementContrast(element, recurse) {
     return;
   } else if (!fg_color_defined && bg_color_defined) {
     // Only set fg if original contrast is poor
-    var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
-    var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
+    let fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
+    let bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
     if (is_transparent(bg_color) || !isContrastyWCAG(fg_color, bg_color)) {
       element.dataset._extensionTextContrast = 'fg';
       return;
     }
   } else if (fg_color_defined && !bg_color_defined) {
     // Only set bg if it will improve contrast
-    var fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
-    var bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
+    let fg_color = colorstyle_to_rgb(getComputedStyle(element).color);
+    let bg_color = colorstyle_to_rgb(getComputedStyle(element).backgroundColor);
     if (!isContrastyWCAG(fg_color, bg_color)) {
       element.dataset._extensionTextContrast = 'bg';
       return;
@@ -238,12 +241,12 @@ function colorstyle_to_rgb(s) {
 }
 
 function getIntensityWCAG(srgb) {
-  let rgbNormalized = [srgb.r / 255.0, srgb.g / 255.0, srgb.b / 255.0]
+  let rgbNormalized = [srgb.r / 255.0, srgb.g / 255.0, srgb.b / 255.0];
   let rgbLin = rgbNormalized.map(function(v) {
     if (v <= 0.03928) {
-      return v / 12.92
+      return v / 12.92;
     } else {
-      return Math.pow((v + 0.055) / 1.055, 2.4)
+      return Math.pow((v + 0.055) / 1.055, 2.4);
     }
   });
 
