@@ -10,10 +10,15 @@ const kInvisibleElems = ['HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE',
 
 var userInverted;
 
-var defaultFg = getDefaultComputedStyle(document.documentElement).color;
+let defaultFg = colorstyle_to_rgb(getDefaultComputedStyle(
+  document.documentElement).color);
+let defaultBg = colorstyle_to_rgb(getDefaultComputedStyle(
+  document.documentElement).backgroundColor);
 
-if (is_light(colorstyle_to_rgb(defaultFg))) {
-  // Default foreground color is light, so user most likely has 'Use system
+if (!isContrastyWCAG(defaultFg, {r:255, g:255, b:255, a:1}) ||
+    !isContrastyWCAG({r:0, g:0, b:0, a:1}, defaultBg)) {
+  // Contrast check against what sites will assume to be default
+  // (black fg, white bg) failed, so user most likely has 'Use system
   // colors' on
   userInverted = true;
 } else {
@@ -253,14 +258,6 @@ function isContrastyWCAG(fore, back) {
   let L2 = Math.min(lumF, lumB);
 
   return (L1 + 0.05) / (L2 + 0.05) > 7;
-}
-
-function is_dark(rgb) {
-  return getIntensityWCAG(rgb) < 0.5;
-}
-
-function is_light(rgb) {
-  return getIntensityWCAG(rgb) > 0.5;
 }
 
 function is_transparent(rgb) {
