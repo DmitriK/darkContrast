@@ -18,16 +18,23 @@ body {
 }
 body> div {
   margin:1rem;
+  padding: 1rem;
 }
   </style>
 </head>
 
 <body>
+  <h2>Direct iframe styling</h2>
   <div>Nothing:<br/><iframe src="frame-src.html"></iframe></div>
   <div>FG only:<br/><iframe class="fg" src="frame-src.html"></iframe></div>
   <div>BG only:<br/><iframe class="bg" src="frame-src.html"></iframe></div>
   <div>BG image:<br/><iframe class="bgimg" src="frame-src.html"></iframe></div>
   <div>Both:<br/><iframe class="fg bg" src="frame-src.html"></iframe></div>
+  <h2>Container element styling</h2>
+  <div class="fg">FG only:<br/><iframe class="fg" src="frame-src.html"></iframe></div>
+  <div class="bg">BG only:<br/><iframe src="frame-src.html"></iframe></div>
+  <div class="bgimg">BG image:<br/><iframe src="frame-src.html"></iframe></div>
+  <div class="fg bg">Both:<br/><iframe src="frame-src.html"></iframe></div>
 </body>
 
 </html>

@@ -216,6 +216,17 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+// If we are in an iframe
+if (window.self !== window.top && userInverted) {
+  // Content script will style iframe contents as a regular document, assuming
+  // normal browser colors. Realistically, the iframe will usually be embedded
+  // in something that has a defined background color, and thus it's
+  // better/easier to force standard colors on all iframes. It's only safe to
+  // use user colors if the iframe and all parent background colors are
+  // transparent or dark, which is hard to check with cross-origin restrictions.
+  document.documentElement.dataset._extensionTextContrast = 'std';
+}
+
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
     if (mutation.type === 'attributes') {
