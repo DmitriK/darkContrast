@@ -3,48 +3,53 @@
 /* exported color */
 'use strict';
 
-var color = {
-  get_intensity: function (srgb) {
-    let rgbNormalized = [srgb.r / 255.0, srgb.g / 255.0, srgb.b / 255.0];
-    let rgbLin = rgbNormalized.map(function (v) {
+const color = {
+  get_intensity(srgb) {
+    const rgbNormalized = [srgb.r / 255.0, srgb.g / 255.0, srgb.b / 255.0];
+    const rgbLin = rgbNormalized.map((v) => {
       if (v <= 0.03928) {
         return v / 12.92;
-      } else {
-        return Math.pow((v + 0.055) / 1.055, 2.4);
       }
+
+      return Math.pow((v + 0.055) / 1.055, 2.4);
     });
 
     return 0.2126 * rgbLin[0] + 0.7152 * rgbLin[1] + 0.0722 * rgbLin[2];
   },
 
-  is_contrasty: function(fg, bg) {
-    let lumF = this.get_intensity(fg);
-    let lumB = this.get_intensity(bg);
+  is_contrasty(fg, bg) {
+    const lumF = this.get_intensity(fg);
+    const lumB = this.get_intensity(bg);
 
-    let L1 = Math.max(lumF, lumB);
-    let L2 = Math.min(lumF, lumB);
+    const L1 = Math.max(lumF, lumB);
+    const L2 = Math.min(lumF, lumB);
 
     return (L1 + 0.05) / (L2 + 0.05) > 7;
   },
 
-  is_transparent: function(rgb) {
+  is_transparent(rgb) {
     return rgb.a === 0;
   },
 
-  to_rgb: function (s) {
-    var color = {};
+  to_rgb(s) {
+    const rgb = {};
+
     if (s === 'transparent') {
-      color.r = 0;
-      color.g = 0;
-      color.b = 0;
-      color.a = 0;
-      return color;
+      rgb.r = 0;
+      rgb.g = 0;
+      rgb.b = 0;
+      rgb.a = 0;
+
+      return rgb;
     }
-    var parts = s.split(',', 3);
-    color.r = parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1));
-    color.g = parseInt(parts[1].trim());
-    color.b = parseInt(parts[2].trim());
-    color.a = 1;
-    return color;
-  }
+
+    const parts = s.split(',', 3);
+
+    rgb.r = parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1), 10);
+    rgb.g = parseInt(parts[1].trim(), 10);
+    rgb.b = parseInt(parts[2].trim(), 10);
+    rgb.a = 1;
+
+    return rgb;
+  },
 };
