@@ -17,8 +17,8 @@ let userInverted = false;
   const defaultBg = color.to_rgb(getDefaultComputedStyle(
     document.documentElement).backgroundColor);
 
-  if (!color.is_contrasty(defaultFg, {r:255, g:255, b:255, a:1}) ||
-      !color.is_contrasty({r:0, g:0, b:0, a:1}, defaultBg)) {
+  if (!color.is_contrasty(defaultFg, {r: 255, g: 255, b: 255, a: 1}) ||
+      !color.is_contrasty({r: 0, g: 0, b: 0, a: 1}, defaultBg)) {
     // Contrast check against what sites will assume to be default
     // (black fg, white bg) failed, so user most likely has 'Use system
     // colors' on
@@ -240,10 +240,10 @@ const observer = new MutationObserver((mutations) => {
 });
 
 const config = {
-  attributes: true,
+  attributes:      true,
   attributeFilter: ['class'],
-  childList: true,
-  subtree: true,
+  childList:       true,
+  subtree:         true,
 };
 
 // Delay action slightly to allow other addons to inject css (e.g. dotjs)

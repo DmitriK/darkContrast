@@ -32,17 +32,11 @@ const color = {
   },
 
   to_rgb(s) {
-    const rgb = {};
-
     if (s === 'transparent') {
-      rgb.r = 0;
-      rgb.g = 0;
-      rgb.b = 0;
-      rgb.a = 0;
-
-      return rgb;
+      return {r: 0, g: 0, b: 0, a: 0};
     }
 
+    const rgb = {};
     const parts = s.split(',', 3);
 
     rgb.r = parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1), 10);
