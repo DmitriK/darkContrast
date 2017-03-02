@@ -26,12 +26,40 @@ let userInverted = false;
   }
 }
 
+function clear_overrides(doc) {
+  const elems = doc.querySelectorAll('[data-_extension-text-contrast]');
+
+  for (const e of elems) {
+    e.removeAttribute('data-_extension-text-contrast');
+  }
+}
+
 function isInputNode(node) {
   return kInputElems.indexOf(node.nodeName) > -1;
 }
 
 function isInVisibleNode(node) {
   return kInvisibleElems.indexOf(node.nodeName) > -1;
+}
+
+function is_subdoc(node) {
+  if (node.contentDocument != null || node.getSVGDocument != null) {
+    return true;
+  }
+
+  return false;
+}
+
+function get_subdoc(node) {
+  if (node.contentDocument != null) {
+    return node.contentDocument.documentElement;
+  }
+
+  if (node.getSVGDocument != null) {
+    return node.getSVGDocument().documentElement;
+  }
+
+  return null;
 }
 
 function is_fg_defined(e) {
@@ -47,7 +75,35 @@ function is_bg_img_defined(e) {
   return getComputedStyle(e).backgroundImage !== 'none';
 }
 
+function fix_embeds(e) {
+  const nodeIterator = document.createNodeIterator(
+      e, NodeFilter.SHOW_ELEMENT, {acceptNode: is_subdoc});
+
+  // Can't use for-in loop because a NodeIterator is not an iterator. Thanks
+  // Javascript.
+  let node; // eslint-disable-line init-declarations
+
+  while ((node = nodeIterator.nextNode()) != null) {
+    if (node.contentDocument != null) {
+      // Node is an <iframe> or <object> and has its own window, so message the
+      // content script there that colors should be standard.
+      node.contentWindow.postMessage('_tcfdt_subdoc', '*');
+    }
+    if (node.getSVGDocument != null) {
+      clear_overrides(node.getSVGDocument().documentElement);
+      // Node is an <embed> SVG file, which will use the local stylesheet, so
+      // set its dataset directly.
+      node.getSVGDocument().documentElement.dataset._extensionTextContrast =
+        'default';
+    }
+  }
+}
+
 function checkElementContrast(element, recurse) {
+  if (element == null) {
+    return;
+  }
+
   // If element has already been examined before, don't do any processing
   if (element.dataset._extensionTextContrast != null) {
     return;
@@ -60,6 +116,7 @@ function checkElementContrast(element, recurse) {
   if (fg_color_defined && bg_color_defined) {
     // Both colors explicitely defined, nothing to do
     element.dataset._extensionTextContrast = '';
+    fix_embeds(element);
 
     return;
   } else if (!fg_color_defined && bg_color_defined) {
@@ -70,6 +127,7 @@ function checkElementContrast(element, recurse) {
     if (color.is_transparent(bg_color) ||
         !color.is_contrasty(fg_color, bg_color)) {
       element.dataset._extensionTextContrast = 'fg';
+      fix_embeds(element);
 
       return;
     }
@@ -80,6 +138,7 @@ function checkElementContrast(element, recurse) {
 
     if (!color.is_contrasty(fg_color, bg_color)) {
       element.dataset._extensionTextContrast = 'bg';
+      fix_embeds(element);
 
       return;
     }
@@ -87,6 +146,7 @@ function checkElementContrast(element, recurse) {
     // No FG or BG color, but possibly transparent image, so need
     // to set both
     element.dataset._extensionTextContrast = 'both';
+    fix_embeds(element);
 
     return;
   }
@@ -100,6 +160,8 @@ function checkElementContrast(element, recurse) {
         checkElementContrast(element.children[i], true);
       }
     }
+
+    checkElementContrast(get_subdoc(element), true);
   }
 }
 
@@ -170,9 +232,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({toggle: true});
       }
     } else {
-      for (const e of elems) {
-        e.removeAttribute('data-_extension-text-contrast');
-      }
+      clear_overrides(document);
       if (window.self === window.top) {
         // Only respond if top-level window, not frame
         sendResponse({toggle: false});
@@ -180,13 +240,8 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
   } else if (message.request === 'std') {
     if (document.documentElement.dataset._extensionTextContrast === 'std') {
-      // Clear overrides
-      const elems =
-        document.querySelectorAll('[data-_extension-text-contrast]');
+      clear_overrides(document);
 
-      for (const e of elems) {
-        e.removeAttribute('data-_extension-text-contrast');
-      }
       // Re-check everything
       checkInputs(document.documentElement);
       if (userInverted === true) {
@@ -197,13 +252,8 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({std: false});
       }
     } else {
-      // Clear overrides
-      const elems =
-        document.querySelectorAll('[data-_extension-text-contrast]');
+      clear_overrides(document);
 
-      for (const e of elems) {
-        e.removeAttribute('data-_extension-text-contrast');
-      }
       // Force override on root element
       document.documentElement.dataset._extensionTextContrast = 'std';
       // Re-check all inputs
@@ -215,17 +265,6 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
   }
 });
-
-// If we are in an iframe
-if (window.self !== window.top && userInverted) {
-  // Content script will style iframe contents as a regular document, assuming
-  // normal browser colors. Realistically, the iframe will usually be embedded
-  // in something that has a defined background color, and thus it's
-  // better/easier to force standard colors on all iframes. It's only safe to
-  // use user colors if the iframe and all parent background colors are
-  // transparent or dark, which is hard to check with cross-origin restrictions.
-  document.documentElement.dataset._extensionTextContrast = 'std';
-}
 
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
@@ -257,11 +296,39 @@ const config = {
   subtree:         true,
 };
 
-// Delay action slightly to allow other addons to inject css (e.g. dotjs)
-setTimeout(() => {
-  checkInputs(document.documentElement);
-  if (userInverted === true) {
-    checkDoc();
-  }
-  observer.observe(document, config);
-}, 32);
+// If we are in an iframe or embedded SVG
+if (window.self !== window.top && userInverted) {
+  // Use a longer delay so that parent can message us first.
+  const to = setTimeout(() => {
+    checkInputs(document.documentElement);
+    if (userInverted === true) {
+      checkDoc();
+    }
+    observer.observe(document, config);
+  }, 100);
+
+  window.addEventListener('message', (e) => {
+    if (e.data === '_tcfdt_subdoc') {
+      // Since we are resetting to default, don't do any other processing.
+      clearTimeout(to);
+      observer.disconnect();
+
+      clear_overrides(document);
+
+      // Only set foreground color, since background may be transparent by
+      // design.
+      document.documentElement.dataset._extensionTextContrast = 'default';
+
+      e.stopPropagation();
+    }
+  }, true);
+} else {
+  // Delay action slightly to allow other addons to inject css (e.g. dotjs)
+  setTimeout(() => {
+    checkInputs(document.documentElement);
+    if (userInverted === true) {
+      checkDoc();
+    }
+    observer.observe(document, config);
+  }, 32);
+}

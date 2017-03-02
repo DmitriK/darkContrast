@@ -7,16 +7,15 @@ See the file COPYING for copying permission.
 <html>
 
 <head>
-  <title>Test Use System Colors fixes</title>
+  <title>Test iFrame fixes</title>
   <meta charset="utf-8" />
   <link rel="stylesheet" href="test.css"/>
   <style>
-body {
+section {
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-between;
 }
-body> div {
+section > div {
   margin:1rem;
   padding: 1rem;
 }
@@ -25,16 +24,20 @@ body> div {
 
 <body>
   <h2>Direct iframe styling</h2>
-  <div>Nothing:<br/><iframe src="frame-src.html"></iframe></div>
-  <div>FG only:<br/><iframe class="fg" src="frame-src.html"></iframe></div>
-  <div>BG only:<br/><iframe class="bg" src="frame-src.html"></iframe></div>
-  <div>BG image:<br/><iframe class="bgimg" src="frame-src.html"></iframe></div>
-  <div>Both:<br/><iframe class="fg bg" src="frame-src.html"></iframe></div>
+  <section>
+    <div>Nothing:<br/><iframe src="frame-src.html"></iframe></div>
+    <div>FG only:<br/><iframe class="fg" src="frame-src.html"></iframe></div>
+    <div>BG only:<br/><iframe class="bg" src="frame-src.html"></iframe></div>
+    <div>BG image:<br/><iframe class="bgimg" src="frame-src.html"></iframe></div>
+    <div>Both:<br/><iframe class="fg bg" src="frame-src.html"></iframe></div>
+  </section>
   <h2>Container element styling</h2>
-  <div class="fg">FG only:<br/><iframe class="fg" src="frame-src.html"></iframe></div>
-  <div class="bg">BG only:<br/><iframe src="frame-src.html"></iframe></div>
-  <div class="bgimg">BG image:<br/><iframe src="frame-src.html"></iframe></div>
-  <div class="fg bg">Both:<br/><iframe src="frame-src.html"></iframe></div>
+  <section>
+    <div class="fg">FG only:<br/><iframe class="fg" src="frame-src.html"></iframe></div>
+    <div class="bg">BG only:<br/><iframe src="frame-src.html"></iframe></div>
+    <div class="bgimg">BG image:<br/><iframe src="frame-src.html"></iframe></div>
+    <div class="fg bg">Both:<br/><iframe src="frame-src.html"></iframe></div>
+  </section>
 </body>
 
 </html>
