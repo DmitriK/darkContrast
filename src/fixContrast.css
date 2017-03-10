@@ -1,13 +1,17 @@
 [data-_extension-text-contrast='fg'],
 [data-_extension-text-contrast='default'] {
-  color: rgb(0, 0, 0);
+  color: rgb(0, 0, 0) !important;
 }
 
 [data-_extension-text-contrast='bg'] {
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(255, 255, 255) !important;
 }
 
-[data-_extension-text-contrast='both'],
+[data-_extension-text-contrast='both']{
+  color: rgb(0, 0, 0) !important;
+  background-color: rgb(255, 255, 255) !important;
+}
+
 [data-_extension-text-contrast='std'] {
   color: rgb(0, 0, 0);
   background-color: rgb(255, 255, 255);
