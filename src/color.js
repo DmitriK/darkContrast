@@ -37,12 +37,16 @@ const color = {
     }
 
     const rgb = {};
-    const parts = s.split(',', 3);
+    const parts = s.split(',', 4);
 
     rgb.r = parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1), 10);
     rgb.g = parseInt(parts[1].trim(), 10);
     rgb.b = parseInt(parts[2].trim(), 10);
-    rgb.a = 1;
+    if (parts[3] === undefined) {
+      rgb.a = 1;
+    } else {
+      rgb.a = parseInt(parts[3].trim(), 10);
+    }
 
     return rgb;
   },

@@ -143,9 +143,18 @@ function checkElementContrast(element, recurse) {
       return;
     }
   } else if (bg_img_defined) {
-    // No FG or BG color, but possibly transparent image, so need
-    // to set both
-    element.dataset._extensionTextContrast = 'both';
+    const default_bg =
+      color.to_rgb(getDefaultComputedStyle(element).backgroundColor);
+
+    if (color.is_transparent(default_bg)) {
+      // If the background is supposed to be transparent, keep the transparency
+      // and only fix foreground
+      element.dataset._extensionTextContrast = 'fg';
+    } else {
+      // No FG or BG color, but may have a transparent bg image. BG color is
+      // not transparent, so need to set both colors.
+      element.dataset._extensionTextContrast = 'both';
+    }
     fix_embeds(element);
 
     return;
