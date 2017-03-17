@@ -9,6 +9,8 @@ const kInvisibleElems = [
   'FRAMESET',
 ];
 
+const IFRAME_DELAY = 500;
+
 let userInverted = false;
 
 {
@@ -223,6 +225,10 @@ function recolor_parent_check(elem) {
     }
     if (!defined) {
       checkElementContrast(elem, true);
+    } else {
+      setTimeout(() => {
+        fix_embeds(elem);
+      }, IFRAME_DELAY);
     }
   }
 }
@@ -307,19 +313,16 @@ const config = {
 
 // If we are in an iframe or embedded SVG
 if (window.self !== window.top && userInverted) {
-  // Use a longer delay so that parent can message us first.
-  const to = setTimeout(() => {
-    checkInputs(document.documentElement);
-    if (userInverted === true) {
-      checkDoc();
-    }
-    observer.observe(document, config);
-  }, 100);
+
+  checkInputs(document.documentElement);
+  if (userInverted === true) {
+    checkDoc();
+  }
+  observer.observe(document, config);
 
   window.addEventListener('message', (e) => {
     if (e.data === '_tcfdt_subdoc') {
       // Since we are resetting to default, don't do any other processing.
-      clearTimeout(to);
       observer.disconnect();
 
       clear_overrides(document);
