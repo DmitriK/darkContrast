@@ -57,7 +57,7 @@ function get_subdoc(node) {
     return node.contentDocument.documentElement;
   }
 
-  if (node.getSVGDocument != null) {
+  if (node.getSVGDocument != null && node.getSVGDocument() != null) {
     return node.getSVGDocument().documentElement;
   }
 
@@ -164,8 +164,9 @@ function checkElementContrast(element, recurse) {
 
   if (recurse === true) {
     const {children} = element;
+    const len = children.length;
 
-    for (let i = 0; i < children.length; i += 1) {
+    for (let i = 0; i < len; i += 1) {
       // Don't look at non-renderable elements
       if (!isInVisibleNode(element.children[i])) {
         checkElementContrast(element.children[i], true);
