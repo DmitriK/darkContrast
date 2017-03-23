@@ -30,7 +30,8 @@ function isInVisibleNode(node) {
 }
 
 function is_subdoc(node) {
-  if (node.contentDocument != null || node.getSVGDocument != null) {
+  if (node.contentDocument != null ||
+    (node.getSVGDocument != null && node.getSVGDocument() != null)) {
     return true;
   }
 
@@ -76,7 +77,7 @@ function fix_embeds(e) {
       // content script there that colors should be standard.
       node.contentWindow.postMessage('_tcfdt_subdoc', '*');
     }
-    if (node.getSVGDocument != null) {
+    if (node.getSVGDocument != null && node.getSVGDocument() != null) {
       clear_overrides(node.getSVGDocument().documentElement);
       // Node is an <embed> SVG file, which will use the local stylesheet, so
       // set its dataset directly.
