@@ -48,4 +48,8 @@ window.addEventListener('load', () => {
   document.getElementById('tog_std').addEventListener('click', () => {
     browser.tabs.query({currentWindow: true, active: true}).then(togg_std);
   });
+
+  document.getElementById('open_opts').addEventListener('click', () => {
+    browser.runtime.openOptionsPage();
+  });
 });
