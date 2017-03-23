@@ -2,26 +2,50 @@
 
 'use strict';
 
-function populateEntries() {
-  browser.storage.local.get("exclude").then((item) => {
+function populateDisabled() {
+  browser.storage.local.get('tcfdt-list-disabled').then((list) => {
+    if ({}.hasOwnProperty.call(list, 'tcfdt-list-disabled')) {
+      document.getElementById('blacklist').value =
+        list['tcfdt-list-disabled'].join('\n');
+    }
+  });
+}
 
+function populateStandard() {
+  browser.storage.local.get('tcfdt-list-standard').then((list) => {
+    if ({}.hasOwnProperty.call(list, 'tcfdt-list-standard')) {
+      document.getElementById('standardlist').value =
+        list['tcfdt-list-standard'].join('\n');
+    }
   });
 }
 
 function main() {
-  populateEntries();
+  populateDisabled();
+  populateStandard();
 
-  document.getElementById('save-btn').addEventListener('click', (e) => {
-    lines = e.target.value;
+  document.getElementById('save-dis').addEventListener('click', () => {
+    const lines = document.getElementById('blacklist').value.split('\n');
 
-    browser.storage.local.set("exclude");
-
-    populateEntries();
+    browser.storage.local.set({'tcfdt-list-disabled': lines}).then(()=>{
+    }, () => {
+    });
   });
 
-  document.getElementById('revert-btn').addEventListener('click', () => {
-    document.getElementById('entry-name').value = '';
-    populateEntries();
+  document.getElementById('save-std').addEventListener('click', () => {
+    const lines = document.getElementById('standardlist').value.split('\n');
+
+    browser.storage.local.set({'tcfdt-list-standard': lines});
+  });
+
+  document.getElementById('revert-dis').addEventListener('click', () => {
+    document.getElementById('blacklist').value = '';
+    populateDisabled();
+  });
+
+  document.getElementById('revert-std').addEventListener('click', () => {
+    document.getElementById('standardlist').value = '';
+    populateStandard();
   });
 }
 

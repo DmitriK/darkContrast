@@ -7,7 +7,7 @@
 </head>
 
 <body>
-  <h1>Exclude List</h1>
+  <h1>Exclusion Lists</h1>
   <p>
     It would be ideal if this web extension "just works", so if you find a
     site that seems to break, consider filing a bug at
@@ -15,10 +15,22 @@
       https://github.com/DmitriK/darkContrast/issues
     </a>
   </p>
-  <textarea id="editor"></textarea>
-  <div class="button-row">
-    <button type="button" id="save-btn">Save</button>
-    <button type="button" id="revert-btn">Revert</button>
+
+  <div class="cols">
+    <div>
+      <label>Disable extension on:<textarea id="blacklist"></textarea></label>
+      <div class="button-row">
+        <button type="button" id="save-dis">Save</button>
+        <button type="button" class="revert-btn" id="revert-dis">Revert</button>
+      </div>
+    </div>
+    <div>
+      <label>Force standard colors on:<textarea id="standardlist"></textarea></label>
+      <div class="button-row">
+        <button type="button" id="save-std">Save</button>
+        <button type="button" class="revert-btn" id="revert-std">Revert</button>
+      </div>
+    </div>
   </div>
 </body>
 
