@@ -337,6 +337,9 @@ function enableStandard(enable) {
     // Re-check all inputs
     checkInputs(document.documentElement);
 
+    // Fix frames
+    fix_embeds(document.documentElement);
+
     observer.observe(document, config);
   } else {
     clear_overrides(document);
@@ -398,7 +401,6 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     }
   } else if (message.request === 'std') {
-    console.log('Got STD msg');
     if (document.documentElement.dataset._extensionTextContrast === 'std') {
       enableStandard(false);
       if (window.self === window.top) {
@@ -407,7 +409,6 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     } else {
       enableStandard(true);
-      clear_overrides(document);
       if (window.self === window.top) {
         // Only respond if top-level window, not frame
         sendResponse({std: true});
