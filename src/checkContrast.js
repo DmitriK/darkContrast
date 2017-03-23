@@ -13,21 +13,6 @@ const IFRAME_DELAY = 500;
 
 let userInverted = false;
 
-{
-  const defaultFg = color.to_rgb(getDefaultComputedStyle(
-    document.documentElement).color);
-  const defaultBg = color.to_rgb(getDefaultComputedStyle(
-    document.documentElement).backgroundColor);
-
-  if (!color.is_contrasty(defaultFg, {r: 255, g: 255, b: 255, a: 1}) ||
-      !color.is_contrasty({r: 0, g: 0, b: 0, a: 1}, defaultBg)) {
-    // Contrast check against what sites will assume to be default
-    // (black fg, white bg) failed, so user most likely has 'Use system
-    // colors' on
-    userInverted = true;
-  }
-}
-
 function clear_overrides(doc) {
   const elems = doc.querySelectorAll('[data-_extension-text-contrast]');
 
@@ -234,53 +219,68 @@ function recolor_parent_check(elem) {
   }
 }
 
-browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.request === 'toggle') {
-    const elems = document.querySelectorAll('[data-_extension-text-contrast]');
+function updateUserInverted() {
+  const defaultFg = color.to_rgb(getDefaultComputedStyle(
+    document.documentElement).color);
+  const defaultBg = color.to_rgb(getDefaultComputedStyle(
+    document.documentElement).backgroundColor);
 
-    if (elems.length === 0) {
-      checkInputs(document.documentElement);
-      if (userInverted === true) {
-        checkDoc();
-      }
-      if (window.self === window.top) {
-        // Only respond if top-level window, not frame
-        sendResponse({toggle: true});
-      }
-    } else {
-      clear_overrides(document);
-      if (window.self === window.top) {
-        // Only respond if top-level window, not frame
-        sendResponse({toggle: false});
-      }
-    }
-  } else if (message.request === 'std') {
-    if (document.documentElement.dataset._extensionTextContrast === 'std') {
-      clear_overrides(document);
-
-      // Re-check everything
-      checkInputs(document.documentElement);
-      if (userInverted === true) {
-        checkDoc();
-      }
-      if (window.self === window.top) {
-        // Only respond if top-level window, not frame
-        sendResponse({std: false});
-      }
-    } else {
-      clear_overrides(document);
-
-      // Force override on root element
-      document.documentElement.dataset._extensionTextContrast = 'std';
-      // Re-check all inputs
-      checkInputs(document.documentElement);
-      if (window.self === window.top) {
-        // Only respond if top-level window, not frame
-        sendResponse({std: true});
-      }
-    }
+  if (!color.is_contrasty(defaultFg, {r: 255, g: 255, b: 255, a: 1}) ||
+      !color.is_contrasty({r: 0, g: 0, b: 0, a: 1}, defaultBg)) {
+    // Contrast check against what sites will assume to be default
+    // (black fg, white bg) failed, so user most likely has 'Use system
+    // colors' on
+    userInverted = true;
   }
-});
+}
+
+function checkDisabledList() {
+  return browser.storage.local.get('tcfdt-list-disabled').then((obj) => {
+    if ({}.hasOwnProperty.call(obj, 'tcfdt-list-disabled')) {
+      const list = obj['tcfdt-list-disabled'];
+
+      for (const i in list) {
+        if ({}.hasOwnProperty.call(list, i)) {
+          const check = list[i];
+
+          if (check === '') {
+            continue;
+          }
+
+          if (window.location.href.indexOf(check) !== -1) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  });
+}
+
+function checkStandardList() {
+  return browser.storage.local.get('tcfdt-list-standard').then((obj) => {
+    if ({}.hasOwnProperty.call(obj, 'tcfdt-list-standard')) {
+      const list = obj['tcfdt-list-standard'];
+
+      for (const i in list) {
+        if ({}.hasOwnProperty.call(list, i)) {
+          const check = list[i];
+
+          if (check === '') {
+            continue;
+          }
+
+          if (window.location.href.indexOf(check) !== -1) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  });
+}
 
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
@@ -312,36 +312,111 @@ const config = {
   subtree:         true,
 };
 
-// If we are in an iframe or embedded SVG
-if (window.self !== window.top && userInverted) {
-
-  checkInputs(document.documentElement);
-  if (userInverted === true) {
-    checkDoc();
-  }
-  observer.observe(document, config);
-
-  window.addEventListener('message', (e) => {
-    if (e.data === '_tcfdt_subdoc') {
-      // Since we are resetting to default, don't do any other processing.
-      observer.disconnect();
-
-      clear_overrides(document);
-
-      // Only set foreground color, since background may be transparent by
-      // design.
-      document.documentElement.dataset._extensionTextContrast = 'default';
-
-      e.stopPropagation();
-    }
-  }, true);
-} else {
-  // Delay action slightly to allow other addons to inject css (e.g. dotjs)
-  setTimeout(() => {
+function enableExtension(enable) {
+  if (enable) {
     checkInputs(document.documentElement);
     if (userInverted === true) {
       checkDoc();
     }
+
     observer.observe(document, config);
-  }, 32);
+  } else {
+    clear_overrides(document);
+
+    observer.disconnect();
+  }
 }
+
+function enableStandard(enable) {
+  if (enable) {
+    clear_overrides(document);
+
+    // Force override on root element
+    document.documentElement.dataset._extensionTextContrast = 'std';
+    // Re-check all inputs
+    checkInputs(document.documentElement);
+
+    observer.observe(document, config);
+  } else {
+    clear_overrides(document);
+    enableExtension(enable);
+  }
+}
+
+function main() {
+  // If we are in an iframe or embedded SVG
+  if (window.self !== window.top && userInverted) {
+    checkStandardList().then((e) => {
+      if (!e) {
+        enableExtension(true);
+      } else {
+        enableStandard(true);
+      }
+    });
+
+    window.addEventListener('message', (e) => {
+      if (e.data === '_tcfdt_subdoc') {
+        // Since we are resetting to default, don't do any other processing.
+        enableExtension(false);
+
+        // Only set foreground color, since background may be transparent by
+        // design.
+        document.documentElement.dataset._extensionTextContrast = 'default';
+
+        e.stopPropagation();
+      }
+    }, true);
+  } else {
+    checkStandardList().then((e) => {
+      if (!e) {
+        enableExtension(true);
+      } else {
+        enableStandard(true);
+      }
+    });
+  }
+}
+
+updateUserInverted();
+
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.request === 'toggle') {
+    const elems = document.querySelectorAll('[data-_extension-text-contrast]');
+
+    if (elems.length === 0) {
+      enableExtension(true);
+      if (window.self === window.top) {
+        // Only respond if top-level window, not frame
+        sendResponse({toggle: true});
+      }
+    } else {
+      enableExtension(false);
+      if (window.self === window.top) {
+        // Only respond if top-level window, not frame
+        sendResponse({toggle: false});
+      }
+    }
+  } else if (message.request === 'std') {
+    console.log('Got STD msg');
+    if (document.documentElement.dataset._extensionTextContrast === 'std') {
+      enableStandard(false);
+      if (window.self === window.top) {
+        // Only respond if top-level window, not frame
+        sendResponse({std: false});
+      }
+    } else {
+      enableStandard(true);
+      clear_overrides(document);
+      if (window.self === window.top) {
+        // Only respond if top-level window, not frame
+        sendResponse({std: true});
+      }
+    }
+  }
+});
+
+checkDisabledList().then((e) => {
+  if (!e) {
+    main();
+  }
+});
