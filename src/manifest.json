@@ -1,4 +1,7 @@
 {
+    "background": {
+      "scripts": ["bg.js"]
+    },
     "browser_action": {
         "browser_style": false,
         "default_icon": "icons/icon-vec.svg",

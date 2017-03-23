@@ -13,6 +13,15 @@ const IFRAME_DELAY = 500;
 
 let userInverted = false;
 
+const port = browser.runtime.connect({name: 'port-from-cs'});
+
+function setBadge(msg) {
+  // Only top-level tab can set the badge
+  if (window.self === window.top) {
+    port.postMessage({badge: msg});
+  }
+}
+
 function clear_overrides(doc) {
   const elems = doc.querySelectorAll('[data-_extension-text-contrast]');
 
@@ -319,12 +328,13 @@ function enableExtension(enable) {
     if (userInverted === true) {
       checkDoc();
     }
-
     observer.observe(document, config);
+    setBadge('');
   } else {
     clear_overrides(document);
 
     observer.disconnect();
+    setBadge('off');
   }
 }
 
@@ -341,9 +351,10 @@ function enableStandard(enable) {
     fix_embeds(document.documentElement);
 
     observer.observe(document, config);
+    setBadge('std');
   } else {
     clear_overrides(document);
-    enableExtension(enable);
+    enableExtension(true);
   }
 }
 
@@ -383,36 +394,20 @@ function main() {
 
 updateUserInverted();
 
-browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((message) => {
   if (message.request === 'toggle') {
     const elems = document.querySelectorAll('[data-_extension-text-contrast]');
 
     if (elems.length === 0) {
       enableExtension(true);
-      if (window.self === window.top) {
-        // Only respond if top-level window, not frame
-        sendResponse({toggle: true});
-      }
     } else {
       enableExtension(false);
-      if (window.self === window.top) {
-        // Only respond if top-level window, not frame
-        sendResponse({toggle: false});
-      }
     }
   } else if (message.request === 'std') {
     if (document.documentElement.dataset._extensionTextContrast === 'std') {
       enableStandard(false);
-      if (window.self === window.top) {
-        // Only respond if top-level window, not frame
-        sendResponse({std: false});
-      }
     } else {
       enableStandard(true);
-      if (window.self === window.top) {
-        // Only respond if top-level window, not frame
-        sendResponse({std: true});
-      }
     }
   }
 });

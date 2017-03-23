@@ -6,25 +6,13 @@
 function sendToggle(tabs) {
   const [{id}] = tabs;
 
-  browser.tabs.sendMessage(id, {request: 'toggle'}).then((m) => {
-    if (m.toggle) {
-      browser.browserAction.setBadgeText({text: '', tabId: id});
-    } else {
-      browser.browserAction.setBadgeText({text: 'off', tabId: id});
-    }
-  });
+  browser.tabs.sendMessage(id, {request: 'toggle'});
 }
 
 function togg_std(tabs) {
   const [{id}] = tabs;
 
-  browser.tabs.sendMessage(id, {request: 'std'}).then((m) => {
-    if (m.std) {
-      browser.browserAction.setBadgeText({text: 'std', tabId: id});
-    } else {
-      browser.browserAction.setBadgeText({text: '', tabId: id});
-    }
-  });
+  browser.tabs.sendMessage(id, {request: 'std'});
 }
 
 window.addEventListener('load', () => {
