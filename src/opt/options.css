@@ -1,0 +1,19 @@
+#editor {
+  width:100%;
+  flex-basis: 100%;
+  min-height: 24rem;
+}
+
+.button-row {
+  display:flex;
+  flex-flow: row wrap;
+}
+
+.button-row button {
+  margin:0.5rem 1rem;
+}
+
+#revert-btn {
+  color: #e8e9ed;
+  background-color: #ef5253;
+}
