@@ -1,5 +1,5 @@
-/* globals browser*/
-
+/* Copyright (c) 2017 Dmitri Kourennyi */
+/* See the file COPYING for copying permission. */
 'use strict';
 
 function populateDisabled() {

@@ -1,6 +1,6 @@
 /* Copyright (c) 2017 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
-/* globals contrast */
+/* globals contrast:false */
 'use strict';
 
 function sendToggle(tabs) {

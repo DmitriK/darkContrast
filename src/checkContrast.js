@@ -1,6 +1,6 @@
 /* Copyright (c) 2016 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
-/* globals contrast */
+/* globals contrast:false */
 'use strict';
 
 const port = browser.runtime.connect({name: 'port-from-cs'});
