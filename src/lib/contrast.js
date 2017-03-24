@@ -36,7 +36,7 @@ const contrast = {
     }
   },
 
-  checkElement(element, recurse) {
+  checkElement(element, recurse, delay) {
     if (element == null) {
       return;
     }
@@ -109,7 +109,13 @@ const contrast = {
       }
 
       if (this.is_subdoc(element)) {
-        this.fix_embeds(element, 'fix');
+        if (delay) {
+          setTimeout(() => {
+            this.fix_embeds(element, 'fix');
+          }, this.IFRAME_DELAY);
+        } else {
+          this.fix_embeds(element, 'fix');
+        }
       }
       // this.checkElement(this.get_subdoc(element), true);
     }
@@ -117,8 +123,8 @@ const contrast = {
 
   checkInputs(elem) {
     // Check all input elements under elem
-    const nodeIterator = document.createNodeIterator(
-        elem, NodeFilter.SHOW_ELEMENT, {acceptNode: this.isInputNode.bind(this)});
+    const nodeIterator = document.createNodeIterator(elem,
+      NodeFilter.SHOW_ELEMENT, {acceptNode: this.isInputNode.bind(this)});
 
     // Can't use for-in loop because a NodeIterator is not an iterator. Thanks
     // Javascript.
@@ -223,9 +229,11 @@ const contrast = {
         parent = parent.parentElement;
       }
       if (!defined) {
-        this.checkElement(elem, true);
+        this.checkElement(elem, true, true);
       } else {
-        this.fix_embeds(elem, 'std');
+        setTimeout(() => {
+          this.fix_embeds(elem, 'std');
+        }, this.IFRAME_DELAY);
       }
     }
   },
