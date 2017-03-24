@@ -231,15 +231,12 @@ const contrast = {
   updateUserInverted() {
     const defaultFg = color.to_rgb(getDefaultComputedStyle(
       document.documentElement).color);
-    const defaultBg = color.to_rgb(getDefaultComputedStyle(
-      document.documentElement).backgroundColor);
 
-    if (!color.is_contrasty(defaultFg, {r: 255, g: 255, b: 255, a: 1}) ||
-        !color.is_contrasty({r: 0, g: 0, b: 0, a: 1}, defaultBg)) {
+    if (!color.is_contrasty(defaultFg, {r: 255, g: 255, b: 255, a: 1})) {
       // Contrast check against what sites will assume to be default
       // (black fg, white bg) failed, so user most likely has 'Use system
       // colors' on
       contrast.userInverted = true;
     }
-  }
+  },
 };
