@@ -27,13 +27,21 @@ function main() {
   document.getElementById('save-dis').addEventListener('click', () => {
     const lines = document.getElementById('blacklist').value.split('\n');
 
-    browser.storage.local.set({'tcfdt-list-disabled': lines});
+    if (lines === []) {
+      browser.storage.local.remove({'tcfdt-list-disabled': lines});
+    } else {
+      browser.storage.local.set({'tcfdt-list-disabled': lines});
+    }
   });
 
   document.getElementById('save-std').addEventListener('click', () => {
     const lines = document.getElementById('standardlist').value.split('\n');
 
-    browser.storage.local.set({'tcfdt-list-standard': lines});
+    if (lines === []) {
+      browser.storage.local.remove({'tcfdt-list-standard': lines});
+    } else {
+      browser.storage.local.set({'tcfdt-list-standard': lines});
+    }
   });
 
   document.getElementById('revert-dis').addEventListener('click', () => {
