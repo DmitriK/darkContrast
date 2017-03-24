@@ -84,9 +84,9 @@ const contrast = {
         color.to_rgb(getDefaultComputedStyle(element).backgroundColor);
 
       if (!this.isInputNode(element) && color.is_transparent(default_bg)) {
-        // If the background is supposed to be transparent, keep the transparency
-        // and only fix foreground. Don't do this for input elements as they
-        // have an inverted style from the get-go.
+        // If the background is supposed to be transparent, keep the
+        // transparency and only fix foreground. Don't do this for input
+        // elements as they have an inverted style from the get-go.
         element.dataset._extensionTextContrast = 'fg';
       } else {
         // No FG or BG color, but may have a transparent bg image. BG color is
@@ -207,7 +207,7 @@ const contrast = {
 
   is_subdoc(node) {
     if (node.contentDocument != null ||
-      (node.getSVGDocument != null && node.getSVGDocument() != null)) {
+      node.getSVGDocument != null && node.getSVGDocument() != null) {
       return true;
     }
 
@@ -228,12 +228,13 @@ const contrast = {
         }
         parent = parent.parentElement;
       }
-      if (!defined) {
-        this.checkElement(elem, true, true);
-      } else {
+      if (defined) {
+        // Color was set, adjust any child embeds
         setTimeout(() => {
           this.fix_embeds(elem, 'std');
         }, this.IFRAME_DELAY);
+      } else {
+        this.checkElement(elem, true, true);
       }
     }
   },

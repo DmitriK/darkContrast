@@ -27,9 +27,7 @@ function main() {
   document.getElementById('save-dis').addEventListener('click', () => {
     const lines = document.getElementById('blacklist').value.split('\n');
 
-    browser.storage.local.set({'tcfdt-list-disabled': lines}).then(()=>{
-    }, () => {
-    });
+    browser.storage.local.set({'tcfdt-list-disabled': lines});
   });
 
   document.getElementById('save-std').addEventListener('click', () => {

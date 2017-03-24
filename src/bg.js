@@ -4,9 +4,8 @@
 
 // Handler for port connection, used for extension button and badge updates.
 browser.runtime.onConnect.addListener((port) => {
-
-  port.onMessage.addListener((m, port) => {
-    const {id} = port.sender.tab;
+  port.onMessage.addListener((m, rport) => {
+    const {id} = rport.sender.tab;
 
     if (m.badge != null) {
       browser.browserAction.setBadgeText({text: m.badge, tabId: id});

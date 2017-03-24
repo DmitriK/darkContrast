@@ -42,7 +42,7 @@ const color = {
     rgb.r = parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1), 10);
     rgb.g = parseInt(parts[1].trim(), 10);
     rgb.b = parseInt(parts[2].trim(), 10);
-    if (parts[3] === undefined) {
+    if (parts[3] == null) {
       rgb.a = 1;
     } else {
       rgb.a = parseInt(parts[3].trim(), 10);
