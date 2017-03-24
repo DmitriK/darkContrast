@@ -8,13 +8,19 @@
         "default_popup": "popup/toggles.html",
         "default_title": "Toggle text contrast fix"
     },
-    "content_scripts": [{
+    "content_scripts": [
+      {
         "matches": ["<all_urls>"],
-        "include_globs": ["*://*"],
-        "js": ["color.js", "checkContrast.js"],
+        "js": ["lib/color.js", "lib/contrast.js", "embed.js"],
         "css": ["fixContrast.css"],
+        "run_at": "document_start",
         "all_frames": true
-    }],
+      },
+      {
+        "matches": ["<all_urls>"],
+        "js": ["checkContrast.js"]
+      }
+    ],
     "description": "Fixes low-contrast text when using system colors with a dark desktop theme.",
     "manifest_version": 2,
     "name": "Text Contrast for Dark Themes",
@@ -22,6 +28,6 @@
       "page": "opt/options.html",
       "open_in_tab": true
     },
-    "permissions": ["storage"],
+    "permissions": ["<all_urls>", "storage"],
     "version": "1.3.0"
 }
