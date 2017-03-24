@@ -20,6 +20,7 @@ module.exports = {
     "newline-after-var": "warn",
     "newline-before-return": "warn",
     "no-console": "warn",
+    "no-continue": "off",
     "no-eq-null": "off",
     "no-implicit-globals": "off",
     "no-magic-numbers": "off",

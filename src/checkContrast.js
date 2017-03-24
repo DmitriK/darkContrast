@@ -101,7 +101,7 @@ function enableExtension(enable) {
   } else {
     observer.disconnect();
     contrast.clear_overrides(document);
-    contrast.fix_embeds(document.documentElement, "clr");
+    contrast.fix_embeds(document.documentElement, 'clr');
 
     setBadge('off');
   }
@@ -147,13 +147,13 @@ browser.runtime.onMessage.addListener((message) => {
   }
 });
 
-checkDisabledList().then((e) => {
-  if (!e) {
-    checkStandardList().then((e) => {
-      if (!e) {
-        enableExtension(true);
-      } else {
+checkDisabledList().then((disabled) => {
+  if (!disabled) {
+    checkStandardList().then((standard) => {
+      if (standard) {
         enableStandard(true);
+      } else {
+        enableExtension(true);
       }
     });
   }
