@@ -83,9 +83,10 @@ const contrast = {
       const default_bg =
         color.to_rgb(getDefaultComputedStyle(element).backgroundColor);
 
-      if (color.is_transparent(default_bg)) {
+      if (!this.isInputNode(element) && color.is_transparent(default_bg)) {
         // If the background is supposed to be transparent, keep the transparency
-        // and only fix foreground
+        // and only fix foreground. Don't do this for input elements as they
+        // have an inverted style from the get-go.
         element.dataset._extensionTextContrast = 'fg';
       } else {
         // No FG or BG color, but may have a transparent bg image. BG color is
