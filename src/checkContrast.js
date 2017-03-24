@@ -117,7 +117,7 @@ function enableStandard(enable) {
     contrast.checkInputs(document.documentElement);
 
     // Fix frames
-    contrast.fix_embeds(document.documentElement);
+    contrast.fix_embeds(document.documentElement, 'std');
 
     observer.observe(document, config);
     setBadge('std');
@@ -125,16 +125,6 @@ function enableStandard(enable) {
     contrast.clear_overrides(document);
     enableExtension(true);
   }
-}
-
-function main() {
-  checkStandardList().then((e) => {
-    if (!e) {
-      enableExtension(true);
-    } else {
-      enableStandard(true);
-    }
-  });
 }
 
 contrast.updateUserInverted();
@@ -159,6 +149,12 @@ browser.runtime.onMessage.addListener((message) => {
 
 checkDisabledList().then((e) => {
   if (!e) {
-    main();
+    checkStandardList().then((e) => {
+      if (!e) {
+        enableExtension(true);
+      } else {
+        enableStandard(true);
+      }
+    });
   }
 });
