@@ -101,7 +101,7 @@ function enableExtension(enable) {
   } else {
     observer.disconnect();
     contrast.clear_overrides(document);
-    fix_embeds(document.documentElement, "clr");
+    contrast.fix_embeds(document.documentElement, "clr");
 
     setBadge('off');
   }

@@ -160,8 +160,7 @@ const contrast = {
         } else if (mode === 'clr') {
           node.contentWindow.postMessage('_tcfdt_subdoc_clr', '*');
         }
-      }
-      if (node.getSVGDocument != null && node.getSVGDocument() != null &&
+      } else if (node.getSVGDocument != null && node.getSVGDocument() != null &&
             mode === 'std') {
         this.clear_overrides(node.getSVGDocument().documentElement);
         // Node is an <embed> SVG file, which will use the local stylesheet, so
