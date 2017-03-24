@@ -151,6 +151,8 @@ const contrast = {
           node.contentWindow.postMessage('_tcfdt_subdoc_std', '*');
         } else if (mode === 'fix') {
           node.contentWindow.postMessage('_tcfdt_subdoc_fix', '*');
+        } else if (mode === 'clr') {
+          node.contentWindow.postMessage('_tcfdt_subdoc_clr', '*');
         }
       }
       if (node.getSVGDocument != null && node.getSVGDocument() != null &&

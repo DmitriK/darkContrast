@@ -10,6 +10,9 @@ if (window.self !== window.top) {
     } else if (e.data === '_tcfdt_subdoc_fix') {
       browser.runtime.sendMessage({frame: 'fix'});
       e.stopPropagation();
+    } else if (e.data === '_tcfdt_subdoc_clr') {
+      browser.runtime.sendMessage({frame: 'clr'});
+      e.stopPropagation();
     }
   }, true);
 }

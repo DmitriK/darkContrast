@@ -30,6 +30,11 @@ browser.runtime.onMessage.addListener((m, sender) => {
         frameId: sender.frameId,
         runAt:   'document_idle',
       });
+    } else if (m.frame === 'clr') {
+      browser.tabs.removeCSS(sender.tab.tabId, {
+        file:    'embed.css',
+        frameId: sender.frameId,
+      });
     }
   }
 });

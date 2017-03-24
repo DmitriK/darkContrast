@@ -99,9 +99,10 @@ function enableExtension(enable) {
     observer.observe(document, config);
     setBadge('');
   } else {
-    contrast.clear_overrides(document);
-
     observer.disconnect();
+    contrast.clear_overrides(document);
+    fix_embeds(document.documentElement, "clr");
+
     setBadge('off');
   }
 }
