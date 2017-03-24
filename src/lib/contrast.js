@@ -153,7 +153,7 @@ const contrast = {
     let node; // eslint-disable-line init-declarations
 
     while ((node = nodeIterator.nextNode()) != null) {
-      if (node.contentDocument != null) {
+      if (node.contentWindow != null) {
         if (mode === 'std') {
           node.contentWindow.postMessage('_tcfdt_subdoc_std', '*');
         } else if (mode === 'fix') {
@@ -206,7 +206,7 @@ const contrast = {
   },
 
   is_subdoc(node) {
-    if (node.contentDocument != null ||
+    if (node.contentWindow != null ||
       node.getSVGDocument != null && node.getSVGDocument() != null) {
       return true;
     }
