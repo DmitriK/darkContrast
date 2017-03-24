@@ -53,7 +53,7 @@ const contrast = {
     if (fg_color_defined && bg_color_defined) {
       // Both colors explicitely defined, nothing to do
       element.dataset._extensionTextContrast = '';
-      this.fix_embeds(element);
+      this.fix_embeds(element, 'std');
 
       return;
     } else if (!fg_color_defined && bg_color_defined) {
@@ -64,7 +64,7 @@ const contrast = {
       if (color.is_transparent(bg_color) ||
           !color.is_contrasty(fg_color, bg_color)) {
         element.dataset._extensionTextContrast = 'fg';
-        this.fix_embeds(element);
+        this.fix_embeds(element, 'std');
 
         return;
       }
@@ -75,7 +75,7 @@ const contrast = {
 
       if (!color.is_contrasty(fg_color, bg_color)) {
         element.dataset._extensionTextContrast = 'bg';
-        this.fix_embeds(element);
+        this.fix_embeds(element, 'std');
 
         return;
       }
@@ -92,7 +92,7 @@ const contrast = {
         // not transparent, so need to set both colors.
         element.dataset._extensionTextContrast = 'both';
       }
-      this.fix_embeds(element);
+      this.fix_embeds(element, 'std');
 
       return;
     }
@@ -108,7 +108,10 @@ const contrast = {
         }
       }
 
-      this.checkElement(this.get_subdoc(element), true);
+      if (this.is_subdoc(element)) {
+        this.fix_embeds(element, 'fix');
+      }
+      // this.checkElement(this.get_subdoc(element), true);
     }
   },
 
@@ -134,7 +137,7 @@ const contrast = {
     }
   },
 
-  fix_embeds(e) {
+  fix_embeds(e, mode) {
     const nodeIterator = document.createNodeIterator(
         e, NodeFilter.SHOW_ELEMENT, {acceptNode: this.is_subdoc});
 
@@ -144,11 +147,14 @@ const contrast = {
 
     while ((node = nodeIterator.nextNode()) != null) {
       if (node.contentDocument != null) {
-        // Node is an <iframe> or <object> and has its own window, so message the
-        // content script there that colors should be standard.
-        node.contentWindow.postMessage('_tcfdt_subdoc', '*');
+        if (mode === 'std') {
+          node.contentWindow.postMessage('_tcfdt_subdoc_std', '*');
+        } else if (mode === 'fix') {
+          node.contentWindow.postMessage('_tcfdt_subdoc_fix', '*');
+        }
       }
-      if (node.getSVGDocument != null && node.getSVGDocument() != null) {
+      if (node.getSVGDocument != null && node.getSVGDocument() != null &&
+            mode === 'std') {
         this.clear_overrides(node.getSVGDocument().documentElement);
         // Node is an <embed> SVG file, which will use the local stylesheet, so
         // set its dataset directly.
@@ -217,9 +223,7 @@ const contrast = {
       if (!defined) {
         this.checkElement(elem, true);
       } else {
-        setTimeout(() => {
-          this.fix_embeds(elem);
-        }, this.IFRAME_DELAY);
+        this.fix_embeds(elem, 'std');
       }
     }
   },

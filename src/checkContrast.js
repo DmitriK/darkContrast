@@ -75,7 +75,7 @@ const observer = new MutationObserver((mutations) => {
       const changedNode = mutation.target;
 
       if (contrast.isInputNode(changedNode)) {
-        contrast.checkElementContrast(changedNode, false);
+        contrast.checkElement(changedNode, false);
       }
       contrast.recolor_parent_check(changedNode);
     } else {
@@ -97,36 +97,12 @@ const config = {
   subtree:         true,
 };
 
-// If we are in an iframe or embedded SVG
-if (window.self !== window.top && contrast.userInverted) {
 
+// Delay action slightly to allow other addons to inject css (e.g. dotjs)
+setTimeout(() => {
   contrast.checkInputs(document.documentElement);
   if (contrast.userInverted === true) {
     contrast.checkDoc();
   }
   observer.observe(document, config);
-
-  window.addEventListener('message', (e) => {
-    if (e.data === '_tcfdt_subdoc') {
-      // Since we are resetting to default, don't do any other processing.
-      observer.disconnect();
-
-      contrast.clear_overrides(document);
-
-      // Only set foreground color, since background may be transparent by
-      // design.
-      document.documentElement.dataset._extensionTextContrast = 'default';
-
-      e.stopPropagation();
-    }
-  }, true);
-} else {
-  // Delay action slightly to allow other addons to inject css (e.g. dotjs)
-  setTimeout(() => {
-    contrast.checkInputs(document.documentElement);
-    if (contrast.userInverted === true) {
-      contrast.checkDoc();
-    }
-    observer.observe(document, config);
-  }, 32);
-}
+}, 32);
