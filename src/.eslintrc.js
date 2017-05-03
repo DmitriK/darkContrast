@@ -9,6 +9,7 @@ module.exports = {
     "camelcase": "warn",
     "capitalized-comments": "off",
     "comma-dangle": ["warn", "always-multiline"],
+    "complexity": "off",
     "eqeqeq": ["error", "smart"],
     "func-style": "off",
     "func-names": ["warn", "as-needed"],
@@ -24,6 +25,7 @@ module.exports = {
     "no-implicit-globals": "off",
     "no-magic-numbers": "off",
     "no-mixed-operators": "off",
+    "no-param-reassign": "off",
     "no-underscore-dangle": "off",
     "no-use-before-define": "warn",
     "object-property-newline": ["warn", {
