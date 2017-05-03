@@ -20,7 +20,7 @@ const contrast = {
 
   checkDoc() {
     // Check from root recursively
-    this.checkElement(document.documentElement, true);
+    this.checkElement(document.documentElement, {recurse: true});
 
     // Other checks required when browser is in quirks mode
     if (document.compatMode === 'BackCompat') {
@@ -37,7 +37,12 @@ const contrast = {
     }
   },
 
-  checkElement(element, recurse, delay) {
+  checkElement(element, {recurse, delay, parentFg, parentBg} = {
+    recurse:  false,
+    delay:    false,
+    parentFg: null,
+    parentBg: null,
+  }) {
     if (element == null) {
       return;
     }
@@ -47,8 +52,8 @@ const contrast = {
       return;
     }
 
-    const fg_color_defined = this.is_fg_defined(element);
-    const bg_color_defined = this.is_bg_defined(element);
+    const fg_color_defined = this.is_fg_defined(element) || parentFg != null;
+    const bg_color_defined = this.is_bg_defined(element) || parentBg != null;
     const bg_img_defined = this.is_bg_img_defined(element);
 
     if (fg_color_defined && bg_color_defined) {
@@ -59,11 +64,12 @@ const contrast = {
       return;
     } else if (!fg_color_defined && bg_color_defined) {
       // Only set fg if original contrast is poor
-      const fg_color = color.to_rgb(getComputedStyle(element).color);
-      const bg_color = color.to_rgb(getComputedStyle(element).backgroundColor);
+      parentFg = parentFg || color.to_rgb(getComputedStyle(element).color);
+      parentBg = parentBg ||
+        color.to_rgb(getComputedStyle(element).backgroundColor);
 
-      if (color.is_transparent(bg_color) ||
-          !color.is_contrasty(fg_color, bg_color)) {
+      if (color.is_transparent(parentBg) ||
+        !color.is_contrasty(parentFg, parentBg)) {
         element.dataset._extensionTextContrast = 'fg';
         this.fix_embeds(element, 'std');
 
@@ -71,10 +77,11 @@ const contrast = {
       }
     } else if (fg_color_defined && !bg_color_defined) {
       // Only set bg if it will improve contrast
-      const fg_color = color.to_rgb(getComputedStyle(element).color);
-      const bg_color = color.to_rgb(getComputedStyle(element).backgroundColor);
+      parentFg = parentFg || color.to_rgb(getComputedStyle(element).color);
+      parentBg = parentBg ||
+        color.to_rgb(getComputedStyle(element).backgroundColor);
 
-      if (!color.is_contrasty(fg_color, bg_color)) {
+      if (!color.is_contrasty(parentFg, parentBg)) {
         element.dataset._extensionTextContrast = 'bg';
         this.fix_embeds(element, 'std');
 
@@ -106,7 +113,8 @@ const contrast = {
       for (let i = 0; i < len; i += 1) {
         // Don't look at non-renderable elements
         if (!this.isInVisibleNode(element.children[i])) {
-          this.checkElement(element.children[i], true);
+          this.checkElement(element.children[i],
+                            {recurse, delay, parentFg, parentBg});
         }
       }
 
@@ -132,7 +140,7 @@ const contrast = {
     let node; // eslint-disable-line init-declarations
 
     while ((node = nodeIterator.nextNode()) != null) {
-      this.checkElement(node, false);
+      this.checkElement(node);
     }
   },
 
@@ -234,7 +242,7 @@ const contrast = {
           this.fix_embeds(elem, 'std');
         }, this.IFRAME_DELAY);
       } else {
-        this.checkElement(elem, true, true);
+        this.checkElement(elem, {recurse: true, delay: true});
       }
     }
   },

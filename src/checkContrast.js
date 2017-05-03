@@ -68,7 +68,7 @@ const observer = new MutationObserver((mutations) => {
       const changedNode = mutation.target;
 
       if (contrast.isInputNode(changedNode)) {
-        contrast.checkElement(changedNode, false);
+        contrast.checkElement(changedNode);
       }
       contrast.recolor_parent_check(changedNode);
     } else {
