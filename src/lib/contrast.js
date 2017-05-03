@@ -9,7 +9,8 @@ const contrast = {
     'INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'TOOLBARBUTTON',
   ],
   kInvisibleElems: [
-    'HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE', 'BR', 'LINK', '#text',
+    'HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE', 'BR', 'LINK',
+    '#text',
     'FRAMESET',
   ],
 
@@ -28,8 +29,8 @@ const contrast = {
 
       for (let i = 0; i < tables.length; i += 1) {
         if (getComputedStyle(tables[i]).color ===
-            getDefaultComputedStyle(tables[i]).color) {
-          // If color has not been set explicitely, then force inherit
+          getDefaultComputedStyle(tables[i]).color) {
+          // If color has not been set explicitly, then force inherit
           tables[i].style.color = 'inherit';
         }
       }
@@ -118,7 +119,6 @@ const contrast = {
           this.fix_embeds(element, 'fix');
         }
       }
-      // this.checkElement(this.get_subdoc(element), true);
     }
   },
 
@@ -146,7 +146,7 @@ const contrast = {
 
   fix_embeds(e, mode) {
     const nodeIterator = document.createNodeIterator(
-        e, NodeFilter.SHOW_ELEMENT, {acceptNode: this.is_subdoc});
+      e, NodeFilter.SHOW_ELEMENT, {acceptNode: this.is_subdoc});
 
     // Can't use for-in loop because a NodeIterator is not an iterator. Thanks
     // Javascript.
@@ -162,7 +162,7 @@ const contrast = {
           node.contentWindow.postMessage('_tcfdt_subdoc_clr', '*');
         }
       } else if (node.getSVGDocument != null && node.getSVGDocument() != null &&
-            mode === 'std') {
+        mode === 'std') {
         this.clear_overrides(node.getSVGDocument().documentElement);
         // Node is an <embed> SVG file, which will use the local stylesheet, so
         // set its dataset directly.

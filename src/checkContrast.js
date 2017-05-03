@@ -73,7 +73,7 @@ const observer = new MutationObserver((mutations) => {
       contrast.recolor_parent_check(changedNode);
     } else {
       for (const newNode of mutation.addedNodes) {
-        // Check visibility of new nodes before furhter processing
+        // Check visibility of new nodes before further processing
         if (!contrast.isInVisibleNode(newNode)) {
           contrast.checkInputs(newNode);
           contrast.recolor_parent_check(newNode);
