@@ -12,11 +12,6 @@
   background-color: rgb(255, 255, 255) !important;
 }
 
-[data-_extension-text-contrast='std'] {
-  color: rgb(0, 0, 0);
-  background-color: rgb(255, 255, 255);
-}
-
 input[type='range'] {
   background-color:transparent;
 }

@@ -2,6 +2,8 @@
 /* See the file COPYING for copying permission. */
 'use strict';
 
+const {tabs} = browser;
+
 // Handler for port connection, used for extension button and badge updates.
 browser.runtime.onConnect.addListener((port) => {
   port.onMessage.addListener((m, rport) => {
@@ -36,4 +38,15 @@ browser.runtime.onMessage.addListener((m, sender) => {
       });
     }
   }
+});
+
+// Need to add standard sheet as a user-sheet, which can only be done via
+// tabs.insertCSS, so do that here
+tabs.onUpdated.addListener((tabId) => {
+  browser.tabs.insertCSS(tabId.id, {
+    allFrames: true,
+    cssOrigin: 'user',
+    file:      '/std.css',
+    runAt:     'document_end',
+  });
 });
