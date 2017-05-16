@@ -1,5 +1,5 @@
 [data-_extension-text-contrast='fg'],
-[data-_extension-text-contrast='default'] {
+[data-_extension-text-contrast='default']:root {
   color: rgb(0, 0, 0) !important;
 }
 
