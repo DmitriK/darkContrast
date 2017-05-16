@@ -21,19 +21,19 @@ browser.runtime.onMessage.addListener((m, sender) => {
     if (m.frame === 'std') {
       browser.tabs.insertCSS(sender.tab.id, {
         cssOrigin: 'user',
-        file:      'embed.css',
+        file:      '/embed.css',
         frameId:   sender.frameId,
         runAt:     'document_idle',
       });
     } else if (m.frame === 'fix') {
       browser.tabs.executeScript(sender.tab.id, {
-        file:    'checkContrast.js',
+        file:    '/checkContrast.js',
         frameId: sender.frameId,
         runAt:   'document_idle',
       });
     } else if (m.frame === 'clr') {
       browser.tabs.removeCSS(sender.tab.id, {
-        file:    'embed.css',
+        file:    '/embed.css',
         frameId: sender.frameId,
       });
     }
