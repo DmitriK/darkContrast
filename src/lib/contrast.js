@@ -52,8 +52,8 @@ const contrast = {
       return;
     }
 
-    const fg_color_defined = this.is_fg_defined(element) || parentFg != null;
-    const bg_color_defined = this.is_bg_defined(element) || parentBg != null;
+    const fg_color_defined = this.is_fg_defined(element);
+    const bg_color_defined = this.is_bg_defined(element);
     const bg_img_defined = this.is_bg_img_defined(element);
 
     if (fg_color_defined && bg_color_defined) {
