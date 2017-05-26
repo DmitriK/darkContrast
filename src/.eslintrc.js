@@ -5,6 +5,9 @@ module.exports = {
     "es6": true
   },
   "extends": "eslint:all",
+  "parserOptions": {
+        "ecmaVersion": 8, // for async/await support
+  },
   "rules": {
     "camelcase": "warn",
     "capitalized-comments": "off",
@@ -20,6 +23,7 @@ module.exports = {
     "max-statements": "off",
     "newline-after-var": "warn",
     "newline-before-return": "warn",
+    "no-bitwise": "int32Hint",
     "no-continue": "off",
     "no-eq-null": "off",
     "no-implicit-globals": "off",

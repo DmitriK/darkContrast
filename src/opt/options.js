@@ -20,7 +20,7 @@ function populateStandard() {
   });
 }
 
-function main() {
+async function main() {
   populateDisabled();
   populateStandard();
 
@@ -52,6 +52,37 @@ function main() {
   document.getElementById('revert-std').addEventListener('click', () => {
     document.getElementById('standardlist').value = '';
     populateStandard();
+  });
+
+  // Handle contrast ratio
+  browser.storage.local.get('tcfdt-cr').then((opts) => {
+    if ({}.hasOwnProperty.call(opts, 'tcfdt-cr')) {
+      let cr = opts['tcfdt-cr'];
+      if (isNaN(cr) || cr < 1 || cr > 21) {
+        cr = 4.5;
+      }
+      document.getElementById('cr').value = cr;
+    }
+  });
+  document.getElementById('setCR').addEventListener('click', () => {
+    const newCR = parseFloat(document.getElementById('cr').value);
+
+    browser.storage.local.set({'tcfdt-cr': newCR});
+  });
+
+  // Handle delay
+  const opts = await browser.storage.local.get('tcfdt-dl');
+  if ({}.hasOwnProperty.call(opts, 'tcfdt-dl')) {
+    document.getElementById('delay').value = opts['tcfdt-dl'];
+  }
+  document.getElementById('setDelay').addEventListener('click', () => {
+    let newDelay = document.getElementById('delay').value | 0;
+
+    if (newDelay <= 0) {
+      newDelay = 0;
+    }
+
+    browser.storage.local.set({'tcfdt-dl': newDelay});
   });
 }
 

@@ -3,6 +3,8 @@
 /* exported color */
 'use strict';
 
+let constrastRatio = 4.5;
+
 const color = {
   get_intensity(srgb) {
     const rgbNormalized = [srgb.r / 255.0, srgb.g / 255.0, srgb.b / 255.0];
@@ -24,11 +26,19 @@ const color = {
     const L1 = Math.max(lumF, lumB);
     const L2 = Math.min(lumF, lumB);
 
-    return (L1 + 0.05) / (L2 + 0.05) > 7;
+    return (L1 + 0.05) / (L2 + 0.05) > constrastRatio;
   },
 
   is_transparent(rgb) {
     return rgb.a === 0;
+  },
+
+  setContrastRatio(x) {
+    if (x < 1 || x > 21) {
+      constrastRatio = 4.5;
+    } else {
+      constrastRatio = x;
+    }
   },
 
   to_rgb(s) {

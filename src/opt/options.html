@@ -2,16 +2,58 @@
 <html>
 
 <head>
+  <title>Text Contrast for Dark Themes Options</title>
   <link rel="stylesheet" href="options.css" />
   <script src="options.js"></script>
 </head>
 
 <body>
-  <h1>Override Lists (Beta)</h1>
+  <h1>Text Contrast for Dark Themes Options</h1>
+  <div class="simple_opts">
+    <div class="opt">
+      <h2>Contrast Threshold (Beta)</h2>
+      <details>
+        <p>
+          Minimum contrast required for recoloring elements. Extension only
+          re-colors elements if resulting contrast is higher than this
+          threshold. Meaningless if not using "Use system colors" option.
+        </p>
+        <table style="width:28rem;">
+          <tr>
+            <th>Text</th>
+            <th><a href="http://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast-contrast">WCAG AA</a></th>
+            <th><a href="http://www.w3.org/WAI/WCAG20/quickref/#qr-visual-audio-contrast7">WCAG AAA</a></th>
+          </tr>
+          <tr><td>Normal</td><td>4.5 (default)</td><td>7.0</td></tr>
+          <tr><td>Large</td><td>3.0</td><td>4.5</td></tr>
+        </table>
+      </details>
+
+
+      <input id="cr" type="number" min="1.0" max="21.0" step="0.1"/>
+      <button type="button" id="setCR">Set</button>
+    </div>
+    <div class="opt">
+      <h2>Delay (Beta)</h2>
+      <details>
+        <p>
+          Optional delay for operation of extension. This may be needed if another
+          style-changing extension (e.g. stylish, dotjs, dark mode) randomly
+          interferes. The extension will delay itself by the specified amount to
+          ensure that other style changes occur before processing. Usually a few
+          10s of ms is sufficient. Set to 0 to disable delay.
+        </p>
+      </details>
+      <input id="delay" type="number" min="0" step="1"/>ms
+      <button type="button" id="setDelay">Set</button>
+    </div>
+  </div>
+  <h2>Override Lists</h2>
   <p>
-    Ideally this extension shouldn't break sites, so if you find yourself adding
-    a site to the 'Disable extension' section to deal with an issue, consider
-    filing a bug at <a href="https://github.com/DmitriK/darkContrast/issues">
+    Ideally this extension shouldn't break sites, so if you find yourself
+    adding a site to the 'Disable extension' section to deal with an issue,
+    consider filing a bug at
+    <a href="https://github.com/DmitriK/darkContrast/issues">
       https://github.com/DmitriK/darkContrast/issues
     </a>
   </p>

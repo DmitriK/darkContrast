@@ -16,6 +16,20 @@ body {
   flex-flow: column nowrap;
 }
 
+h1, h2 {
+  margin:0.5rem 0;
+}
+
+.simple_opts {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.simple_opts .opt {
+  flex: 1 1 32rem;
+  margin: 0.25rem;
+}
+
 .cols {
   flex-grow: 1;
   display:flex;

@@ -1,6 +1,6 @@
 /* Copyright (c) 2016 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
-/* globals contrast:false */
+/* globals color:false, contrast:false */
 'use strict';
 
 const port = browser.runtime.connect({name: 'port-from-cs'});
@@ -127,7 +127,43 @@ function enableStandard(enable) {
   }
 }
 
-contrast.updateUserInverted();
+async function init() {
+  let opts = await browser.storage.local.get('tcfdt-cr');
+
+  if ({}.hasOwnProperty.call(opts, 'tcfdt-cr')) {
+    color.setContrastRatio(opts['tcfdt-cr']);
+  }
+
+  contrast.updateUserInverted();
+
+  opts = await browser.storage.local.get('tcfdt-dl');
+
+  if ({}.hasOwnProperty.call(opts, 'tcfdt-dl')) {
+    const delay = opts['tcfdt-dl'] | 0;
+
+    if (delay !== 0) {
+      const prDelay = new Promise((resolve) => {
+        setTimeout(resolve, delay);
+      });
+
+      await prDelay;
+    }
+  }
+
+  const disabled = await checkDisabledList();
+
+  if (!disabled) {
+    const standard = await checkStandardList();
+
+    if (standard) {
+      enableStandard(true);
+    } else {
+      enableExtension(true);
+    }
+  }
+}
+
+init();
 
 browser.runtime.onMessage.addListener((message) => {
   if (message.request === 'toggle') {
@@ -147,14 +183,3 @@ browser.runtime.onMessage.addListener((message) => {
   }
 });
 
-checkDisabledList().then((disabled) => {
-  if (!disabled) {
-    checkStandardList().then((standard) => {
-      if (standard) {
-        enableStandard(true);
-      } else {
-        enableExtension(true);
-      }
-    });
-  }
-});
