@@ -56,8 +56,6 @@ const contrast = {
     const bg_color_defined = this.is_bg_defined(element) || (parentBg != null);
     const bg_img_defined = this.is_bg_img_defined(element);
 
-    console.log(element, parentFg, parentBg, fg_color_defined, bg_color_defined, bg_img_defined);
-
     if (fg_color_defined && bg_color_defined) {
       // Both colors explicitely defined, nothing to do
       element.dataset._extensionTextContrast = '';
