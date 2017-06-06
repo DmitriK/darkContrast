@@ -65,10 +65,14 @@ const contrast = {
     } else if (!fg_color_defined && bg_color_defined) {
       // Only set fg if original contrast is poor
       const fg = parentFg || color.to_rgb(getComputedStyle(element).color);
-      parentBg = color.to_rgb(getComputedStyle(element).backgroundColor);
+      const bg = color.to_rgb(getComputedStyle(element).backgroundColor);
+
+      if (!color.is_transparent(bg)) {
+        parentBg = bg;
+      }
 
       if (color.is_transparent(parentBg) ||
-        !color.is_contrasty(fg, parentBg)) {
+        !color.is_contrasty(fg, bg)) {
         element.dataset._extensionTextContrast = 'fg';
         this.fix_embeds(element, 'std');
 
@@ -77,12 +81,15 @@ const contrast = {
 
     } else if (fg_color_defined && !bg_color_defined) {
       // Only set bg if it will improve contrast
+      const fg = color.to_rgb(getComputedStyle(element).color);
       const bg = parentBg ||
         color.to_rgb(getComputedStyle(element).backgroundColor);
 
-      parentFg = color.to_rgb(getComputedStyle(element).color);
+      if (!color.is_transparent(fg)) {
+        parentFg = fg;
+      }
 
-      if (!color.is_contrasty(parentFg, bg)) {
+      if (!color.is_contrasty(fg, bg)) {
         element.dataset._extensionTextContrast = 'bg';
         this.fix_embeds(element, 'std');
 
