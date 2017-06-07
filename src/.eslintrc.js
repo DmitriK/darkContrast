@@ -23,7 +23,7 @@ module.exports = {
     "max-statements": "off",
     "newline-after-var": "warn",
     "newline-before-return": "warn",
-    "no-bitwise": "int32Hint",
+    "no-bitwise": ["error", {"int32Hint": true}],
     "no-continue": "off",
     "no-eq-null": "off",
     "no-implicit-globals": "off",
