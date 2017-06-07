@@ -62,7 +62,13 @@ function checkStandardList() {
 
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
-    if (mutation.type === 'attributes') {
+    if (mutation.type === 'attributes' &&
+        mutation.attributeName === 'data-_extension-text-contrast' &&
+        mutation.oldValue !== null) {
+      // Something in the author JS has erased the previous attribute, so
+      // restore it.
+      mutation.target.dataset._extensionTextContrast = mutation.oldValue;
+    } else if (mutation.type === 'attributes') {
       // This mutation represents a change to class or style of element
       // so this element also needs re-checking
       const changedNode = mutation.target;
@@ -84,10 +90,11 @@ const observer = new MutationObserver((mutations) => {
 });
 
 const config = {
-  attributes:      true,
-  attributeFilter: ['class'],
-  childList:       true,
-  subtree:         true,
+  attributes:        true,
+  attributeFilter:   ['class', 'style', 'data-_extension-text-contrast'],
+  childList:         true,
+  subtree:           true,
+  attributeOldValue: true,
 };
 
 function enableExtension(enable) {
@@ -109,6 +116,8 @@ function enableExtension(enable) {
 
 function enableStandard(enable) {
   if (enable) {
+    // Must stop observing when clearing overrides to prevent self-restoration
+    observer.disconnect();
     contrast.clear_overrides(document);
 
     // Force override on root element
@@ -122,7 +131,10 @@ function enableStandard(enable) {
     observer.observe(document, config);
     setBadge('std');
   } else {
+    // Must stop observing when clearing overrides to prevent self-restoration
+    observer.disconnect();
     contrast.clear_overrides(document);
+    observer.observe(document, config);
     enableExtension(true);
   }
 }
