@@ -29,5 +29,5 @@
       "open_in_tab": true
     },
     "permissions": ["<all_urls>", "storage"],
-    "version": "1.4.0"
+    "version": "1.4.0beta4"
 }

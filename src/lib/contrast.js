@@ -71,7 +71,7 @@ const contrast = {
         parentBg = bg;
       }
 
-      if (color.is_transparent(parentBg) ||
+      if (color.is_transparent(bg) ||
         !color.is_contrasty(fg, bg)) {
         element.dataset._extensionTextContrast = 'fg';
         this.fix_embeds(element, 'std');
