@@ -37,12 +37,13 @@ const contrast = {
     }
   },
 
-  checkElement(element, {recurse, delay, parentFg, parentBg} = {
-    recurse:  false,
-    delay:    false,
-    parentFg: null,
-    parentBg: null,
-  }) {
+  checkElement(element, {
+    recurse = false,
+    delay = false,
+    parentFg = null,
+    parentBg = null,
+    checkGoodContrast = true,
+  } = {}) {
     if (element == null) {
       return;
     }
@@ -71,7 +72,8 @@ const contrast = {
         parentBg = bg;
       }
 
-      if (color.is_transparent(bg) ||
+      if (!checkGoodContrast ||
+        color.is_transparent(bg) ||
         !color.is_contrasty(fg, bg)) {
         element.dataset._extensionTextContrast = 'fg';
         this.fix_embeds(element, 'std');
@@ -89,7 +91,8 @@ const contrast = {
         parentFg = fg;
       }
 
-      if (!color.is_contrasty(fg, bg)) {
+      if (!checkGoodContrast ||
+        !color.is_contrasty(fg, bg)) {
         element.dataset._extensionTextContrast = 'bg';
         this.fix_embeds(element, 'std');
 
@@ -148,7 +151,7 @@ const contrast = {
     let node; // eslint-disable-line init-declarations
 
     while ((node = nodeIterator.nextNode()) != null) {
-      this.checkElement(node);
+      this.checkElement(node, {checkGoodContrast: false});
     }
   },
 
