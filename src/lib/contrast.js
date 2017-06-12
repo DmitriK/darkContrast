@@ -6,7 +6,7 @@
 
 const contrast = {
   kInputElems: [
-    'INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'TOOLBARBUTTON',
+    'INPUT', 'TEXTAREA', 'SELECT', 'BUTTON',
   ],
   kInvisibleElems: [
     'HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE', 'BR', 'LINK',
