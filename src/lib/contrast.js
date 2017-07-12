@@ -42,7 +42,6 @@ const contrast = {
     delay = false,
     parentFg = null,
     parentBg = null,
-    checkGoodContrast = true,
   } = {}) {
     if (element == null) {
       return;
@@ -58,7 +57,7 @@ const contrast = {
     const bg_img_defined = this.is_bg_img_defined(element);
 
     if (fg_color_defined && bg_color_defined) {
-      // Both colors explicitely defined, nothing to do
+      // Both colors explicitly defined, nothing to do
       element.dataset._extensionTextContrast = '';
       this.fix_embeds(element, 'std');
 
@@ -72,15 +71,12 @@ const contrast = {
         parentBg = bg;
       }
 
-      if (!checkGoodContrast ||
-        color.is_transparent(bg) ||
-        !color.is_contrasty(fg, bg)) {
+      if (color.is_transparent(bg) || !color.is_contrasty(fg, bg)) {
         element.dataset._extensionTextContrast = 'fg';
         this.fix_embeds(element, 'std');
 
         return;
       }
-
     } else if (fg_color_defined && !bg_color_defined) {
       // Only set bg if it will improve contrast
       const fg = color.to_rgb(getComputedStyle(element).color);
@@ -91,8 +87,7 @@ const contrast = {
         parentFg = fg;
       }
 
-      if (!checkGoodContrast ||
-        !color.is_contrasty(fg, bg)) {
+      if (!color.is_contrasty(fg, bg)) {
         element.dataset._extensionTextContrast = 'bg';
         this.fix_embeds(element, 'std');
 
@@ -151,7 +146,7 @@ const contrast = {
     let node; // eslint-disable-line init-declarations
 
     while ((node = nodeIterator.nextNode()) != null) {
-      this.checkElement(node, {checkGoodContrast: false});
+      this.checkElement(node);
     }
   },
 

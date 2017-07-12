@@ -4,7 +4,6 @@
 Copyright ©2016 Dmitri Kourennyi
 See the file COPYING for copying permission.
 -->
-
 <head>
   <title>DarkContrast Test Page</title>
   <script>
@@ -79,6 +78,18 @@ section {
   background-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
 }
 
+.match-fg {
+  color: rgb(210, 218, 227);
+}
+.match-bg {
+  background-color: rgb(63, 69, 82);
+}
+.paired-match-fg {
+  color: rgb(255, 255, 255);
+}
+.paired-match-bg {
+  background-color: rgb(0, 0, 0);
+}
   </style>
 </head>
 
@@ -211,6 +222,76 @@ section {
         </select>
         <br/>
         <button id="dyn_btn" class="">Button</button>
+      </form>
+    </section>
+    <section>
+      <h2>Explicit Foreground that Matches</h2>
+      <form>
+        <input class="match-fg" value="Input" />
+        <br/>
+        <textarea class="match-fg">Textarea</textarea>
+        <br/>
+        <select class="match-fg">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button class="match-fg">Button</button>
+      </form>
+    </section>
+    <section>
+      <h2>Explicit Background that Matches</h2>
+      <form>
+        <input class="match-bg" value="Input" />
+        <br/>
+        <textarea class="match-bg">Textarea</textarea>
+        <br/>
+        <select class="match-bg">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button class="match-fg">Button</button>
+      </form>
+    </section>
+    <section>
+      <h2>Explicit Both that Match</h2>
+      <form>
+        <input class="match-fg match-bg" value="Input" />
+        <br/>
+        <textarea class="match-fg match-bg">Textarea</textarea>
+        <br/>
+        <select class="match-fg match-bg">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button class="match-fg match-bg">Button</button>
+      </form>
+    </section>
+    <section>
+      <h2>Matchy FG, contrasty BG</h2>
+      <form>
+        <input class="match-fg paired-match-bg" value="Input" />
+        <br/>
+        <textarea class="match-fg paired-match-bg">Textarea</textarea>
+        <br/>
+        <select class="match-fg paired-match-bg">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button class="match-fg paired-match-bg">Button</button>
+      </form>
+    </section>
+    <section>
+      <h2>Matchy BG, contrasty FG</h2>
+      <form>
+        <input class="paired-match-fg match-bg" value="Input" />
+        <br/>
+        <textarea class="paired-match-fg match-bg">Textarea</textarea>
+        <br/>
+        <select class="paired-match-fg match-bg">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button class="paired-match-fg match-bg">Button</button>
       </form>
     </section>
   </div>
