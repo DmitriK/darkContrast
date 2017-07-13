@@ -90,6 +90,10 @@ section {
 .paired-match-bg {
   background-color: rgb(0, 0, 0);
 }
+
+.hidden-fg { color:white; }
+.hidden-bg { background-color:black; }
+
   </style>
 </head>
 
@@ -249,7 +253,7 @@ section {
           <option>Select</option>
         </select>
         <br/>
-        <button class="match-fg">Button</button>
+        <button class="match-bg">Button</button>
       </form>
     </section>
     <section>
@@ -292,6 +296,44 @@ section {
         </select>
         <br/>
         <button class="paired-match-fg match-bg">Button</button>
+      </form>
+    </section>
+    <section>
+      <h2>Hidden Foreground</h2>
+      <p>
+        Will be (incorrectly) visible with extension enabled. Should be hidden
+        if standard colors are forced (currently fails due to Firefox styling
+        strangeness).
+      </p>
+      <form>
+        <input class="hidden-fg" value="Input" />
+        <br/>
+        <textarea class="hidden-fg">Textarea</textarea>
+        <br/>
+        <select class="hidden-fg">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button class="hidden-fg">Button</button>
+      </form>
+    </section>
+    <section>
+      <h2>Hidden Background</h2>
+      <p>
+        Will be (incorrectly) visible with extension enabled. Should be hidden
+        if standard colors are forced (currently fails due to Firefox styling
+        strangeness).
+      </p>
+      <form>
+        <input class="hidden-bg" value="Input" />
+        <br/>
+        <textarea class="hidden-bg">Textarea</textarea>
+        <br/>
+        <select class="hidden-bg">
+          <option>Select</option>
+        </select>
+        <br/>
+        <button class="hidden-bg">Button</button>
       </form>
     </section>
   </div>
