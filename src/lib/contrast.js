@@ -204,7 +204,8 @@ const contrast = {
 
   is_bg_defined(e) {
     return getComputedStyle(e).backgroundColor !==
-      getDefaultComputedStyle(e).backgroundColor;
+      getDefaultComputedStyle(e).backgroundColor &&
+      !color.is_transparent(color.to_rgb(getComputedStyle(e).backgroundColor));
   },
 
   is_bg_img_defined(e) {
