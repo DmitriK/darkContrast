@@ -13,7 +13,7 @@
         "matches": ["<all_urls>"],
         "js": ["lib/color.js", "lib/contrast.js", "embed.js"],
         "css": ["fixContrast.css"],
-        "run_at": "document_start",
+        "run_at": "document_end",
         "all_frames": true
       },
       {
@@ -29,5 +29,5 @@
       "open_in_tab": true
     },
     "permissions": ["<all_urls>", "storage"],
-    "version": "1.4.1"
+    "version": "1.4.2beta1"
 }
