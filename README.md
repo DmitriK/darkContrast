@@ -45,7 +45,7 @@ inspected, resulting in no slowdown with JavaScript heavy sites.
 
 ## IFrames and SVG images
 
-The sub-documents of IFrames and SVG images included via <embed> are traversed
+The sub-documents of IFrames and SVG images included via `<embed>` are traversed
 by the extension. The extension will try to correctly set the style of the inner
 sub-document based on the styling of the parent.
 
