@@ -82,6 +82,7 @@ const observer = new MutationObserver((mutations) => {
         // Check visibility of new nodes before further processing
         if (!contrast.isInVisibleNode(newNode)) {
           contrast.checkInputs(newNode);
+          contrast.fix_embeds(newNode, 'fix');
           contrast.recolor_parent_check(newNode);
         }
       }

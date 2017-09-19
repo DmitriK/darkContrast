@@ -169,11 +169,17 @@ const contrast = {
     while ((node = nodeIterator.nextNode()) != null) {
       if (node.contentWindow != null) {
         if (mode === 'std') {
-          node.contentWindow.postMessage('_tcfdt_subdoc_std', '*');
+          window.setTimeout((n) => {
+            n.contentWindow.postMessage('_tcfdt_subdoc_std', '*');
+          }, 500, node);
         } else if (mode === 'fix') {
-          node.contentWindow.postMessage('_tcfdt_subdoc_fix', '*');
+          window.setTimeout((n) => {
+            n.contentWindow.postMessage('_tcfdt_subdoc_fix', '*');
+          }, 500, node);
         } else if (mode === 'clr') {
-          node.contentWindow.postMessage('_tcfdt_subdoc_clr', '*');
+          window.setTimeout((n) => {
+            n.contentWindow.postMessage('_tcfdt_subdoc_clr', '*');
+          }, 500, node);
         }
       } else if (node.getSVGDocument != null && node.getSVGDocument() != null &&
         mode === 'std') {
