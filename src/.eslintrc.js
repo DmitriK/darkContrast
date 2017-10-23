@@ -4,11 +4,19 @@ module.exports = {
     "webextensions": true,
     "es6": true
   },
+  "env": {
+    "browser": true,
+    "webextensions": true,
+  },
   "extends": "eslint:all",
   "parserOptions": {
         "ecmaVersion": 8, // for async/await support
   },
   "rules": {
+    "array-element-newline": [
+      "error",
+      { "multiline": true }
+    ],
     "camelcase": "warn",
     "capitalized-comments": "off",
     "comma-dangle": ["warn", "always-multiline"],
@@ -21,6 +29,7 @@ module.exports = {
     "key-spacing": ["warn", { "align": "value" }],
     "lines-around-directive": ["error", { "before": "never", "after": "always" }],
     "max-statements": "off",
+    "multiline-comment-style": "off",
     "newline-after-var": "warn",
     "newline-before-return": "warn",
     "no-bitwise": ["error", {"int32Hint": true}],
