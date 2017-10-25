@@ -111,29 +111,108 @@ const checkUserInverted = () => {
   return false;
 };
 
+const fixInputs = (details) => {
+  tabs.insertCSS(
+    details.tabId,
+    {
+      frameId:   details.frameId,
+      cssOrigin: 'author',
+      file:      '/fixContrast.css',
+      runAt:     'document_end',
+    }
+  );
+  tabs.executeScript(
+    details.tabId,
+    {
+      file:    '/fixInputs.js',
+      frameId: details.frameId,
+      runAt:   'document_end',
+    }
+  );
+};
+
+const stdInputs = (details) => {
+  tabs.insertCSS(
+    details.tabId,
+    {
+      frameId:   details.frameId,
+      cssOrigin: 'user',
+      file:      '/stdInputs.css',
+      runAt:     'document_end',
+    }
+  );
+};
+
+const fixAll = (details) => {
+  tabs.insertCSS(
+    details.tabId,
+    {
+      frameId:   details.frameId,
+      cssOrigin: 'author',
+      file:      '/fixContrast.css',
+      runAt:     'document_end',
+    }
+  );
+  tabs.executeScript(
+    details.tabId,
+    {
+      file:    '/fixAll.js',
+      frameId: details.frameId,
+      runAt:   'document_end',
+    }
+  );
+};
+
+const stdAll = (details) => {
+  tabs.insertCSS(
+    details.tabId,
+    {
+      frameId:   details.frameId,
+      cssOrigin: 'user',
+      file:      '/stdAll.css',
+      runAt:     'document_end',
+    }
+  );
+};
+
+const inList = (list) => {
+  for (const entry of list) {
+    if (window.location.href.indexOf(entry) !== -1) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 
 webNavigation.onCompleted.addListener((details) => {
-  browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
+  browser.storage.local.get({
+    'tcfdt-cr':            4.5,
+    'tcfdt-list-disabled': [],
+    'tcfdt-list-standard': [],
+  }).then((items) => {
     constrastRatio = items['tcfdt-cr'];
+    const offList = items['tcfdt-list-disabled'];
+    const stdList = items['tcfdt-list-standard'];
+
+    // Do nothing if extension is disabled for this site
+    if (inList(offList)) {
+      return;
+    }
+
     if (checkUserInverted()) {
+      if (inList(stdList)) {
+        stdAll(details);
+      } else {
+        fixAll(details);
+      }
     } else {
-      tabs.insertCSS(
-        details.tabId,
-        {
-          allFrames: true,
-          cssOrigin: 'author',
-          file:      '/fixContrast.css',
-          runAt:     'document_end',
-        }
-      );
-      tabs.executeScript(
-        details.tabId,
-        {
-          file:    '/fixInputs.js',
-          frameId: details.frameId,
-          runAt:     'document_end',
-        }
-      );
+      if (inList(stdList)) {
+        stdInputs(details);
+      } else {
+        fixInputs(details);
+      }
     }
   });
 });

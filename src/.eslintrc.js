@@ -13,10 +13,7 @@ module.exports = {
         "ecmaVersion": 8, // for async/await support
   },
   "rules": {
-    "array-element-newline": [
-      "error",
-      { "multiline": true }
-    ],
+    "array-element-newline": "off",
     "camelcase": "warn",
     "capitalized-comments": "off",
     "comma-dangle": ["warn", "always-multiline"],
@@ -39,6 +36,7 @@ module.exports = {
     "no-magic-numbers": "off",
     "no-mixed-operators": "off",
     "no-param-reassign": "off",
+    "no-ternary": "off",
     "no-underscore-dangle": "off",
     "no-use-before-define": "warn",
     "object-property-newline": ["warn", {
