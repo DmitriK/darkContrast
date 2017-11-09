@@ -11,6 +11,8 @@ const INVISIBLE_NODES = [
 ];
 const INPUT_NODE_NAMES = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'];
 
+const SUBDOC_NODES = ['IFRAME', 'SVG', 'OBJECT', 'EMBED', 'FRAME'];
+
 const isFgDefined =
   (e) => getComputedStyle(e).color !== getDefaultComputedStyle(e).color;
 
@@ -66,6 +68,7 @@ const isTransparent = (rgb) => rgb.a === 0;
 
 const isInVisibleNode = (node) => INVISIBLE_NODES.indexOf(node.nodeName) > -1;
 const isInputNode = (node) => INPUT_NODE_NAMES.indexOf(node.nodeName) > -1;
+const isSubDocNode = (node) => SUBDOC_NODES.indexOf(node.nodeName) > -1;
 
 const checkElement = (el, {recurse, parentFg, parentBg} =
                       {recurse: false, parentFg: null, parentBg: null}) => {
@@ -83,8 +86,6 @@ const checkElement = (el, {recurse, parentFg, parentBg} =
   const bgImgDefined = isBgImgDefined(el);
   const fgParentDefined = parentFg != null;
   const bgParentDefined = parentBg != null;
-
-  console.log(el);
 
   if ((fgClrDefined || fgParentDefined) &&
       (bgClrDefined || bgParentDefined)) {
@@ -130,15 +131,8 @@ const checkElement = (el, {recurse, parentFg, parentBg} =
   } else if (bgImgDefined) {
     const defaultBg = toRGB(getDefaultComputedStyle(el).backgroundColor);
 
-    if (isTransparent(defaultBg)) {
-      // If the background is supposed to be transparent, keep the
-      // transparency and only fix foreground.
-      el.dataset._extensionTextContrast = 'fg';
-    } else {
-      // No FG or BG color, but may have a transparent bg image. BG color is
-      // not transparent, so need to set both colors.
+      // No FG or BG color, but may have a transparent bg image, set both colors
       el.dataset._extensionTextContrast = 'both';
-    }
 
     return;
   }
@@ -202,7 +196,30 @@ const checkParents = (el) => {
   }
 };
 
+const stdEmbeds = (e) => {
+  const nodeIterator = document.createNodeIterator(
+    e, NodeFilter.SHOW_ELEMENT, {acceptNode: isSubDocNode});
+
+  // Can't use for-in loop because a NodeIterator is not an iterator. Thanks
+  // Javascript.
+  let node; // eslint-disable-line init-declarations
+
+  while ((node = nodeIterator.nextNode()) != null) {
+    node.contentWindow.postMessage('_tcfdt_subdoc_std', '*');
+  }
+};
+
 browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
+  /*if (window.self !== window.top) {
+    window.addEventListener('message', (e) => {
+      if (e.data === '_tcfdt_subdoc_std') {
+        browser.runtime.sendMessage({frame: 'std'});
+        contrast.fix_embeds(document.documentElement, 'std');
+      }
+      e.stopPropagation();
+    }, true);
+  }*/
+
   constrastRatio = items['tcfdt-cr'];
   checkAll();
 
