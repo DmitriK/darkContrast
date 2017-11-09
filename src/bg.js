@@ -3,7 +3,7 @@
 /* globals getDefaultComputedStyle:false */
 'use strict';
 
-const {tabs, webNavigation} = browser;
+const {browserAction, tabs, webNavigation} = browser;
 
 // Handler for port connection, used for extension button and badge updates.
 /*browser.runtime.onConnect.addListener((port) => {
@@ -198,8 +198,17 @@ webNavigation.onCompleted.addListener((details) => {
 
     // Do nothing if extension is disabled for this site
     if (inList(offList)) {
+      browserAction.setBadgeText({
+        text: 'off',
+        tabId: details.tabId,
+      });
       return;
     }
+
+    browserAction.setBadgeText({
+        text: '',
+        tabId: details.tabId,
+      });
 
     if (checkUserInverted()) {
       if (inList(stdList)) {
