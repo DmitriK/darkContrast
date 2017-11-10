@@ -1,64 +1,22 @@
 /* Copyright (c) 2017 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
-/* globals getDefaultComputedStyle:false */
-'use strict';
 
-let constrastRatio = 4.5;
+import { isContrasty, setContrastRatio, toRGB } from './lib/color';
+
+declare function getDefaultComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
 
 const INPUT_NODE_NAMES = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'];
 
-const isFgDefined =
-  (e) => getComputedStyle(e).color !== getDefaultComputedStyle(e).color;
+const isFgDefined = (e: Element): boolean =>
+  getComputedStyle(e).color !== getDefaultComputedStyle(e).color;
 
-const isBgDefined = (e) => getComputedStyle(e).backgroundColor !==
-  getDefaultComputedStyle(e).backgroundColor;
+const isBgDefined = (e: Element): boolean =>
+  getComputedStyle(e).backgroundColor !== getDefaultComputedStyle(e).backgroundColor;
 
-const isBgImgDefined = (e) => getComputedStyle(e).backgroundImage !== 'none';
+const isBgImgDefined = (e: Element): boolean =>
+  getComputedStyle(e).backgroundImage !== 'none';
 
-const toRGB = (s) => {
-  if (s === 'transparent') {
-    return {r: 0, g: 0, b: 0, a: 0};
-  }
-
-  const rgb = {};
-  const parts = s.split(',', 4);
-
-  rgb.r = parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1), 10);
-  rgb.g = parseInt(parts[1].trim(), 10);
-  rgb.b = parseInt(parts[2].trim(), 10);
-  if (parts[3] == null) {
-    rgb.a = 1;
-  } else {
-    rgb.a = parseInt(parts[3].trim(), 10);
-  }
-
-  return rgb;
-};
-
-const getIntensity = (srgb) => {
-  const rgbNormalized = [srgb.r / 255.0, srgb.g / 255.0, srgb.b / 255.0];
-  const rgbLin = rgbNormalized.map((v) => {
-    if (v <= 0.03928) {
-      return v / 12.92;
-    }
-
-    return Math.pow((v + 0.055) / 1.055, 2.4);
-  });
-
-  return 0.2126 * rgbLin[0] + 0.7152 * rgbLin[1] + 0.0722 * rgbLin[2];
-};
-
-const isContrasty = (fg, bg) => {
-  const lumF = getIntensity(fg);
-  const lumB = getIntensity(bg);
-
-  const L1 = Math.max(lumF, lumB);
-  const L2 = Math.min(lumF, lumB);
-
-  return (L1 + 0.05) / (L2 + 0.05) > constrastRatio;
-};
-
-const checkElement = (el) => {
+const checkElement = (el: HTMLElement): void => {
   // If element has already been examined before, don't do any processing
   if (el.dataset._extensionTextContrast != null) {
     return;
@@ -73,16 +31,16 @@ const checkElement = (el) => {
     el.dataset._extensionTextContrast = '';
   } else if (!fgClrDefined && bgClrDefined) {
     // Only set fg if original contrast is poor
-    const fg = toRGB(getComputedStyle(el).color);
-    const bg = toRGB(getComputedStyle(el).backgroundColor);
+    const fg = toRGB(getComputedStyle(el).getPropertyValue('color'));
+    const bg = toRGB(getComputedStyle(el).getPropertyValue('background-color'));
 
     if (!isContrasty(fg, bg)) {
       el.dataset._extensionTextContrast = 'fg';
     }
   } else if (fgClrDefined && !bgClrDefined) {
     // Only set bg if it will improve contrast
-    const fg = toRGB(getComputedStyle(el).color);
-    const bg = toRGB(getComputedStyle(el).backgroundColor);
+    const fg = toRGB(getComputedStyle(el).getPropertyValue('color'));
+    const bg = toRGB(getComputedStyle(el).getPropertyValue('background-color'));
 
     if (!isContrasty(fg, bg)) {
       el.dataset._extensionTextContrast = 'bg';
@@ -94,27 +52,30 @@ const checkElement = (el) => {
   }
 };
 
-const isInput = (node) => INPUT_NODE_NAMES.indexOf(node.nodeName) > -1;
+const isInput = (node: Element) => INPUT_NODE_NAMES.indexOf(node.nodeName) > -1;
 
-const checkInputs = (root = document) => {
+const checkInputs = (root: Element = document.documentElement) => {
   // Check all input elements
   const nodeIterator = document.createNodeIterator(
     root,
     NodeFilter.SHOW_ELEMENT,
-    {acceptNode: isInput},
+    {
+      acceptNode: (el: Element) =>
+        isInput(el) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+    },
   );
 
-  // Can't use for-of loop because a NodeIterator is not iteratable.
+  // Can't use for-of loop because a NodeIterator is not iterable.
   // Thanks Javascript!
   let node = null;
 
   while ((node = nodeIterator.nextNode()) != null) {
-    checkElement(node);
+    checkElement(node as HTMLElement);
   }
 };
 
 browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
-  constrastRatio = items['tcfdt-cr'];
+  setContrastRatio(items['tcfdt-cr']);
   checkInputs();
 
   const observer = new MutationObserver((mutations) => {
@@ -124,18 +85,19 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
           mutation.oldValue !== null) {
         // Something in the author JS has erased the previous attribute, so
         // restore it.
-        mutation.target.dataset._extensionTextContrast = mutation.oldValue;
+        const element = mutation.target as HTMLElement;
+        element.dataset._extensionTextContrast = mutation.oldValue;
       } else if (mutation.type === 'attributes') {
         // This mutation represents a change to class or style of element
         // so this element also needs re-checking
-        const changedNode = mutation.target;
+        const changedNode = mutation.target as HTMLElement;
 
         if (isInput(changedNode)) {
           checkElement(changedNode);
         }
       } else {
         for (const newNode of mutation.addedNodes) {
-          checkInputs(newNode);
+          checkInputs(newNode as Element);
         }
       }
     });
