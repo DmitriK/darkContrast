@@ -1,7 +1,17 @@
 /* Copyright (c) 2017 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
-/* globals getDefaultComputedStyle:false */
-'use strict';
+
+import { isContrasty, setContrastRatio, toRGB } from './lib/color';
+
+declare function getDefaultComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
+
+interface WebNavDetails {
+  tabId: number;
+  url: string;
+  processId: number;
+  frameId: number;
+  timeStamp: number;
+}
 
 const {browserAction, tabs, webNavigation} = browser;
 
@@ -52,54 +62,9 @@ tabs.onUpdated.addListener((tabId) => {
   });
 });*/
 
-let constrastRatio = 4.5;
-
-const getIntensity = (srgb) => {
-  const rgbNormalized = [srgb.r / 255.0, srgb.g / 255.0, srgb.b / 255.0];
-  const rgbLin = rgbNormalized.map((v) => {
-    if (v <= 0.03928) {
-      return v / 12.92;
-    }
-
-    return Math.pow((v + 0.055) / 1.055, 2.4);
-  });
-
-  return 0.2126 * rgbLin[0] + 0.7152 * rgbLin[1] + 0.0722 * rgbLin[2];
-};
-
-const isContrasty = (fg, bg) => {
-  const lumF = getIntensity(fg);
-  const lumB = getIntensity(bg);
-
-  const L1 = Math.max(lumF, lumB);
-  const L2 = Math.min(lumF, lumB);
-
-  return (L1 + 0.05) / (L2 + 0.05) > constrastRatio;
-};
-
-const toRGB = (s) => {
-  if (s === 'transparent') {
-    return {r: 0, g: 0, b: 0, a: 0};
-  }
-
-  const rgb = {};
-  const parts = s.split(',', 4);
-
-  rgb.r = parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1), 10);
-  rgb.g = parseInt(parts[1].trim(), 10);
-  rgb.b = parseInt(parts[2].trim(), 10);
-  if (parts[3] == null) {
-    rgb.a = 1;
-  } else {
-    rgb.a = parseInt(parts[3].trim(), 10);
-  }
-
-  return rgb;
-};
-
 const checkUserInverted = () => {
   const defaultFg =
-    toRGB(getDefaultComputedStyle(document.documentElement).color);
+    toRGB(getDefaultComputedStyle(document.documentElement).color!);
 
   if (!isContrasty(defaultFg, {r: 255, g: 255, b: 255, a: 1})) {
     // Contrast check against what sites will assume to be default
@@ -111,7 +76,7 @@ const checkUserInverted = () => {
   return false;
 };
 
-const fixInputs = (details) => {
+const fixInputs = (details: WebNavDetails) => {
   tabs.insertCSS(
     details.tabId,
     {
@@ -131,7 +96,7 @@ const fixInputs = (details) => {
   );
 };
 
-const stdInputs = (details) => {
+const stdInputs = (details: WebNavDetails) => {
   tabs.insertCSS(
     details.tabId,
     {
@@ -143,7 +108,7 @@ const stdInputs = (details) => {
   );
 };
 
-const fixAll = (details) => {
+const fixAll = (details: WebNavDetails) => {
   tabs.insertCSS(
     details.tabId,
     {
@@ -163,7 +128,7 @@ const fixAll = (details) => {
   );
 };
 
-const stdAll = (details) => {
+const stdAll = (details: WebNavDetails) => {
   tabs.insertCSS(
     details.tabId,
     {
@@ -175,7 +140,7 @@ const stdAll = (details) => {
   );
 };
 
-const inList = (list) => {
+const inList = (list: string[]) => {
   for (const entry of list) {
     if (window.location.href.indexOf(entry) !== -1) {
       return true;
@@ -186,13 +151,13 @@ const inList = (list) => {
 };
 
 
-webNavigation.onCompleted.addListener((details) => {
+webNavigation.onCompleted.addListener((details: WebNavDetails) => {
   browser.storage.local.get({
     'tcfdt-cr':            4.5,
     'tcfdt-list-disabled': [],
     'tcfdt-list-standard': [],
   }).then((items) => {
-    constrastRatio = items['tcfdt-cr'];
+    setContrastRatio(items['tcfdt-cr']);
     const offList = items['tcfdt-list-disabled'];
     const stdList = items['tcfdt-list-standard'];
 

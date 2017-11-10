@@ -1,0 +1,3 @@
+[submodule "src/types/web-ext-types"]
+	path = src/types/web-ext-types
+	url = git@github.com:DmitriK/web-ext-types.git

@@ -1,0 +1,28 @@
+{
+  "extends": "tslint:all",
+  "rules": {
+    "binary-expression-operand-order": false,
+    "comment-format": [true, "check-space"],
+    "interface-name": false,
+    "max-classes-per-file": false,
+    "member-ordering": [true, {
+      "order": "fields-first",
+      "alphabetize": false
+    }],
+    "no-magic-numbers": false,
+    "no-parameter-properties": false,
+    "object-literal-sort-keys": [
+      true,
+      "match-declaration-order"
+    ],
+    "quotemark": [true, "single"],
+    "typedef": [true,
+      "call-signature",
+      "arrow-call-signature",
+      "parameter",
+      "arrow-parameter",
+      "property-declaration",
+      "member-variable-declaration"
+    ]
+  }
+}

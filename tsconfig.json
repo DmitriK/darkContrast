@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "outDir": "./js/transpiled",
+        "allowJs": false,
+        "target": "ES2015",
+        "module": "es2015",
+        "strict": true,
+        "sourceMap": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "typeRoots": ["@types", "./src/types/web-ext-types"],
+    },
+    "include": [
+        "./src/*.ts",
+    ]
+}
