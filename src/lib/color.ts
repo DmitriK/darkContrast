@@ -5,7 +5,7 @@
 
 let constrastRatio = 4.5;
 
-interface Srgb {
+export interface Srgb {
   r: number;
   g: number;
   b: number;
