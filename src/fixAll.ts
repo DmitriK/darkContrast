@@ -4,6 +4,7 @@
 
 import { isContrasty, isTransparent, setContrastRatio, Srgb, toRGB } from './lib/color';
 import { isFgDefined, isBgDefined, isBgImgDefined, isInputNode, isInVisibleNode, isSubDocNode } from './lib/checks';
+import { clearOverrides } from './lib/contrast';
 
 const checkElement = (el: HTMLElement,
                       {recurse, parentFg, parentBg}: {recurse?: boolean, parentFg?: Srgb, parentBg?: Srgb} =
@@ -205,4 +206,12 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
   };
 
   observer.observe(document, observerConf);
+
+  browser.runtime.onMessage.addListener((message: {}) => {
+    const request = (message as {request: 'off'}).request;
+    if (request === 'off') {
+      observer.disconnect();
+      clearOverrides(document);
+    }
+  });
 });

@@ -1,9 +1,8 @@
 /* Copyright (c) 2017 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
 
-import { isContrasty, setContrastRatio, toRGB } from './lib/color';
-
-declare function getDefaultComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
+import { setContrastRatio } from './lib/color';
+import { checkUserInverted } from './lib/checks';
 
 interface WebNavDetails {
   tabId: number;
@@ -13,7 +12,21 @@ interface WebNavDetails {
   timeStamp: number;
 }
 
-const {browserAction, tabs, webNavigation} = browser;
+interface PopupMessage {
+  request: 'toggle';
+  tabId: number;
+}
+
+const {browserAction, runtime, tabs, webNavigation} = browser;
+
+runtime.onMessage.addListener((msg: {}) => {
+  browserAction.getBadgeText({tabId: (msg as PopupMessage).tabId}).then((value: string) => {
+    if (value === '') {
+      // Was operational, need to disable
+      clearAny((msg as PopupMessage).tabId);
+    }
+  });
+});
 
 // Handler for port connection, used for extension button and badge updates.
 /*browser.runtime.onConnect.addListener((port) => {
@@ -61,20 +74,6 @@ tabs.onUpdated.addListener((tabId) => {
     runAt:     'document_end',
   });
 });*/
-
-const checkUserInverted = () => {
-  const defaultFg =
-    toRGB(getDefaultComputedStyle(document.documentElement).color!);
-
-  if (!isContrasty(defaultFg, {r: 255, g: 255, b: 255, a: 1})) {
-    // Contrast check against what sites will assume to be default
-    // (black fg, white bg) failed, so user most likely has 'Use system
-    // colors' on
-    return true;
-  }
-
-  return false;
-};
 
 const fixInputs = (details: WebNavDetails) => {
   tabs.insertCSS(
@@ -138,6 +137,19 @@ const stdAll = (details: WebNavDetails) => {
       runAt:     'document_end',
     }
   );
+};
+
+const clearAny = (tabId: number) => {
+  tabs.removeCSS(tabId, {
+    file: '/stdInputs.css',
+  });
+  tabs.removeCSS(tabId, {
+    file: 'stdAll.css',
+  });
+
+  tabs.sendMessage(tabId, {request: 'off'});
+
+  browserAction.setBadgeText({text: 'off', tabId});
 };
 
 const inList = (list: string[]) => {
