@@ -3,27 +3,7 @@
 /* globals getDefaultComputedStyle:false */
 
 import { isContrasty, isTransparent, setContrastRatio, Srgb, toRGB } from './lib/color';
-
-declare function getDefaultComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
-
-const INVISIBLE_NODES = [
-  'HEAD', 'TITLE', 'META', 'SCRIPT', 'IMG', 'STYLE', 'BR', 'LINK', '#text',
-  'FRAMESET',
-];
-const INPUT_NODE_NAMES = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'];
-
-const SUBDOC_NODES = ['IFRAME', 'SVG', 'OBJECT', 'EMBED', 'FRAME'];
-
-const isFgDefined = (e: Element) => getComputedStyle(e).color !== getDefaultComputedStyle(e).color;
-
-const isBgDefined = (e: Element) => getComputedStyle(e).backgroundColor !==
-  getDefaultComputedStyle(e).backgroundColor;
-
-const isBgImgDefined = (e: Element) => getComputedStyle(e).backgroundImage !== 'none';
-
-const isInVisibleNode = (node: Node) => INVISIBLE_NODES.indexOf(node.nodeName) > -1;
-const isInputNode = (node: Node) => INPUT_NODE_NAMES.indexOf(node.nodeName) > -1;
-const isSubDocNode = (node: Node) => SUBDOC_NODES.indexOf(node.nodeName) > -1;
+import { isFgDefined, isBgDefined, isBgImgDefined, isInputNode, isInVisibleNode, isSubDocNode } from './lib/checks';
 
 const checkElement = (el: HTMLElement,
                       {recurse, parentFg, parentBg}: {recurse?: boolean, parentFg?: Srgb, parentBg?: Srgb} =
@@ -118,7 +98,7 @@ const checkInputs = (root: Element = document.documentElement) => {
     root,
     NodeFilter.SHOW_ELEMENT,
     {
-      acceptNode: (el: Element) => isInputNode(el) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+      acceptNode: (el: HTMLElement) => isInputNode(el) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
     },
   );
 
@@ -202,7 +182,7 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
 
         checkParents(changedNode as HTMLElement);
 
-        if (isInputNode(changedNode)) {
+        if (isInputNode(changedNode as HTMLElement)) {
           checkElement(changedNode as HTMLElement);
         }
       } else {

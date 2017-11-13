@@ -2,19 +2,7 @@
 /* See the file COPYING for copying permission. */
 
 import { isContrasty, setContrastRatio, toRGB } from './lib/color';
-
-declare function getDefaultComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
-
-const INPUT_NODE_NAMES = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'];
-
-const isFgDefined = (e: Element): boolean =>
-  getComputedStyle(e).color !== getDefaultComputedStyle(e).color;
-
-const isBgDefined = (e: Element): boolean =>
-  getComputedStyle(e).backgroundColor !== getDefaultComputedStyle(e).backgroundColor;
-
-const isBgImgDefined = (e: Element): boolean =>
-  getComputedStyle(e).backgroundImage !== 'none';
+import { isFgDefined, isBgDefined, isBgImgDefined, isInputNode } from './lib/checks';
 
 const checkElement = (el: HTMLElement): void => {
   // If element has already been examined before, don't do any processing
@@ -52,16 +40,14 @@ const checkElement = (el: HTMLElement): void => {
   }
 };
 
-const isInput = (node: Element) => INPUT_NODE_NAMES.indexOf(node.nodeName) > -1;
-
 const checkInputs = (root: Element = document.documentElement) => {
   // Check all input elements
   const nodeIterator = document.createNodeIterator(
     root,
     NodeFilter.SHOW_ELEMENT,
     {
-      acceptNode: (el: Element) =>
-        isInput(el) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+      acceptNode: (el: HTMLElement) =>
+        isInputNode(el) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
     },
   );
 
@@ -92,7 +78,7 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
         // so this element also needs re-checking
         const changedNode = mutation.target as HTMLElement;
 
-        if (isInput(changedNode)) {
+        if (isInputNode(changedNode)) {
           checkElement(changedNode);
         }
       } else {
