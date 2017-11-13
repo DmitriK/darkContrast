@@ -2,22 +2,22 @@ ROLLUP = node node_modules/rollup/bin/rollup
 
 CSS_FILES = js/fixContrast.css js/stdAll.css
 
-.PHONY: js/transpiled js/css
+.PHONY: build/transpiled build/css
 
-all: js/bg.js js/fixInputs.js js/fixAll.js js/css
+all: build/ext/bg.js build/ext/fixInputs.js build/ext/fixAll.js build/ext/others
 
-js/transpiled:
+build/transpiled:
 	tsc -p .
 
-js/bg.js: js/transpiled
-	$(ROLLUP) js/transpiled/bg.js --output.format iife --output.file js/bg.js
+build/ext/bg.js: build/transpiled
+	$(ROLLUP) build/transpiled/bg.js --output.format iife --output.file $@
 
-js/fixInputs.js: js/transpiled
-	$(ROLLUP) js/transpiled/fixInputs.js --output.format iife --output.file js/fixInputs.js
+build/ext/fixInputs.js: build/transpiled
+	$(ROLLUP) build/transpiled/fixInputs.js --output.format iife --output.file $@
 
-js/fixAll.js: js/transpiled
-	$(ROLLUP) js/transpiled/fixAll.js --output.format iife --output.file js/fixAll.js
+build/ext/fixAll.js: build/transpiled
+	$(ROLLUP) build/transpiled/fixAll.js --output.format iife --output.file $@
 
-js/css: src/stdAll.css src/fixContrast.css
-	cp src/stdAll.css js/stdAll.css
-	cp src/fixContrast.css js/fixContrast.css
+build/ext/others: src/manifest.json src/stdAll.css src/fixContrast.css src/opt \
+	src/popup src/icons
+	cp -r $? build/ext/
