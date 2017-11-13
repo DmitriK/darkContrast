@@ -1,8 +1,10 @@
 ROLLUP = node node_modules/rollup/bin/rollup
 
-.PHONY: js/transpiled
+CSS_FILES = js/fixContrast.css js/stdAll.css
 
-all: js/bg.js js/fixInputs.js
+.PHONY: js/transpiled js/css
+
+all: js/bg.js js/fixInputs.js js/fixAll.js js/css
 
 js/transpiled:
 	tsc -p .
@@ -12,3 +14,10 @@ js/bg.js: js/transpiled
 
 js/fixInputs.js: js/transpiled
 	$(ROLLUP) js/transpiled/fixInputs.js --output.format iife --output.file js/fixInputs.js
+
+js/fixAll.js: js/transpiled
+	$(ROLLUP) js/transpiled/fixAll.js --output.format iife --output.file js/fixAll.js
+
+js/css: src/stdAll.css src/fixContrast.css
+	cp src/stdAll.css js/stdAll.css
+	cp src/fixContrast.css js/fixContrast.css
