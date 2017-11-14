@@ -1,38 +1,27 @@
 /* Copyright (c) 2017 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
 
-import { checkUserInverted } from './lib/checks';
-
 const { runtime } = browser;
 
-function sendToggle(tabs: browser.tabs.Tab[]) {
+const sendOff = (tabs: browser.tabs.Tab[]): void => {
   const [{id}] = tabs;
 
-  runtime.sendMessage('', {request: 'toggle', tabId: id});
-}
+  runtime.sendMessage('', {request: 'off', tabId: id});
+};
 
-// function togg_std(tabs) {
-//   const [{id}] = tabs;
+const sendStd = (tabs: browser.tabs.Tab[]): void => {
+  const [{id}] = tabs;
 
-//   browser.tabs.sendMessage(id, {request: 'std'});
-// }
+  runtime.sendMessage('', {request: 'std', tabId: id});
+};
 
 window.addEventListener('load', () => {
-  if (checkUserInverted) {
-    // Contrast check against what sites will assume to be default
-    // (black fg, white bg) failed, so user most likely has 'Use system
-    // colors' on
-    (document.getElementById('tog_std') as HTMLButtonElement).style.display = 'block';
-  }
-
   (document.getElementById('tog_main') as HTMLButtonElement).addEventListener('click', () => {
-    browser.tabs.query({currentWindow: true, active: true}).then(sendToggle);
+    browser.tabs.query({currentWindow: true, active: true}).then(sendOff);
   });
 
   (document.getElementById('tog_std') as HTMLButtonElement).addEventListener('click', () => {
-    // browser.tabs.query({currentWindow: true, active: true}).then(togg_std);
-
-    // browser.runtime.sendMessage(undefined, {request: 'std'});
+     browser.tabs.query({currentWindow: true, active: true}).then(sendStd);
   });
 
   (document.getElementById('open_opts') as HTMLButtonElement).addEventListener('click', () => {

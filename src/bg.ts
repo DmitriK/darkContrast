@@ -13,19 +13,31 @@ interface WebNavDetails {
 }
 
 interface PopupMessage {
-  request: 'toggle';
+  request: 'off' | 'std';
   tabId: number;
 }
 
 const {browserAction, runtime, tabs, webNavigation} = browser;
 
 runtime.onMessage.addListener((msg: {}) => {
-  browserAction.getBadgeText({tabId: (msg as PopupMessage).tabId}).then((value: string) => {
-    if (value === '') {
-      // Was operational, need to disable
-      clearAny((msg as PopupMessage).tabId);
-    }
-  });
+  const request = (msg as PopupMessage).request;
+  const tabId = (msg as PopupMessage).tabId;
+
+  if (request === 'off') {
+    clearAny(tabId);
+    browserAction.setBadgeText({text: 'off', tabId});
+  } else if (request === 'std') {
+    clearAny(tabId);
+    // Insert std css into all frames of tab
+    tabs.insertCSS(tabId,
+                   {
+                     cssOrigin: 'user',
+                     file:      '/stdAll.css',
+                     runAt:     'document_end',
+                   },
+    );
+    browserAction.setBadgeText({text: 'std', tabId});
+  }
 });
 
 // Handler for port connection, used for extension button and badge updates.
@@ -148,8 +160,6 @@ const clearAny = (tabId: number) => {
   });
 
   tabs.sendMessage(tabId, {request: 'off'});
-
-  browserAction.setBadgeText({text: 'off', tabId});
 };
 
 const inList = (list: string[]) => {
