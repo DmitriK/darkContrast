@@ -48,16 +48,16 @@ export function setContrastRatio(x: number): void {
 }
 
 export function toRGB(s: string): Srgb {
-  if (s === 'transparent') {
+  if (!s || s === 'transparent') {
     return {r: 0, g: 0, b: 0, a: 0};
   }
 
   const parts = s.split(',', 4);
 
   const rgb: Srgb = {
-    r: parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1), 10),
-    g: parseInt(parts[1].trim(), 10),
-    b: parseInt(parts[2].trim(), 10),
+    r: parseInt(parts[0].substr(parts[0].indexOf('(', 3) + 1), 10) || 0,
+    g: parseInt(parts[1].trim(), 10) || 0,
+    b: parseInt(parts[2].trim(), 10) || 0,
     a: 1,
   };
 
