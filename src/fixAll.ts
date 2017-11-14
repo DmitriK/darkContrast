@@ -36,7 +36,7 @@ const checkElement = (el: HTMLElement,
              (bgClrDefined || bgParentDefined)) {
     const fg = toRGB(getComputedStyle(el).getPropertyValue('color'));
     const bg = bgClrDefined
-      ? toRGB(getComputedStyle(el).getPropertyValue('backgroundColor'))
+      ? toRGB(getComputedStyle(el).getPropertyValue('background-color'))
       : parentBg;
 
     // Note that if background image exists, it may not be transparent, so we
@@ -57,7 +57,7 @@ const checkElement = (el: HTMLElement,
     const fg = fgClrDefined
       ? toRGB(getComputedStyle(el).getPropertyValue('color'))
       : parentFg;
-    const bg = toRGB(getComputedStyle(el).getPropertyValue('backgroundColor'));
+    const bg = toRGB(getComputedStyle(el).getPropertyValue('background-color'));
 
     if (!isContrasty(fg, bg)) {
       el.dataset._extensionTextContrast = 'bg';
