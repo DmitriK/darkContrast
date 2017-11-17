@@ -13,21 +13,27 @@ interface WebNavDetails {
 }
 
 interface PopupMessage {
-  request: 'off' | 'std';
-  tabId: number;
+  request?: 'off' | 'std';
+  allFrames?: boolean;
 }
 
 const {browserAction, runtime, tabs, webNavigation} = browser;
 
-runtime.onMessage.addListener((msg: {}) => {
-  const request = (msg as PopupMessage).request;
-  const tabId = (msg as PopupMessage).tabId;
+runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.MessageSender) => {
+  console.log(msg, sender);
+  const request = msg.request;
+  if (!sender.tab || !sender.tab.id) {
+    return;
+  }
+
+  const tabId = sender.tab.id;
+  const frameId = msg.allFrames === true ? sender.frameId : undefined;
 
   if (request === 'off') {
-    clearAny(tabId);
+    clearAny(tabId, frameId);
     browserAction.setBadgeText({text: 'off', tabId});
   } else if (request === 'std') {
-    clearAny(tabId);
+    clearAny(tabId, frameId);
     // Insert std css into all frames of tab
     tabs.insertCSS(tabId,
                    {
@@ -151,15 +157,18 @@ const stdAll = (details: WebNavDetails) => {
   );
 };
 
-const clearAny = (tabId: number) => {
+const clearAny = (tabId: number, frameId?: number | undefined) => {
   tabs.removeCSS(tabId, {
+    allFrames: frameId !== undefined,
     file: '/stdInputs.css',
+    frameId: frameId || 0,
   });
   tabs.removeCSS(tabId, {
     file: 'stdAll.css',
+    frameId: frameId || 0,
   });
 
-  tabs.sendMessage(tabId, {request: 'off'});
+  tabs.sendMessage(tabId, {request: 'off'}, frameId ? {frameId} : {});
 };
 
 const inList = (list: string[]) => {
