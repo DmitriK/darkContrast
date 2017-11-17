@@ -20,14 +20,13 @@ interface PopupMessage {
 const {browserAction, runtime, tabs, webNavigation} = browser;
 
 runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.MessageSender) => {
-  console.log(msg, sender);
   const request = msg.request;
   if (!sender.tab || !sender.tab.id) {
     return;
   }
 
   const tabId = sender.tab.id;
-  const frameId = msg.allFrames === true ? sender.frameId : undefined;
+  const frameId = msg.allFrames ? undefined : sender.frameId;
 
   if (request === 'off') {
     clearAny(tabId, frameId);
@@ -40,6 +39,8 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
                      cssOrigin: 'author',
                      file:      '/stdAll.css',
                      runAt:     'document_start',
+                     allFrames: frameId === undefined,
+                     frameId: frameId || 0,
                    },
     );
     browserAction.setBadgeText({text: 'std', tabId});
@@ -159,11 +160,12 @@ const stdAll = (details: WebNavDetails) => {
 
 const clearAny = (tabId: number, frameId?: number | undefined) => {
   tabs.removeCSS(tabId, {
-    allFrames: frameId !== undefined,
+    allFrames: frameId === undefined,
     file: '/stdInputs.css',
     frameId: frameId || 0,
   });
   tabs.removeCSS(tabId, {
+    allFrames: frameId === undefined,
     file: 'stdAll.css',
     frameId: frameId || 0,
   });

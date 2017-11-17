@@ -154,15 +154,14 @@ const stdEmbeds = (e: HTMLElement) => {
 };
 
 browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
-  /*if (window.self !== window.top) {
+  if (window.self !== window.top) {
     window.addEventListener('message', (e) => {
       if (e.data === '_tcfdt_subdoc_std') {
-        browser.runtime.sendMessage({frame: 'std'});
-        contrast.fix_embeds(document.documentElement, 'std');
+        browser.runtime.sendMessage({request: 'std'});
       }
       e.stopPropagation();
     }, true);
-  }*/
+  }
 
   setContrastRatio(items['tcfdt-cr']);
   checkAll();
