@@ -6,6 +6,7 @@ See the file COPYING for copying permission.
 -->
 <head>
   <title>DarkContrast Test Page</title>
+  <link rel="stylesheet" href="test.css" />
   <script>
 window.setTimeout(test_dynamic, 500);
 
@@ -70,6 +71,10 @@ section {
   color: #543210;
 }
 
+.bg {
+  background-color:#ABCDEF;
+}
+
 .bgImg {
   background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEWrze+83v+32CWOAAAAEElEQVR4AWNk+I8d/WfEigCAsxAJdjDJwwAAAABJRU5ErkJggg==);
 }
@@ -100,7 +105,7 @@ section {
 <body>
   <h1>DarkContrast Check Page</h1>
   <p class="fg">Explicit foreground color</p>
-  <p style="background-color:#ABCDEF">Explicit background color</p>
+  <p class="bg">Explicit background color</p>
   <div class="sections" id="sections">
     <section>
       <h2>Nothing defined</h2>
@@ -117,45 +122,45 @@ section {
       </form>
     </section>
     <section>
-      <h2 style="color:#543210;">FG only</h2>
+      <h2 class="fg">FG only</h2>
       <form>
-        <input value="Input" style="color:#543210;" />
+        <input value="Input" class="fg" />
         <br/>
-        <textarea style="color:#543210;">Textarea</textarea>
+        <textarea class="fg">Textarea</textarea>
         <br/>
-        <select style="color:#543210;">
+        <select class="fg">
           <option>Select</option>
         </select>
         <br/>
-        <button style="color:#543210;">Button</button>
+        <button class="fg">Button</button>
       </form>
     </section>
     <section>
       <h2>BG only</h2>
       <form>
-        <input value="Input" style="background-color:#ABCDEF;" />
+        <input value="Input" class="bg" />
         <br/>
-        <textarea style="background-color:#ABCDEF;">Textarea</textarea>
+        <textarea class="bg">Textarea</textarea>
         <br/>
-        <select style="background-color:#ABCDEF;">
+        <select class="bg">
           <option>Select</option>
         </select>
         <br/>
-        <button style="background-color:#ABCDEF;">Button</button>
+        <button class="bg">Button</button>
       </form>
     </section>
     <section>
       <h2>FG and BG</h2>
       <form>
-        <input value="Input" style="color:#543210;background-color:#ABCDEF;" />
+        <input value="Input" class="fg bg" />
         <br/>
-        <textarea style="color:#543210;background-color:#ABCDEF;">Textarea</textarea>
+        <textarea class="fg bg">Textarea</textarea>
         <br/>
-        <select style="color:#543210;background-color:#ABCDEF;">
+        <select class="fg bg">
           <option>Select</option>
         </select>
         <br/>
-        <button style="color:#543210;background-color:#ABCDEF;">Button</button>
+        <button class="fg bg">Button</button>
       </form>
     </section>
     <section>

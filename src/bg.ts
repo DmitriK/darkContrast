@@ -37,9 +37,9 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
     // Insert std css into all frames of tab
     tabs.insertCSS(tabId,
                    {
-                     cssOrigin: 'user',
+                     cssOrigin: 'author',
                      file:      '/stdAll.css',
-                     runAt:     'document_end',
+                     runAt:     'document_start',
                    },
     );
     browserAction.setBadgeText({text: 'std', tabId});
@@ -150,9 +150,9 @@ const stdAll = (details: WebNavDetails) => {
     details.tabId,
     {
       frameId:   details.frameId,
-      cssOrigin: 'user',
+      cssOrigin: 'author',
       file:      '/stdAll.css',
-      runAt:     'document_end',
+      runAt:     'document_start',
     }
   );
 };
