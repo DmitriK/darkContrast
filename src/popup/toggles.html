@@ -6,20 +6,52 @@
 <script src="/lib/contrast.js"></script>
 <script src="toggles.js"></script>
 <style>
-button {
-  display:block
+html {
+  color: -moz-DialogText;
+  background-color: -moz-Dialog;
+  font-family: sans-serif;
 }
+button {
+  display: box;
+  color:ButtonText;
+}
+
 .ctr {
   display:flex;
-  flex-flow: column;
+  flex-flow: row nowrap;
+  align-items: center;
 }
+
+.toggles {
+  border: 1px solid -moz-DialogText;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.toggles legend span {
+  font-size: 0.5rem;
+}
+
+.opts {
+  fill:currentColor;
+  width: 4rem;
+  height: 4rem;
+}
+
 </style>
 </head>
 <body>
 <div class="ctr">
-  <button id="tog_main">Turn off</button>
-  <button id="tog_std">Force standard colors</button>
-  <button id="open_opts">Open override lists</button>
+  <fieldset class="toggles">
+    <legend>Toggles <span>(refresh to clear)</span></legend>
+    <button id="tog_main">Turn off</button>
+    <button id="tog_std">Force standard colors</button>
+  </fieldset>
+  <button class="opts" id="open_opts">
+    <svg width="100%" height="100%" viewBox="0 0 16 16">
+      <path d="M15 7h-2.1a4.967 4.967 0 0 0-.732-1.753l1.49-1.49a1 1 0 0 0-1.414-1.414l-1.49 1.49A4.968 4.968 0 0 0 9 3.1V1a1 1 0 0 0-2 0v2.1a4.968 4.968 0 0 0-1.753.732l-1.49-1.49a1 1 0 0 0-1.414 1.415l1.49 1.49A4.967 4.967 0 0 0 3.1 7H1a1 1 0 0 0 0 2h2.1a4.968 4.968 0 0 0 .737 1.763c-.014.013-.032.017-.045.03l-1.45 1.45a1 1 0 1 0 1.414 1.414l1.45-1.45c.013-.013.018-.031.03-.045A4.968 4.968 0 0 0 7 12.9V15a1 1 0 0 0 2 0v-2.1a4.968 4.968 0 0 0 1.753-.732l1.49 1.49a1 1 0 0 0 1.414-1.414l-1.49-1.49A4.967 4.967 0 0 0 12.9 9H15a1 1 0 0 0 0-2zM5 8a3 3 0 1 1 3 3 3 3 0 0 1-3-3z"/>
+    </svg>
+  </button>
 </div>
 </body>
 </html>
