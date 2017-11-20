@@ -230,7 +230,7 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
 
       while (elem !== null) {
         if ('_extensionTextContrast' in elem.dataset) {
-          // Color set somewhere above, frame needs to reset to standard colord
+          // Color set somewhere above, frame needs to reset to standard color
           src_win.postMessage('_tcfdt_subdoc_std', '*');
 
           return;
