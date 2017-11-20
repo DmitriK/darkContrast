@@ -213,4 +213,31 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
       clearOverrides(document);
     }
   });
+
+  window.addEventListener('message', (e) => {
+    if (e.data === '_tcfdt_checkme') {
+      e.stopPropagation();
+
+      // check all parents to see if extension has made any fixes
+      const src_win = (e.source as  Window);
+      if (src_win.frameElement === null) {
+        return;
+      }
+      let elem: HTMLElement | null = (e.source as Window).frameElement as HTMLElement;
+
+      while (elem !== null) {
+        if ('_extensionTextContrast' in elem.dataset) {
+          // Color set somewhere above, frame needs to reset to standard colord
+          src_win.postMessage('_tcfdt_subdoc_std', '*');
+
+          return;
+        }
+        elem = elem.parentElement;
+      }
+    }
+  }, true);
+
+  if (window.self !== window.top) {
+    window.parent.postMessage('_tcfdt_checkme', '*');
+  }
 });
