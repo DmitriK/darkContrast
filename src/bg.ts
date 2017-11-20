@@ -43,7 +43,9 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
                      frameId: frameId || 0,
                    },
     );
-    browserAction.setBadgeText({text: 'std', tabId});
+    if (frameId === undefined) {
+      browserAction.setBadgeText({text: 'std', tabId});
+    }
   }
 });
 
