@@ -20,6 +20,10 @@ h1, h2 {
   margin:0.5rem 0;
 }
 
+p {
+  margin-top: 0;
+}
+
 .simple_opts {
   display: flex;
   flex-flow: row wrap;
@@ -43,7 +47,7 @@ h1, h2 {
   margin: 0 1rem;
 }
 
-label {
+.cols label {
   display:flex;
   flex-flow: column nowrap;
   flex-grow: 1;

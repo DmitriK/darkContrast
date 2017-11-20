@@ -84,6 +84,29 @@ async function main() {
 
     browser.storage.local.set({'tcfdt-dl': newDelay});
   });
+
+  // Handle list mode
+  browser.storage.local.get('tcfdt-wlist').then((opts) => {
+    if (opts['tcfdt-wlist']) {
+      document.getElementById('wlist').checked = true;
+      document.getElementById('list-mode-title').textContent = 'Enable';
+    } else {
+      document.getElementById('wlist').checked = false;
+      document.getElementById('list-mode-title').textContent = 'Disable';
+    }
+  });
+
+  document.getElementById('wlist').addEventListener('change', (e) => {
+    const newMode = e.currentTarget.checked;
+
+    if (newMode) {
+      document.getElementById('list-mode-title').textContent = 'Enable';
+    } else {
+      document.getElementById('list-mode-title').textContent = 'Disable';
+    }
+
+    browser.storage.local.set({'tcfdt-wlist': newMode});
+  });
 }
 
 window.addEventListener('load', main);

@@ -2,6 +2,7 @@
 <html>
 
 <head>
+  <meta charset="utf-8"/>
   <title>Text Contrast for Dark Themes Options</title>
   <link rel="stylesheet" href="options.css" />
   <script src="options.js"></script>
@@ -50,7 +51,7 @@
   </div>
   <h2>Override Lists</h2>
   <p>
-    Ideally this extension shouldn't break sites, so if you find yourself
+    Ideally, this extension shouldn't break sites, so if you find yourself
     adding a site to the 'Disable extension' section to deal with an issue,
     consider filing a bug at
     <a href="https://github.com/DmitriK/darkContrast/issues">
@@ -62,10 +63,15 @@
     done. Extension will do simple matching against the site URL.
   </p>
 
+  <label>
+    <input type="checkbox" id="wlist"/>
+    Treat list as opt-in (whitelist)
+  </label>
+
   <div class="cols">
     <div>
-      <label>Disable extension:<br/>
-        (for sites that break with extension enabled)
+      <label><div><span id="list-mode-title">Disable</span> extension:<br/>
+        (for sites that break with extension enabled)</div>
         <textarea id="blacklist"></textarea>
       </label>
       <div class="button-row">

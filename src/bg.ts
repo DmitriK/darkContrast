@@ -144,13 +144,15 @@ webNavigation.onCompleted.addListener((details: WebNavDetails) => {
     'tcfdt-cr':            4.5,
     'tcfdt-list-disabled': [],
     'tcfdt-list-standard': [],
+    'tcfdt-wlist'        : false,
   }).then((items) => {
     setContrastRatio(items['tcfdt-cr']);
     const offList = items['tcfdt-list-disabled'];
     const stdList = items['tcfdt-list-standard'];
+    const wListMode = items['tcfdt-wlist'];
 
-    // Do nothing if extension is disabled for this site
-    if (inList(offList)) {
+    // Do nothing if extension is disabled for this site and in blacklist mode
+    if (inList(offList) && !wListMode) {
       browserAction.setBadgeText({
         text: 'off',
         tabId: details.tabId,
@@ -167,12 +169,26 @@ webNavigation.onCompleted.addListener((details: WebNavDetails) => {
       if (inList(stdList)) {
         stdAll(details);
       } else {
+        if (!inList(offList) && wListMode) {
+          browserAction.setBadgeText({
+            text: 'off',
+            tabId: details.tabId,
+          });
+          return;
+        }
         fixAll(details);
       }
     } else {
       if (inList(stdList)) {
         stdInputs(details);
       } else {
+        if (!inList(offList) && wListMode) {
+          browserAction.setBadgeText({
+            text: 'off',
+            tabId: details.tabId,
+          });
+          return;
+        }
         fixInputs(details);
       }
     }
