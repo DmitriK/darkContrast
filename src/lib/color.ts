@@ -26,6 +26,10 @@ function getIntensity(srgb: Srgb): number {
 }
 
 export function isContrasty(fg: Srgb, bg: Srgb): boolean {
+  // Contrast check doesn't make sense if one of the colors is transparent, so always consider it as bad contrast.
+  if (isTransparent(fg) || isTransparent(bg)) {
+    return false;
+  }
   const lumF = getIntensity(fg);
   const lumB = getIntensity(bg);
 

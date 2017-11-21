@@ -39,7 +39,7 @@ const checkElement = (el: HTMLElement,
       ? toRGB(getComputedStyle(el).getPropertyValue('background-color'))
       : parentBg;
 
-    // Note that if background image exists, it may not be transparent, so we
+    // Note that if background image exists, it may be transparent, so we
     // can't afford to skip setting the color
     if (!isContrasty(fg, bg) || bgImgDefined) {
       el.dataset._extensionTextContrast = 'fg';
