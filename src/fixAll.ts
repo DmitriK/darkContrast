@@ -8,7 +8,7 @@ import { clearOverrides } from './lib/contrast';
 
 declare function getDefaultComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
 
-let probe = document.createElement('p');
+let probe = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
 probe.style.color = '-moz-default-color';
 probe.style.backgroundColor = '-moz-default-background-color';
 
