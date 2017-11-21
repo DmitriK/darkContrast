@@ -15,17 +15,24 @@ interface WebNavDetails {
 interface PopupMessage {
   request?: 'off' | 'std' | 'stdFg';
   allFrames?: boolean;
+  tabId?: number;
 }
 
 const {browserAction, runtime, tabs, webNavigation} = browser;
 
 runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.MessageSender) => {
   const request = msg.request;
-  if (!sender.tab || !sender.tab.id) {
+
+  let tabId = 0;
+
+  if (sender.tab && sender.tab.id) {
+    tabId = sender.tab.id;
+  } else if (msg.tabId) {
+    tabId = msg.tabId;
+  } else {
     return;
   }
 
-  const tabId = sender.tab.id;
   const frameId = msg.allFrames ? undefined : sender.frameId;
 
   if (request === 'off') {
@@ -33,16 +40,18 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
     browserAction.setBadgeText({text: 'off', tabId});
   } else if (request === 'std') {
     clearAny(tabId, frameId);
-    // Insert std css into all frames of tab
-    tabs.insertCSS(tabId,
-                   {
-                     cssOrigin: 'author',
-                     file:      '/stdAll.css',
-                     runAt:     'document_start',
-                     allFrames: frameId === undefined,
-                     frameId: frameId || 0,
-                   },
-    );
+    const details: browser.extensionTypes.InjectDetailsCSS = {
+      cssOrigin: 'author',
+      file:      '/stdAll.css',
+      runAt:     'document_start'
+    };
+
+    if (frameId === undefined) {
+      details.allFrames = true;
+    } else {
+      details.frameId = frameId;
+    }
+    tabs.insertCSS(tabId, details);
     if (frameId === undefined) {
       browserAction.setBadgeText({text: 'std', tabId});
     }
@@ -125,16 +134,23 @@ const stdAll = (details: WebNavDetails) => {
 };
 
 const clearAny = (tabId: number, frameId?: number | undefined) => {
-  tabs.removeCSS(tabId, {
-    allFrames: frameId === undefined,
+  let details: browser.extensionTypes.InjectDetails = {};
+
+  if (frameId === undefined) {
+    details.allFrames = true;
+  } else {
+    details.frameId = frameId;
+  }
+
+  tabs.removeCSS(tabId, Object.assign(details, {
     file: '/stdInputs.css',
-    frameId: frameId || 0,
-  });
-  tabs.removeCSS(tabId, {
-    allFrames: frameId === undefined,
-    file: 'stdAll.css',
-    frameId: frameId || 0,
-  });
+  }));
+  tabs.removeCSS(tabId, Object.assign(details, {
+    file: '/stdAll.css',
+  }));
+  tabs.removeCSS(tabId, Object.assign(details, {
+    file: '/stdFgOnly.css',
+  }));
 
   tabs.sendMessage(tabId, {request: 'off'}, frameId ? {frameId} : {});
 };

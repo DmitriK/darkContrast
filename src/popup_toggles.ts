@@ -5,14 +5,14 @@ const { runtime } = browser;
 
 window.addEventListener('load', () => {
   (document.getElementById('tog_main') as HTMLButtonElement).addEventListener('click', () => {
-    browser.tabs.query({currentWindow: true, active: true}).then(() => {
-      runtime.sendMessage('', {request: 'off', allFrames: true});
+    browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+      runtime.sendMessage('', {request: 'off', allFrames: true, tabId: tabs[0].id});
     });
   });
 
   (document.getElementById('tog_std') as HTMLButtonElement).addEventListener('click', () => {
-     browser.tabs.query({currentWindow: true, active: true}).then(() => {
-       runtime.sendMessage('', {request: 'std', allFrames: true});
+     browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+       runtime.sendMessage('', {request: 'std', allFrames: true, tabId: tabs[0].id});
      });
   });
 
