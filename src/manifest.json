@@ -12,6 +12,7 @@
     "manifest_version": 2,
     "name": "Text Contrast for Dark Themes",
     "options_ui": {
+      "browser_style": false,
       "page": "opt/options.html",
       "open_in_tab": true
     },
