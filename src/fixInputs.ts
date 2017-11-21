@@ -7,7 +7,7 @@ import { clearOverrides } from './lib/contrast';
 
 const checkElement = (el: HTMLElement): void => {
   // If element has already been examined before, don't do any processing
-  if (el.dataset._extensionTextContrast != null) {
+  if ('_extensionTextContrast' in el.dataset) {
     return;
   }
 

@@ -14,7 +14,7 @@ const checkElement = (el: HTMLElement,
   }
 
   // If element has already been examined before, don't do any processing
-  if (el.dataset._extensionTextContrast) {
+  if ('_extensionTextContrast' in el.dataset) {
     return;
   }
 
