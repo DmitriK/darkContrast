@@ -138,6 +138,54 @@ const inList = (list: string[]) => {
   return false;
 };
 
+const dispatchFixes = (details: WebNavDetails,
+                       lists: { off: string[]; std: string[]; wMode: boolean } =
+                              { off: [],       std: [],       wMode: false}) => {
+  // Do nothing if extension is disabled for this site and in blacklist mode
+  if (inList(lists.off) && !lists.wMode) {
+    browserAction.setBadgeText({
+      text: 'off',
+      tabId: details.tabId,
+    });
+
+    return;
+  }
+
+  browserAction.setBadgeText({
+      text: '',
+      tabId: details.tabId,
+    });
+
+  if (checkUserInverted()) {
+    if (inList(lists.std)) {
+      stdAll(details);
+    } else {
+      if (!inList(lists.off) && lists.wMode) {
+        browserAction.setBadgeText({
+          text: 'off',
+          tabId: details.tabId,
+        });
+
+        return;
+      }
+      fixAll(details);
+    }
+  } else {
+    if (inList(lists.std)) {
+      stdInputs(details);
+    } else {
+      if (!inList(lists.off) && lists.wMode) {
+        browserAction.setBadgeText({
+          text: 'off',
+          tabId: details.tabId,
+        });
+
+        return;
+      }
+      fixInputs(details);
+    }
+  }
+};
 
 webNavigation.onCompleted.addListener((details: WebNavDetails) => {
   browser.storage.local.get({
@@ -145,52 +193,27 @@ webNavigation.onCompleted.addListener((details: WebNavDetails) => {
     'tcfdt-list-disabled': [],
     'tcfdt-list-standard': [],
     'tcfdt-wlist'        : false,
+    'tcfdt-dl'           : 0
   }).then((items) => {
     setContrastRatio(items['tcfdt-cr']);
-    const offList = items['tcfdt-list-disabled'];
-    const stdList = items['tcfdt-list-standard'];
-    const wListMode = items['tcfdt-wlist'];
+    const delay = items['tcfdt-dl'];
 
-    // Do nothing if extension is disabled for this site and in blacklist mode
-    if (inList(offList) && !wListMode) {
-      browserAction.setBadgeText({
-        text: 'off',
-        tabId: details.tabId,
-      });
-      return;
-    }
-
-    browserAction.setBadgeText({
-        text: '',
-        tabId: details.tabId,
-      });
-
-    if (checkUserInverted()) {
-      if (inList(stdList)) {
-        stdAll(details);
-      } else {
-        if (!inList(offList) && wListMode) {
-          browserAction.setBadgeText({
-            text: 'off',
-            tabId: details.tabId,
-          });
-          return;
-        }
-        fixAll(details);
-      }
+    if (delay === 0) {
+      dispatchFixes(details,
+                    {
+                      off: items['tcfdt-list-disabled'],
+                      std: items['tcfdt-list-standard'],
+                      wMode: items['tcfdt-wlist'],
+                    });
     } else {
-      if (inList(stdList)) {
-        stdInputs(details);
-      } else {
-        if (!inList(offList) && wListMode) {
-          browserAction.setBadgeText({
-            text: 'off',
-            tabId: details.tabId,
-          });
-          return;
-        }
-        fixInputs(details);
-      }
+      setTimeout(() => {
+          dispatchFixes(details,
+                        {
+                          off: items['tcfdt-list-disabled'],
+                          std: items['tcfdt-list-standard'],
+                          wMode: items['tcfdt-wlist'],
+                        });
+        }, delay);
     }
   });
 });
