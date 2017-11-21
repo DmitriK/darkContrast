@@ -25,9 +25,9 @@ function getIntensity(srgb: Srgb): number {
   return 0.2126 * rgbLin[0] + 0.7152 * rgbLin[1] + 0.0722 * rgbLin[2];
 }
 
-export function isContrasty(fg: Srgb, bg: Srgb): boolean {
+export function isContrasty(fg: Srgb | undefined, bg: Srgb | undefined): boolean {
   // Contrast check doesn't make sense if one of the colors is transparent, so always consider it as bad contrast.
-  if (isTransparent(fg) || isTransparent(bg)) {
+  if (fg === undefined || bg === undefined || isTransparent(fg) || isTransparent(bg)) {
     return false;
   }
   const lumF = getIntensity(fg);
@@ -39,12 +39,12 @@ export function isContrasty(fg: Srgb, bg: Srgb): boolean {
   return (L1 + 0.05) / (L2 + 0.05) > constrastRatio;
 }
 
-export function isTransparent(rgb: Srgb): boolean {
-  return rgb.a === 0;
+export function isTransparent(rgb: Srgb | undefined): boolean {
+  return rgb === undefined || rgb.a === 0;
 }
 
 export function setContrastRatio(x: number): void {
-  if (x < 1 || x > 21) {
+  if (isNaN(x) || x < 1 || x > 21) {
     constrastRatio = 4.5;
   } else {
     constrastRatio = x;
