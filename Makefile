@@ -4,13 +4,17 @@ CSS_FILES = js/fixContrast.css js/stdAll.css
 
 .PHONY: build/transpiled build/css
 
-all: build/ext/bg.js build/ext/fixInputs.js build/ext/fixAll.js build/ext/popup/toggles.js build/ext/others
+all: build/ext/bg.js build/ext/fixInputs.js build/ext/fixAll.js \
+	build/ext/popup/toggles.js build/ext/frameListener.js build/ext/others
 
 build/transpiled:
 	tsc -p .
 
 build/ext/bg.js: build/transpiled
 	$(ROLLUP) build/transpiled/bg.js --output.format iife --output.file $@
+
+build/ext/frameListener.js: build/transpiled
+	$(ROLLUP) build/transpiled/frameListener.js --output.format iife --output.file $@
 
 build/ext/fixInputs.js: build/transpiled
 	$(ROLLUP) build/transpiled/fixInputs.js --output.format iife --output.file $@

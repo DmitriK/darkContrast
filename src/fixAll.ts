@@ -179,19 +179,7 @@ const stdEmbeds = (e: HTMLElement) => {
   }
 };
 
-let frame_fixed = false;
-
 browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
-  if (window.self !== window.top) {
-    window.addEventListener('message', (e) => {
-      if (e.data === '_tcfdt_subdoc_std') {
-        browser.runtime.sendMessage({request: 'stdFg'});
-        frame_fixed = true;
-      }
-      e.stopPropagation();
-    }, true);
-  }
-
   setContrastRatio(items['tcfdt-cr']);
   checkAll();
 
@@ -266,7 +254,7 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
     }
   }, true);
 
-  if (window.self !== window.top && !frame_fixed) {
+  if (window.self !== window.top && (!('tcfdtFrameFixed' in window) || !(window as any).tcfdtFrameFixed)) {
     window.parent.postMessage('_tcfdt_checkme', '*');
   }
 });
