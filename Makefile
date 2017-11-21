@@ -18,8 +18,8 @@ build/ext/fixInputs.js: build/transpiled
 build/ext/fixAll.js: build/transpiled
 	$(ROLLUP) build/transpiled/fixAll.js --output.format iife --output.file $@
 
-build/ext/others: src/manifest.json src/stdAll.css src/fixContrast.css src/opt \
-	src/popup src/icons
+build/ext/others: src/manifest.json src/stdAll.css src/stdFgOnly.css \
+	src/fixContrast.css src/opt src/popup src/icons
 	cp -r $? build/ext/
 
 build/ext/popup/toggles.js: build/transpiled build/ext/others

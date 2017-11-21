@@ -13,7 +13,7 @@ interface WebNavDetails {
 }
 
 interface PopupMessage {
-  request?: 'off' | 'std';
+  request?: 'off' | 'std' | 'stdFg';
   allFrames?: boolean;
 }
 
@@ -46,6 +46,17 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
     if (frameId === undefined) {
       browserAction.setBadgeText({text: 'std', tabId});
     }
+  } else if (request === 'stdFg') {
+    clearAny(tabId, frameId);
+    // Insert std css into all frames of tab
+    tabs.insertCSS(tabId,
+                   {
+                     cssOrigin: 'author',
+                     file:      '/stdFgOnly.css',
+                     runAt:     'document_start',
+                     frameId: frameId || 0,
+                   },
+    );
   }
 });
 

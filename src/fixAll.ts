@@ -185,7 +185,7 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
   if (window.self !== window.top) {
     window.addEventListener('message', (e) => {
       if (e.data === '_tcfdt_subdoc_std') {
-        browser.runtime.sendMessage({request: 'std'});
+        browser.runtime.sendMessage({request: 'stdFg'});
         frame_fixed = true;
       }
       e.stopPropagation();
