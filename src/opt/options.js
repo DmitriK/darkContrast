@@ -25,9 +25,10 @@ async function main() {
   populateStandard();
 
   document.getElementById('save-dis').addEventListener('click', () => {
-    const lines = document.getElementById('blacklist').value.split('\n');
+    const lines =
+      document.getElementById('blacklist').value.split('\n').filter(s => s.trim() !== "");
 
-    if (lines === []) {
+    if (lines.length === 0) {
       browser.storage.local.remove({'tcfdt-list-disabled': lines});
     } else {
       browser.storage.local.set({'tcfdt-list-disabled': lines});
@@ -35,9 +36,10 @@ async function main() {
   });
 
   document.getElementById('save-std').addEventListener('click', () => {
-    const lines = document.getElementById('standardlist').value.split('\n');
+    const lines =
+      document.getElementById('standardlist').value.split('\n').filter(s => s.trim() !== "");
 
-    if (lines === []) {
+    if (lines.length === 0) {
       browser.storage.local.remove({'tcfdt-list-standard': lines});
     } else {
       browser.storage.local.set({'tcfdt-list-standard': lines});

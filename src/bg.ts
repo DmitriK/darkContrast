@@ -163,9 +163,9 @@ const clearAny = (tabId: number, frameId?: number | undefined) => {
   tabs.sendMessage(tabId, {request: 'off'}, frameId ? {frameId} : {});
 };
 
-const inList = (list: string[]) => {
+const inList = (url: string, list: string[]) => {
   for (const entry of list) {
-    if (window.location.href.indexOf(entry) !== -1) {
+    if (url.indexOf(entry) !== -1 && entry !== "") {
       return true;
     }
   }
@@ -177,7 +177,7 @@ const dispatchFixes = (details: WebNavDetails,
                        lists: { off: string[]; std: string[]; wMode: boolean } =
                               { off: [],       std: [],       wMode: false}) => {
   // Do nothing if extension is disabled for this site and in blacklist mode
-  if (inList(lists.off) && !lists.wMode) {
+  if (inList(details.url, lists.off) && !lists.wMode) {
     browserAction.setBadgeText({
       text: 'off',
       tabId: details.tabId,
@@ -192,10 +192,10 @@ const dispatchFixes = (details: WebNavDetails,
     });
 
   if (checkUserInverted()) {
-    if (inList(lists.std)) {
+    if (inList(details.url, lists.std)) {
       stdAll(details);
     } else {
-      if (!inList(lists.off) && lists.wMode) {
+      if (!inList(details.url, lists.off) && lists.wMode) {
         browserAction.setBadgeText({
           text: 'off',
           tabId: details.tabId,
@@ -206,10 +206,10 @@ const dispatchFixes = (details: WebNavDetails,
       fixAll(details);
     }
   } else {
-    if (inList(lists.std)) {
+    if (inList(details.url, lists.std)) {
       stdInputs(details);
     } else {
-      if (!inList(lists.off) && lists.wMode) {
+      if (!inList(details.url, lists.off) && lists.wMode) {
         browserAction.setBadgeText({
           text: 'off',
           tabId: details.tabId,
