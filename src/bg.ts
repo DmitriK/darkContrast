@@ -99,6 +99,10 @@ const stdInputs = (details: WebNavDetails) => {
       runAt:     'document_end',
     }
   );
+  browserAction.setBadgeText({
+          text: 'std',
+          tabId: details.tabId,
+        });
 };
 
 const fixAll = (details: WebNavDetails) => {
@@ -131,6 +135,10 @@ const stdAll = (details: WebNavDetails) => {
       runAt:     'document_start',
     }
   );
+  browserAction.setBadgeText({
+          text: 'std',
+          tabId: details.tabId,
+        });
 };
 
 const clearAny = (tabId: number, frameId?: number | undefined) => {
