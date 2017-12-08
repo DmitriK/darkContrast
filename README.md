@@ -144,3 +144,14 @@ extension relies on the fact that children inherit parent styles to keep fixes
 small and performant. The extension is unable to know that an element may have
 been moved above another element resulting in poor contrast. Forcing standard
 colors may alleviate the issue on such sites.
+
+## Cross-origin iFrames
+
+When trying to fix all elements, and iframes are involved, the extensions must
+decide how to style an iframe based on what the parent does (if parent styles
+have been fixed, then iframe should be forced into standard colors, otherwise
+processed normally). This communication channel between the iframe and the
+parent is restricted when the frames are cross-origin, which blocks access to
+properties that the parent needs to determine if a fix is needed. This will
+result in the extensions failing to work in iframes on certain sites, which may
+require adding the site to one of the override lists.
