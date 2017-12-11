@@ -167,7 +167,7 @@ const checkParents = (el: HTMLElement) => {
 const stdEmbeds = (e: HTMLElement) => {
   const nodeIterator = document.createNodeIterator(
     e, NodeFilter.SHOW_ELEMENT, {
-      acceptNode: (el: Element) => isSubDocNode(el) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+      acceptNode: (el: Element) => isSubDocNode(el) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT,
     });
 
   // Can't use for-in loop because a NodeIterator is not an iterator. Thanks
@@ -236,7 +236,7 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
       e.stopPropagation();
 
       // check all parents to see if extension has made any fixes
-      const src_win = (e.source as  Window);
+      const src_win = (e.source as Window);
       if (src_win.frameElement === null) {
         return;
       }
