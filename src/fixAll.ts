@@ -15,6 +15,8 @@ probe.style.backgroundColor = '-moz-default-background-color';
 const DEFAULT_FG = toRGB(getComputedStyle(probe).getPropertyValue('color'));
 const DEFAULT_BG = toRGB(getComputedStyle(probe).getPropertyValue('background-color'));
 
+let topElementFixed = false;
+
 const getParentFg = (el: HTMLElement): Srgb => {
   if (el.parentElement !== null) {
     return toRGB(getComputedStyle(el.parentElement).getPropertyValue('color'));
@@ -117,6 +119,7 @@ const checkElement = (el: HTMLElement, {recurse}: { recurse?: boolean} = { recur
       }
     }
   }
+
 };
 
 const checkInputs = (root: Element = document.documentElement) => {
@@ -148,20 +151,32 @@ const checkAll = () => {
 
 const checkParents = (el: HTMLElement) => {
   let parent = el.parentElement;
-  let defined = false;
+
+  if (topElementFixed) {
+    // Still have to fix subdocs since style has been explicitely defined by us.
+    stdEmbeds(el);
+    return;
+  }
 
   while (parent !== null) {
-    if (parent.dataset._extensionTextContrast != null) {
+    if ('_extensionTextContrast' in parent.dataset) {
       // If any parents' were already handled,
       // new elements don't need recolor.
-      defined = true;
-      break;
+
+      if (parent === document.documentElement || parent === document.body) {
+        // Style is already defined in top level document or body element, so all child elements (except for inputs)
+        // will be ok. We cna avoid this check for all subsequent element additions or changes.
+        topElementFixed = true;
+      }
+
+      // Still have to fix subdocs since style has been explicitely defined by us.
+      stdEmbeds(el);
+
+      return;
     }
     parent = parent.parentElement;
   }
-  if (!defined) {
-    checkElement(el, {recurse: true});
-  }
+  checkElement(el, {recurse: true});
 };
 
 const stdEmbeds = (e: HTMLElement) => {
@@ -192,21 +207,25 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
         // restore it.
         const element = mutation.target as HTMLElement;
         element.dataset._extensionTextContrast = mutation.oldValue;
-      } else if (mutation.type === 'attributes') {
+      } else if (mutation.type === 'attributes' && mutation.attributeName !== 'data-_extension-text-contrast') {
         // This mutation represents a change to class or style of element
         // so this element also needs re-checking
         const changedNode = mutation.target;
 
-        checkParents(changedNode as HTMLElement);
+        setTimeout(() => {
+          checkParents(changedNode as HTMLElement);
+        }, 0);
 
         if (isInputNode(changedNode as HTMLElement)) {
           checkElement(changedNode as HTMLElement);
         }
-      } else {
+      } else if (mutation.type === 'childList') {
         for (const newNode of mutation.addedNodes) {
           if (!isInVisibleNode(newNode)) {
-            checkParents(newNode as HTMLElement);
-            checkInputs(newNode as HTMLElement);
+            setTimeout(() => {
+              checkParents(newNode as HTMLElement);
+              checkInputs(newNode as HTMLElement);
+            }, 0);
           }
         }
       }
