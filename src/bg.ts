@@ -223,7 +223,7 @@ const dispatchFixes = (details: WebNavDetails,
 };
 
 // Add listener to frames early to ensure our script has first chance to catch messages
-webNavigation.onCommitted.addListener((details: WebNavDetails) => {
+webNavigation.onDOMContentLoaded.addListener((details: WebNavDetails) => {
   if (details.frameId > 0) {
     tabs.executeScript(
       details.tabId,

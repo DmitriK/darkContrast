@@ -17,8 +17,6 @@ const DEFAULT_BG = toRGB(getComputedStyle(probe).getPropertyValue('background-co
 
 let topElementFixed = false;
 
-const fixedSubdocCache: Node[] = [];
-
 const getParentFg = (el: HTMLElement): Srgb => {
   if (el.parentElement !== null) {
     return toRGB(getComputedStyle(el.parentElement).getPropertyValue('color'));
@@ -155,7 +153,7 @@ const checkParents = (el: HTMLElement) => {
   let parent = el.parentElement;
 
   if (topElementFixed) {
-    // Still have to fix subdocs since style has been explicitely defined by us.
+    // Still have to fix subdocs since style has been explicitly defined by us.
     stdEmbeds(el);
     return;
   }
@@ -171,7 +169,7 @@ const checkParents = (el: HTMLElement) => {
         topElementFixed = true;
       }
 
-      // Still have to fix subdocs since style has been explicitely defined by us.
+      // Still have to fix subdocs since style has been explicitly defined by us.
       stdEmbeds(el);
 
       return;
@@ -189,11 +187,13 @@ const stdEmbeds = (e: HTMLElement) => {
 
   // Can't use for-in loop because a NodeIterator is not an iterator. Thanks
   // Javascript.
-  let node; // eslint-disable-line init-declarations
+  let node: Node; // eslint-disable-line init-declarations
 
   while ((node = nodeIterator.nextNode()) != null) {
-    fixedSubdocCache.push(node);
-    (node as HTMLIFrameElement).contentWindow.postMessage('_tcfdt_subdoc_std', '*');
+    (node as HTMLElement).dataset._extensionTextContrastFF = '';
+    if ((node as HTMLIFrameElement).contentWindow !== null) {
+      (node as HTMLIFrameElement).contentWindow.postMessage('_tcfdt_subdoc_std', '*');
+    }
   }
 };
 
@@ -255,24 +255,36 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
 
   window.addEventListener('message', (e) => {
     if (e.data === '_tcfdt_checkme') {
-      e.stopPropagation();
-
       // check all parents to see if extension has made any fixes
-      const src_win = (e.source as Window);
-      if (src_win.frameElement === null) {
-        // Got a check request from a frame that we can't access due to cross-origin issues. Best we can do is force
-        // send message to all frames.
-        for (let node of fixedSubdocCache) {
+      // const src_win = ;
+
+      try {
+        let elem: HTMLElement | null = (e.source as Window).frameElement as HTMLElement;
+
+        if ('_extensionTextContrastFF' in elem.dataset) {
+          (e.source as Window).postMessage('_tcfdt_subdoc_std', '*');
+        }
+      } catch {
+        // Likely failed due to cross-origin issues. Have no way of determining which frame element requested the check.
+        // Only remaining option is to re-send directive for fixing to all frames that need it. Super-awkward and
+        // flicker-y, but it works.
+        const nodeIterator = document.createNodeIterator(
+          document.documentElement,
+          NodeFilter.SHOW_ELEMENT,
+          {
+            acceptNode: (el: HTMLElement) => '_extensionTextContrastFF' in el.dataset ?
+              NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT,
+          },
+        );
+
+        let node = null;
+
+        while ((node = nodeIterator.nextNode()) !== null) {
           (node as HTMLIFrameElement).contentWindow.postMessage('_tcfdt_subdoc_std', '*');
         }
-        return;
       }
-      let elem: HTMLElement | null = (e.source as Window).frameElement as HTMLElement;
 
-      if (fixedSubdocCache.indexOf(elem) >= 0) {
-        src_win.postMessage('_tcfdt_subdoc_std', '*');
-        return;
-      }
+      e.stopPropagation();
     }
   }, true);
 
