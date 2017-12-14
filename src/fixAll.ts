@@ -17,6 +17,8 @@ const DEFAULT_BG = toRGB(getComputedStyle(probe).getPropertyValue('background-co
 
 let topElementFixed = false;
 
+const fixedSubdocCache: Node[] = [];
+
 const getParentFg = (el: HTMLElement): Srgb => {
   if (el.parentElement !== null) {
     return toRGB(getComputedStyle(el.parentElement).getPropertyValue('color'));
@@ -190,6 +192,7 @@ const stdEmbeds = (e: HTMLElement) => {
   let node; // eslint-disable-line init-declarations
 
   while ((node = nodeIterator.nextNode()) != null) {
+    fixedSubdocCache.push(node);
     (node as HTMLIFrameElement).contentWindow.postMessage('_tcfdt_subdoc_std', '*');
   }
 };
@@ -257,18 +260,18 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
       // check all parents to see if extension has made any fixes
       const src_win = (e.source as Window);
       if (src_win.frameElement === null) {
+        // Got a check request from a frame that we can't access due to cross-origin issues. Best we can do is force
+        // send message to all frames.
+        for (let node of fixedSubdocCache) {
+          (node as HTMLIFrameElement).contentWindow.postMessage('_tcfdt_subdoc_std', '*');
+        }
         return;
       }
       let elem: HTMLElement | null = (e.source as Window).frameElement as HTMLElement;
 
-      while (elem !== null) {
-        if ('_extensionTextContrast' in elem.dataset) {
-          // Color set somewhere above, frame needs to reset to standard color
-          src_win.postMessage('_tcfdt_subdoc_std', '*');
-
-          return;
-        }
-        elem = elem.parentElement;
+      if (fixedSubdocCache.indexOf(elem) >= 0) {
+        src_win.postMessage('_tcfdt_subdoc_std', '*');
+        return;
       }
     }
   }, true);
