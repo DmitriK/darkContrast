@@ -74,7 +74,7 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
         // restore it.
         const element = mutation.target as HTMLElement;
         element.dataset._extensionTextContrast = mutation.oldValue;
-      } else if (mutation.type === 'attributes') {
+      } else if (mutation.type === 'attributes' && mutation.attributeName !== 'data-_extension-text-contrast') {
         // This mutation represents a change to class or style of element
         // so this element also needs re-checking
         const changedNode = mutation.target as HTMLElement;
@@ -82,7 +82,7 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
         if (isInputNode(changedNode)) {
           checkElement(changedNode);
         }
-      } else {
+      } else if (mutation.type === 'childList') {
         for (const newNode of mutation.addedNodes) {
           checkInputs(newNode as Element);
         }
