@@ -29,7 +29,7 @@ async function main() {
       document.getElementById('blacklist').value.split('\n').filter(s => s.trim() !== "");
 
     if (lines.length === 0) {
-      browser.storage.local.remove({'tcfdt-list-disabled': lines});
+      browser.storage.local.remove('tcfdt-list-disabled');
     } else {
       browser.storage.local.set({'tcfdt-list-disabled': lines});
     }
@@ -40,7 +40,7 @@ async function main() {
       document.getElementById('standardlist').value.split('\n').filter(s => s.trim() !== "");
 
     if (lines.length === 0) {
-      browser.storage.local.remove({'tcfdt-list-standard': lines});
+      browser.storage.local.remove('tcfdt-list-standard');
     } else {
       browser.storage.local.set({'tcfdt-list-standard': lines});
     }
