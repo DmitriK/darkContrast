@@ -5,6 +5,8 @@ import { isContrasty, setContrastRatio, toRGB } from './lib/color';
 import { isFgDefined, isBgDefined, isBgImgDefined, isInputNode } from './lib/checks';
 import { clearOverrides } from './lib/contrast';
 
+declare function requestIdleCallback(callback: () => any, options?: {timeout: number}): CSSStyleDeclaration;
+
 const checkElement = (el: HTMLElement): void => {
   // If element has already been examined before, don't do any processing
   if ('_extensionTextContrast' in el.dataset) {
@@ -65,45 +67,55 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
   setContrastRatio(items['tcfdt-cr']);
   checkInputs();
 
-  const observer = new MutationObserver((mutations) => {
+  const dataObserver = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
-      if (mutation.type === 'attributes' &&
-          mutation.attributeName === 'data-_extension-text-contrast' &&
-          mutation.oldValue !== null) {
+      if (mutation.oldValue !== null) {
         // Something in the author JS has erased the previous attribute, so
         // restore it.
         const element = mutation.target as HTMLElement;
         element.dataset._extensionTextContrast = mutation.oldValue;
-      } else if (mutation.type === 'attributes' && mutation.attributeName !== 'data-_extension-text-contrast') {
-        // This mutation represents a change to class or style of element
-        // so this element also needs re-checking
-        const changedNode = mutation.target as HTMLElement;
-
-        if (isInputNode(changedNode)) {
-          checkElement(changedNode);
-        }
-      } else if (mutation.type === 'childList') {
-        for (const newNode of mutation.addedNodes) {
-          checkInputs(newNode as Element);
-        }
       }
     });
   });
 
-  const observerConf = {
+  const observer = new MutationObserver((mutations) => {
+    const mutLen = mutations.length;
+    for (let i = 0; i < mutLen; i += 1) {
+      if (mutations[i].type === 'attributes') {
+        // This mutation represents a change to class or style of element
+        // so this element also needs re-checking
+        const changedNode = mutations[i].target as HTMLElement;
+
+        if (isInputNode(changedNode)) {
+          requestIdleCallback(() => { checkElement(changedNode); });
+        }
+      } else if (mutations[i].type === 'childList') {
+        const addLen = mutations[i].addedNodes.length;
+        for (let j = 0; j < addLen; j += 1) {
+          requestIdleCallback(() => { checkInputs(mutations[i].addedNodes[j] as Element); });
+        }
+      }
+    }
+  });
+
+  observer.observe(document, {
     attributes:        true,
-    attributeFilter:   ['class', 'style', 'data-_extension-text-contrast'],
+    attributeFilter:   ['class', 'style'],
     childList:         true,
     subtree:           true,
-    attributeOldValue: true,
-  };
+  });
 
-  observer.observe(document, observerConf);
+  dataObserver.observe(document.body, {
+    attributes: true,
+    attributeFilter: ['data-_extension-text-contrast'],
+    subtree: true,
+    attributeOldValue: true,
+  });
 
   browser.runtime.onMessage.addListener((message: {}) => {
     const request = (message as {request: 'off'}).request;
     if (request === 'off') {
-      observer.disconnect();
+      dataObserver.disconnect();
       clearOverrides(document);
     }
   });

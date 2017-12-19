@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <script type="text/javascript">
+    let toggle = false;
+    window.addEventListener('load', () => {
+      setInterval(() => {
+        toggle = !toggle;
+        document.getElementById('mod_in').className = toggle ? 'foo' : 'bar';
+        document.getElementById('mod_el').className = toggle ? 'foo' : 'bar';
+        document.getElementById('add_in').innerHTML = '';
+        let el = document.createElement('input');
+        document.getElementById('add_in').appendChild(el);
+        document.getElementById('add_el').innerHTML = '';
+        document.getElementById('add_el').textContent = toggle ? 'foo' : 'bar';
+      }, 16);
+    })
+  </script>
+</head>
+<body>
+  <label>Modified input<input id="mod_in"/></label>
+  <label>Added input<span id="add_in"></span></label>
+  <div >Modified other<span id="mod_el"></span></div>
+  <div>Added other<span id="add_el"></span></div>
+</body>
+</html>
