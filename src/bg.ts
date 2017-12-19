@@ -37,11 +37,13 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
 
   if (request === 'off') {
     clearAny(tabId, frameId);
-    browserAction.setBadgeText({text: 'off', tabId});
+    if (frameId === undefined || frameId === 0) {
+      browserAction.setBadgeText({text: 'off', tabId});
+    }
   } else if (request === 'std') {
     clearAny(tabId, frameId);
 
-    if (frameId === undefined) {
+    if (frameId === undefined || frameId === 0) {
       // Applying to all frames
       tabs.insertCSS(tabId, {
         cssOrigin: 'author',
@@ -50,6 +52,7 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
       });
 
       webNavigation.getAllFrames({tabId}).then((frames) => {
+        console.log(frames);
         for (let frame of frames) {
           tabs.insertCSS(tabId, {
             cssOrigin: 'author',
@@ -67,7 +70,7 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
         frameId
       });
     }
-    if (frameId === undefined) {
+    if (frameId === undefined || frameId === 0) {
       browserAction.setBadgeText({text: 'std', tabId});
     }
   } else if (request === 'stdFg') {
@@ -102,6 +105,12 @@ const fixInputs = (details: WebNavDetails) => {
       runAt:   'document_end',
     }
   );
+  if (details.frameId === 0) {
+    browserAction.setBadgeText({
+        text: '',
+        tabId: details.tabId,
+      });
+  }
 };
 
 const stdInputs = (details: WebNavDetails) => {
@@ -114,10 +123,12 @@ const stdInputs = (details: WebNavDetails) => {
       runAt:     'document_end',
     }
   );
-  browserAction.setBadgeText({
-          text: 'std',
-          tabId: details.tabId,
-        });
+  if (details.frameId === 0) {
+    browserAction.setBadgeText({
+            text: 'std',
+            tabId: details.tabId,
+          });
+  }
 };
 
 const fixAll = (details: WebNavDetails) => {
@@ -138,6 +149,12 @@ const fixAll = (details: WebNavDetails) => {
       runAt:   'document_end',
     }
   );
+  if (details.frameId === 0) {
+    browserAction.setBadgeText({
+        text: '',
+        tabId: details.tabId,
+      });
+  }
 };
 
 const stdAll = (details: WebNavDetails) => {
@@ -150,10 +167,12 @@ const stdAll = (details: WebNavDetails) => {
       runAt:     'document_start',
     }
   );
-  browserAction.setBadgeText({
-          text: 'std',
-          tabId: details.tabId,
-        });
+  if (details.frameId === 0) {
+    browserAction.setBadgeText({
+            text: 'std',
+            tabId: details.tabId,
+          });
+  }
 };
 
 const clearAny = (tabId: number, frameId?: number | undefined) => {
@@ -193,18 +212,15 @@ const dispatchFixes = (details: WebNavDetails,
                               { off: [],       std: [],       wMode: false}) => {
   // Do nothing if extension is disabled for this site and in blacklist mode
   if (inList(details.url, lists.off) && !lists.wMode) {
-    browserAction.setBadgeText({
-      text: 'off',
-      tabId: details.tabId,
-    });
+    if (details.frameId === 0) {
+      browserAction.setBadgeText({
+        text: 'off',
+        tabId: details.tabId,
+      });
+    }
 
     return;
   }
-
-  browserAction.setBadgeText({
-      text: '',
-      tabId: details.tabId,
-    });
 
   if (checkUserInverted()) {
     if (inList(details.url, lists.std)) {
