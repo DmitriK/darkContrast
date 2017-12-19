@@ -40,18 +40,33 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
     browserAction.setBadgeText({text: 'off', tabId});
   } else if (request === 'std') {
     clearAny(tabId, frameId);
-    const details: browser.extensionTypes.InjectDetailsCSS = {
-      cssOrigin: 'author',
-      file:      '/stdAll.css',
-      runAt:     'document_start'
-    };
 
     if (frameId === undefined) {
-      details.allFrames = true;
+      // Applying to all frames
+      tabs.insertCSS(tabId, {
+        cssOrigin: 'author',
+        file:      '/stdAll.css',
+        runAt:     'document_start',
+      });
+
+      webNavigation.getAllFrames({tabId}).then((frames) => {
+        for (let frame of frames) {
+          tabs.insertCSS(tabId, {
+            cssOrigin: 'author',
+            file:      '/stdFgOnly.css',
+            runAt:     'document_start',
+            frameId:   frame.frameId,
+          });
+        }
+      });
     } else {
-      details.frameId = frameId;
+      tabs.insertCSS(tabId, {
+        cssOrigin: 'author',
+        file:      '/stdFgOnly.css',
+        runAt:     'document_start',
+        frameId
+      });
     }
-    tabs.insertCSS(tabId, details);
     if (frameId === undefined) {
       browserAction.setBadgeText({text: 'std', tabId});
     }
