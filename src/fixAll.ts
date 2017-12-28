@@ -8,7 +8,10 @@ import { clearOverrides } from './lib/contrast';
 
 declare function getDefaultComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
 
-declare function requestIdleCallback(callback: () => any, options?: {timeout: number}): CSSStyleDeclaration;
+declare function requestIdleCallback(callback: (idleDeadline: {
+  didTimeout: boolean;
+  timeRemaining: () => number;
+}) => any, options?: {timeout: number}): number;
 
 let probe = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
 probe.style.color = '-moz-default-color';
