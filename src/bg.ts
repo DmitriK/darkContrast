@@ -18,7 +18,22 @@ interface PopupMessage {
   tabId?: number;
 }
 
-const {browserAction, runtime, tabs, webNavigation} = browser;
+interface OptsCache {
+  ovrList: string[];
+  stdList: string[];
+  wMode: boolean;
+  delay: number;
+};
+
+const {browserAction, runtime, storage, tabs, webNavigation} = browser;
+
+let optCache: OptsCache = {
+  ovrList: [],
+  stdList: [],
+  wMode: false,
+  delay: 0,
+};
+refreshCache();
 
 runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.MessageSender) => {
   const request = msg.request;
@@ -52,7 +67,6 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
       });
 
       webNavigation.getAllFrames({tabId}).then((frames) => {
-        console.log(frames);
         for (let frame of frames) {
           tabs.insertCSS(tabId, {
             cssOrigin: 'author',
@@ -253,6 +267,41 @@ const dispatchFixes = (details: WebNavDetails,
   }
 };
 
+async function refreshCache(): Promise<void> {
+  return storage.local.get({
+    'tcfdt-cr':            4.5,
+    'tcfdt-list-disabled': [],
+    'tcfdt-list-standard': [],
+    'tcfdt-wlist'        : false,
+    'tcfdt-dl'           : 0
+  }).then((items) => {
+    optCache = {
+      ovrList: items['tcfdt-list-disabled'],
+      stdList: items['tcfdt-list-standard'],
+      wMode: items['tcfdt-wlist'],
+      delay: items['tcfdt-dl'],
+    };
+    setContrastRatio(items['tcfdt-cr']);
+  });
+}
+
+storage.onChanged.addListener((changes) => {
+  for (let key of Object.keys(changes)) {
+    let val = changes[key].newValue;
+    if (key === 'tcfdt-cr') {
+      setContrastRatio(val);
+    } else if (key === 'tcfdt-list-disabled') {
+      optCache.ovrList = val;
+    } else if (key === 'tcfdt-list-standard') {
+      optCache.stdList = val;
+    } else if (key === 'tcfdt-wlist') {
+      optCache.wMode = val;
+    } else if (key === 'tcfdt-dl') {
+      optCache.delay = val;
+    }
+  }
+})
+
 // Add listener to frames early to ensure our script has first chance to catch messages
 webNavigation.onDOMContentLoaded.addListener((details: WebNavDetails) => {
   if (details.frameId > 0) {
@@ -268,32 +317,21 @@ webNavigation.onDOMContentLoaded.addListener((details: WebNavDetails) => {
 });
 
 webNavigation.onCompleted.addListener((details: WebNavDetails) => {
-  browser.storage.local.get({
-    'tcfdt-cr':            4.5,
-    'tcfdt-list-disabled': [],
-    'tcfdt-list-standard': [],
-    'tcfdt-wlist'        : false,
-    'tcfdt-dl'           : 0
-  }).then((items) => {
-    setContrastRatio(items['tcfdt-cr']);
-    const delay = items['tcfdt-dl'];
-
-    if (delay === 0) {
-      dispatchFixes(details,
-                    {
-                      off: items['tcfdt-list-disabled'],
-                      std: items['tcfdt-list-standard'],
-                      wMode: items['tcfdt-wlist'],
-                    });
-    } else {
-      setTimeout(() => {
-          dispatchFixes(details,
-                        {
-                          off: items['tcfdt-list-disabled'],
-                          std: items['tcfdt-list-standard'],
-                          wMode: items['tcfdt-wlist'],
-                        });
-        }, delay);
-    }
-  });
+  if (optCache.delay === 0) {
+    dispatchFixes(details,
+                  {
+                    off: optCache.ovrList,
+                    std: optCache.stdList,
+                    wMode: optCache.wMode,
+                  });
+  } else {
+    setTimeout(() => {
+        dispatchFixes(details,
+                      {
+                        off: optCache.ovrList,
+                        std: optCache.stdList,
+                        wMode: optCache.wMode,
+                      });
+      }, optCache.delay);
+  }
 });
