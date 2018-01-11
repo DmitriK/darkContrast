@@ -66,7 +66,7 @@ export function toRGB(s: string): Srgb {
   };
 
   if (parts[3]) {
-    rgb.a = parseInt(parts[3].trim(), 10);
+    rgb.a = parseFloat(parts[3].trim());
   }
 
   return rgb;
