@@ -60,11 +60,11 @@ const checkElement = (el: HTMLElement, {recurse}: { recurse?: boolean} = { recur
   let bg = toRGB(getComputedStyle(el).getPropertyValue('background-color'));
 
   if (!fgClrDefined) {
-    toRGB(getDefaultComputedStyle(el).getPropertyValue('color'));
+    fg = toRGB(getDefaultComputedStyle(el).getPropertyValue('color'));
   }
 
   if (!bgClrDefined) {
-    toRGB(getDefaultComputedStyle(el).getPropertyValue('background-color'));
+    bg = toRGB(getDefaultComputedStyle(el).getPropertyValue('background-color'));
   }
 
   if (isTransparent(fg)) {
