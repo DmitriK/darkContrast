@@ -22,5 +22,5 @@
       "open_in_tab": true
     },
     "permissions": ["<all_urls>", "activeTab", "storage", "webNavigation"],
-    "version": "2.0.3beta2"
+    "version": "2.0.3beta3"
 }
