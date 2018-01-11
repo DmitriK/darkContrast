@@ -9,6 +9,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "typeRoots": ["@types", "./src/types/web-ext-types"],
+        "noEmitHelpers": true,
     },
     "include": [
         "./src/*.ts",
