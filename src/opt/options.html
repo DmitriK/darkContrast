@@ -31,8 +31,8 @@
       </details>
 
 
-      <input id="cr" type="number" min="1.0" max="21.0" step="0.1"/>
-      <button type="button" id="setCR">Set</button>
+      <input id="cr" type="number" min="1.0" max="21.0" step="0.1" disabled/>
+      <button type="button" id="setCR" disabled>Set</button>
     </div>
     <div class="opt">
       <h2>Delay (Beta)</h2>
@@ -45,8 +45,8 @@
           10s of ms is sufficient. Set to 0 to disable delay.
         </p>
       </details>
-      <input id="delay" type="number" min="0" step="1"/>ms
-      <button type="button" id="setDelay">Set</button>
+      <input id="delay" type="number" min="0" step="1" disabled/>ms
+      <button type="button" id="setDelay" disabled>Set</button>
     </div>
   </div>
   <h2>Override Lists</h2>
@@ -64,7 +64,7 @@
   </p>
 
   <label>
-    <input type="checkbox" id="wlist"/>
+    <input type="checkbox" id="wlist" disabled/>
     Treat list as opt-in (whitelist)
   </label>
 
@@ -72,21 +72,21 @@
     <div>
       <label><div><span id="list-mode-title">Disable</span> extension:<br/>
         (for sites that break with extension enabled)</div>
-        <textarea id="blacklist"></textarea>
+        <textarea id="blacklist" disabled></textarea>
       </label>
       <div class="button-row">
-        <button type="button" id="save-dis">Save</button>
-        <button type="button" class="revert-btn" id="revert-dis">Revert</button>
+        <button type="button" id="save-dis" disabled>Save</button>
+        <button type="button" class="revert-btn" id="revert-dis" disabled>Revert</button>
       </div>
     </div>
     <div>
       <label>Force standard colors:<br/>
         (for sites that work but look ugly with extension enabled)
-        <textarea id="standardlist"></textarea>
+        <textarea id="standardlist" disabled></textarea>
       </label>
       <div class="button-row">
-        <button type="button" id="save-std">Save</button>
-        <button type="button" class="revert-btn" id="revert-std">Revert</button>
+        <button type="button" id="save-std" disabled>Save</button>
+        <button type="button" class="revert-btn" id="revert-std" disabled>Revert</button>
       </div>
     </div>
   </div>

@@ -41,7 +41,7 @@ p {
 }
 
 .cols > div{
-  flex-grow: 1;
+  flex: 1 50%;
   display:flex;
   flex-flow: column nowrap;
   margin: 0 1rem;
