@@ -267,8 +267,8 @@ const dispatchFixes = (details: WebNavDetails,
   }
 };
 
-async function refreshCache(): Promise<void> {
-  return storage.local.get({
+function refreshCache() {
+  storage.local.get({
     'tcfdt-cr':            4.5,
     'tcfdt-list-disabled': [],
     'tcfdt-list-standard': [],
