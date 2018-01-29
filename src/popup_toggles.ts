@@ -3,13 +3,19 @@
 
 const { runtime, storage, tabs } = browser;
 
-window.addEventListener('load', () => {
-  (document.getElementById('tog_main') as HTMLButtonElement).addEventListener('click', () => {
-    browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+let toggle_on = () => {
+  browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+      runtime.sendMessage('', {request: 'on', allFrames: true, tabId: tabs[0].id});
+    });
+};
+
+let toggle_off = () => {
+  browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
       runtime.sendMessage('', {request: 'off', allFrames: true, tabId: tabs[0].id});
     });
-  });
+};
 
+window.addEventListener('load', () => {
   (document.getElementById('tog_std') as HTMLButtonElement).addEventListener('click', () => {
      tabs.query({currentWindow: true, active: true}).then((tabs) => {
        runtime.sendMessage('', {request: 'std', allFrames: true, tabId: tabs[0].id});
@@ -26,6 +32,12 @@ window.addEventListener('load', () => {
     let el = document.getElementById('listKind') as HTMLSpanElement;
 
     el.textContent = wList ? 'white' : 'black';
+
+    el = document.getElementById('togModeTxt') as HTMLSpanElement;
+    el.textContent = wList ? 'on' : 'off';
+
+    // Change what toggle button callback does
+    (document.getElementById('tog_main') as HTMLButtonElement).addEventListener('click', wList ? toggle_on : toggle_off);
   });
 
   tabs.query({currentWindow: true, active: true}).then((tabs) => {

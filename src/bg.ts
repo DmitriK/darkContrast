@@ -13,7 +13,7 @@ interface WebNavDetails {
 }
 
 interface PopupMessage {
-  request?: 'off' | 'std' | 'stdFg';
+  request?: 'off' | 'on' | 'std' | 'stdFg';
   allFrames?: boolean;
   tabId?: number;
 }
@@ -23,7 +23,12 @@ interface OptsCache {
   stdList: string[];
   wMode: boolean;
   delay: number;
-};
+}
+
+interface Target {
+  tabId: number;
+  frameId: number;
+}
 
 const {browserAction, runtime, storage, tabs, webNavigation} = browser;
 
@@ -38,37 +43,47 @@ refreshCache();
 runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.MessageSender) => {
   const request = msg.request;
 
-  let tabId = 0;
+  let target = {tabId: 0, frameId: 0};
+
+  let allFrames = msg.allFrames ? msg.allFrames : false;
 
   if (sender.tab && sender.tab.id) {
-    tabId = sender.tab.id;
+    target.tabId = sender.tab.id;
   } else if (msg.tabId) {
-    tabId = msg.tabId;
+    target.tabId = msg.tabId;
   } else {
     return;
   }
 
-  const frameId = msg.allFrames ? undefined : sender.frameId;
+  if (!msg.allFrames && sender.frameId) {
+    target.frameId = sender.frameId;
+  }
 
   if (request === 'off') {
-    clearAny(tabId, frameId);
-    if (frameId === undefined || frameId === 0) {
-      browserAction.setBadgeText({text: 'off', tabId});
+    clearAny(target, allFrames);
+    if (target.frameId === 0) {
+      browserAction.setBadgeText({text: 'off', tabId: target.tabId});
+    }
+  } else if (request === 'on') {
+    clearAny(target, allFrames);
+    if (checkUserInverted()) {
+      fixAll(target);
+    } else {
+      fixInputs(target);
     }
   } else if (request === 'std') {
-    clearAny(tabId, frameId);
-
-    if (frameId === undefined || frameId === 0) {
+    clearAny(target, allFrames);
+    if (target.frameId === 0) {
       // Applying to all frames
-      tabs.insertCSS(tabId, {
+      tabs.insertCSS(target.tabId, {
         cssOrigin: 'author',
         file:      '/stdAll.css',
         runAt:     'document_start',
       });
 
-      webNavigation.getAllFrames({tabId}).then((frames) => {
+      webNavigation.getAllFrames({tabId: target.tabId}).then((frames) => {
         for (let frame of frames) {
-          tabs.insertCSS(tabId, {
+          tabs.insertCSS(target.tabId, {
             cssOrigin: 'author',
             file:      '/stdFgOnly.css',
             runAt:     'document_start',
@@ -77,52 +92,52 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
         }
       });
     } else {
-      tabs.insertCSS(tabId, {
+      tabs.insertCSS(target.tabId, {
         cssOrigin: 'author',
         file:      '/stdFgOnly.css',
         runAt:     'document_start',
-        frameId
+        frameId:   target.frameId
       });
     }
-    if (frameId === undefined || frameId === 0) {
-      browserAction.setBadgeText({text: 'std', tabId});
+    if (target.frameId === 0) {
+      browserAction.setBadgeText({text: 'std', tabId: target.tabId});
     }
   } else if (request === 'stdFg') {
-    clearAny(tabId, frameId);
+    clearAny(target, allFrames);
     // Insert std css into all frames of tab
-    tabs.insertCSS(tabId,
+    tabs.insertCSS(target.tabId,
                    {
                      cssOrigin: 'author',
                      file:      '/stdFgOnly.css',
                      runAt:     'document_start',
-                     frameId: frameId || 0,
+                     frameId:   target.frameId,
                    },
     );
   }
 });
 
-const fixInputs = (details: WebNavDetails) => {
+const fixInputs = (target: Target) => {
   tabs.insertCSS(
-    details.tabId,
+    target.tabId,
     {
-      frameId:   details.frameId,
+      frameId:   target.frameId,
       cssOrigin: 'author',
       file:      '/fixContrast.css',
       runAt:     'document_end',
     }
   );
   tabs.executeScript(
-    details.tabId,
+    target.tabId,
     {
       file:    '/fixInputs.js',
-      frameId: details.frameId,
+      frameId: target.frameId,
       runAt:   'document_end',
     }
   );
-  if (details.frameId === 0) {
+  if (target.frameId === 0) {
     browserAction.setBadgeText({
         text: '',
-        tabId: details.tabId,
+        tabId: target.tabId,
       });
   }
 };
@@ -145,28 +160,28 @@ const stdInputs = (details: WebNavDetails) => {
   }
 };
 
-const fixAll = (details: WebNavDetails) => {
+const fixAll = (target: Target) => {
   tabs.insertCSS(
-    details.tabId,
+    target.tabId,
     {
-      frameId:   details.frameId,
+      frameId:   target.frameId,
       cssOrigin: 'author',
       file:      '/fixContrast.css',
       runAt:     'document_end',
     }
   );
   tabs.executeScript(
-    details.tabId,
+    target.tabId,
     {
       file:    '/fixAll.js',
-      frameId: details.frameId,
+      frameId: target.frameId,
       runAt:   'document_end',
     }
   );
-  if (details.frameId === 0) {
+  if (target.frameId === 0) {
     browserAction.setBadgeText({
         text: '',
-        tabId: details.tabId,
+        tabId: target.tabId,
       });
   }
 };
@@ -189,26 +204,26 @@ const stdAll = (details: WebNavDetails) => {
   }
 };
 
-const clearAny = (tabId: number, frameId?: number | undefined) => {
+const clearAny = (target: Target, allFrames: boolean) => {
   let details: browser.extensionTypes.InjectDetails = {};
 
-  if (frameId === undefined) {
+  if (allFrames) {
     details.allFrames = true;
   } else {
-    details.frameId = frameId;
+    details.frameId = target.frameId;
   }
 
-  tabs.removeCSS(tabId, Object.assign(details, {
+  tabs.removeCSS(target.tabId, Object.assign(details, {
     file: '/stdInputs.css',
   }));
-  tabs.removeCSS(tabId, Object.assign(details, {
+  tabs.removeCSS(target.tabId, Object.assign(details, {
     file: '/stdAll.css',
   }));
-  tabs.removeCSS(tabId, Object.assign(details, {
+  tabs.removeCSS(target.tabId, Object.assign(details, {
     file: '/stdFgOnly.css',
   }));
 
-  tabs.sendMessage(tabId, {request: 'off'}, frameId ? {frameId} : {});
+  tabs.sendMessage(target.tabId, {request: 'off'}, !allFrames ? {frameId: target.frameId} : {});
 };
 
 const inList = (url: string, list: string[]) => {

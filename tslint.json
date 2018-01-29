@@ -15,6 +15,7 @@
       true,
       "match-declaration-order"
     ],
+    "prefer-const": false,
     "quotemark": [true, "single"],
     "typedef": [true,
       "call-signature",
