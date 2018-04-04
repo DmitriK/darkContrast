@@ -192,12 +192,12 @@ const stdEmbeds = (e: HTMLElement) => {
 
   // Can't use for-in loop because a NodeIterator is not an iterator. Thanks
   // Javascript.
-  let node: Node; // eslint-disable-line init-declarations
+  let node: Node | null = null; // eslint-disable-line init-declarations
 
   while ((node = nodeIterator.nextNode()) != null) {
     (node as HTMLElement).dataset._extensionTextContrastFF = '';
     if ((node as HTMLIFrameElement).contentWindow !== null) {
-      (node as HTMLIFrameElement).contentWindow.postMessage('_tcfdt_subdoc_std', '*');
+      (node as HTMLIFrameElement).contentWindow!.postMessage('_tcfdt_subdoc_std', '*');
     }
   }
 };
@@ -294,7 +294,7 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
         let node = null;
 
         while ((node = nodeIterator.nextNode()) !== null) {
-          (node as HTMLIFrameElement).contentWindow.postMessage('_tcfdt_subdoc_std', '*');
+          (node as HTMLIFrameElement).contentWindow!.postMessage('_tcfdt_subdoc_std', '*');
         }
       }
 
