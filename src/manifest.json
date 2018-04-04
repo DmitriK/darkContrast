@@ -21,6 +21,6 @@
       "page": "opt/options.html",
       "open_in_tab": true
     },
-    "permissions": ["<all_urls>", "activeTab", "storage", "webNavigation"],
+    "permissions": ["<all_urls>", "storage", "tabs", "webNavigation"],
     "version": "2.0.4"
 }
