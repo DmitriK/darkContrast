@@ -314,13 +314,13 @@ storage.onChanged.addListener((changes) => {
     if (key === 'tcfdt-cr') {
       setContrastRatio(val);
     } else if (key === 'tcfdt-list-disabled') {
-      optCache.ovrList = val;
+      optCache.ovrList = val ? val : [];
     } else if (key === 'tcfdt-list-standard') {
-      optCache.stdList = val;
+      optCache.stdList = val ? val : [];
     } else if (key === 'tcfdt-wlist') {
-      optCache.wMode = val;
+      optCache.wMode = val ? val : false;
     } else if (key === 'tcfdt-dl') {
-      optCache.delay = val;
+      optCache.delay = val ? val : 0;
     }
   }
 })
