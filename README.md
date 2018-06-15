@@ -5,6 +5,22 @@ Firefox extension that fixes low contrast text when using a dark desktop theme.
 This extension is intended for Firefox users that have a light text on dark
 background system theme.
 
+## Permission Requirements Explanations ##
+
+### <all_urls> ###
+The extension inserts CSS and JavaScript into page content in order to fix
+colors, and requires URL permissions for all sites in order to do so.
+
+### storage ###
+Extension settings use local storage.
+
+### tabs ###
+Extension requires access to tab data to get active URL. In order for frames to
+see top-level tab URL, permissions for all tabs is needed, not just active tab.
+
+### webNavigation ###
+Extension is triggered on web navigation events.
+
 ## Input Elements
 
 The primary purpose of this extension is to fix input elements, which are drawn
