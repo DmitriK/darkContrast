@@ -2,8 +2,18 @@
 
 Firefox extension that fixes low contrast text when using a dark desktop theme.
 
-This extension is intended for Firefox users that have a light text on dark
-background system theme.
+For users who don't want *any* native theming in web content, Firefox has a
+built-in solution. In `about:config`, verify that
+`widget.content.allow-gtk-dark-theme` is `false`. If you use a theme that does
+not have a light variant (e.g, Arc Dark; the light version, Arc, is a separate
+theme), then create a new string entry in `about:config` called
+`widget.content.gtk-theme-override` and set it to a light theme, e.g. `Arc` or
+`Adwaita:light`.
+
+Otherwise, for users who wish to retain dark theming of un-styled input elements
+or entire pages, this extension tries to fix broken author css to ensure text
+remains read-able. Note that per the above paragraph, such users will likely
+want to set `widget.content.allow-gtk-dark-theme` to `true`.
 
 ## Permission Requirements Explanations ##
 
@@ -35,8 +45,8 @@ Elements with both colors defined or both colors undefined remain unchanged.
 Elements which already have good contrast (e.g. author is running their own dark
 styling) are also unchanged.
 
-In contrast to UserStyles.css or similar fixes, this extension tries to minimize
-changes that fix the contrast issue. Thus native styles are retained if
+In comparison to UserStyles.css or similar fixes, this extension tries to
+minimize changes that fix the contrast issue. Thus native styles are retained if
 possible.
 
 ## Use with "Use System Colors" or custom colors
