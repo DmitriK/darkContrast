@@ -1,11 +1,19 @@
 /* Copyright (c) 2017 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
 
-import { isContrasty, setContrastRatio, toRGB } from './lib/color';
+import { getParentBg, getParentFg, isContrasty, isTransparent, setContrastRatio, Srgb, toRGB } from './lib/color';
 import { isFgDefined, isBgDefined, isBgImgDefined, isInputNode } from './lib/checks';
 import { clearOverrides } from './lib/contrast';
 
-declare function requestIdleCallback(callback: () => any, options?: {timeout: number}): CSSStyleDeclaration;
+declare function requestIdleCallback(callback: () => any, options?: { timeout: number }): CSSStyleDeclaration;
+declare function getDefaultComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
+
+let probe = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
+probe.style.color = '-moz-default-color';
+probe.style.backgroundColor = '-moz-default-background-color';
+
+const DEFAULT_FG: Srgb = toRGB(getComputedStyle(probe).getPropertyValue('color'));
+const DEFAULT_BG: Srgb = toRGB(getComputedStyle(probe).getPropertyValue('background-color'));
 
 const checkElement = (el: HTMLElement): void => {
   // If element has already been examined before, don't do any processing
@@ -17,22 +25,34 @@ const checkElement = (el: HTMLElement): void => {
   const bgClrDefined = isBgDefined(el);
   const bgImgDefined = isBgImgDefined(el);
 
+  let fg = toRGB(getComputedStyle(el).getPropertyValue('color'));
+  let bg = toRGB(getComputedStyle(el).getPropertyValue('background-color'));
+
+  if (!fgClrDefined) {
+    fg = toRGB(getDefaultComputedStyle(el).getPropertyValue('color'));
+  }
+
+  if (!bgClrDefined) {
+    bg = toRGB(getDefaultComputedStyle(el).getPropertyValue('background-color'));
+  }
+
+  if (isTransparent(fg)) {
+    fg = getParentFg(el, DEFAULT_FG);
+  }
+  if (isTransparent(bg)) {
+    bg = getParentBg(el, DEFAULT_BG);
+  }
+
   if (fgClrDefined && bgClrDefined) {
     // Both colors explicitly defined, nothing to do
     el.dataset._extensionTextContrast = '';
   } else if (!fgClrDefined && bgClrDefined) {
     // Only set fg if original contrast is poor
-    const fg = toRGB(getComputedStyle(el).getPropertyValue('color'));
-    const bg = toRGB(getComputedStyle(el).getPropertyValue('background-color'));
-
     if (!isContrasty(fg, bg)) {
       el.dataset._extensionTextContrast = 'fg';
     }
   } else if (fgClrDefined && !bgClrDefined) {
     // Only set bg if it will improve contrast
-    const fg = toRGB(getComputedStyle(el).getPropertyValue('color'));
-    const bg = toRGB(getComputedStyle(el).getPropertyValue('background-color'));
-
     if (!isContrasty(fg, bg)) {
       el.dataset._extensionTextContrast = 'bg';
     }
@@ -63,7 +83,7 @@ const checkInputs = (root: Element = document.documentElement) => {
   }
 };
 
-browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
+browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
   setContrastRatio(items['tcfdt-cr']);
   checkInputs();
 
@@ -99,10 +119,10 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
   });
 
   observer.observe(document, {
-    attributes:        true,
-    attributeFilter:   ['class', 'style'],
-    childList:         true,
-    subtree:           true,
+    attributes: true,
+    attributeFilter: ['class', 'style'],
+    childList: true,
+    subtree: true,
   });
 
   dataObserver.observe(document.body, {
@@ -113,7 +133,7 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
   });
 
   browser.runtime.onMessage.addListener((message: {}) => {
-    const request = (message as {request: 'off'}).request;
+    const request = (message as { request: 'off' }).request;
     if (request === 'off') {
       dataObserver.disconnect();
       clearOverrides(document);

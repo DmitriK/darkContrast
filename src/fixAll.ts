@@ -2,7 +2,7 @@
 /* See the file COPYING for copying permission. */
 /* globals getDefaultComputedStyle:false */
 
-import { isContrasty, isTransparent, setContrastRatio, Srgb, toRGB } from './lib/color';
+import { getParentBg, getParentFg, isContrasty, isTransparent, setContrastRatio, Srgb, toRGB } from './lib/color';
 import { isFgDefined, isBgDefined, isBgImgDefined, isInputNode, isInVisibleNode, isSubDocNode } from './lib/checks';
 import { clearOverrides } from './lib/contrast';
 
@@ -11,38 +11,18 @@ declare function getDefaultComputedStyle(elt: Element, pseudoElt?: string): CSSS
 declare function requestIdleCallback(callback: (idleDeadline: {
   didTimeout: boolean;
   timeRemaining: () => number;
-}) => any, options?: {timeout: number}): number;
+}) => any, options?: { timeout: number }): number;
 
 let probe = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
 probe.style.color = '-moz-default-color';
 probe.style.backgroundColor = '-moz-default-background-color';
 
-const DEFAULT_FG = toRGB(getComputedStyle(probe).getPropertyValue('color'));
-const DEFAULT_BG = toRGB(getComputedStyle(probe).getPropertyValue('background-color'));
+const DEFAULT_FG: Srgb = toRGB(getComputedStyle(probe).getPropertyValue('color'));
+const DEFAULT_BG: Srgb = toRGB(getComputedStyle(probe).getPropertyValue('background-color'));
 
 let topElementFixed = false;
 
-const getParentFg = (el: HTMLElement): Srgb => {
-  if (el.parentElement !== null) {
-    return toRGB(getComputedStyle(el.parentElement).getPropertyValue('color'));
-  }
-
-  return DEFAULT_FG;
-};
-
-const getParentBg = (el: HTMLElement): Srgb => {
-  while (el.parentElement !== null) {
-    const color = toRGB(getComputedStyle(el.parentElement).getPropertyValue('background-color'));
-    if (!isTransparent(color)) {
-      return color;
-    }
-    el = el.parentElement;
-  }
-
-  return DEFAULT_BG;
-};
-
-const checkElement = (el: HTMLElement, {recurse}: { recurse?: boolean} = { recurse: false }): void => {
+const checkElement = (el: HTMLElement, { recurse }: { recurse?: boolean } = { recurse: false }): void => {
   if (!el) {
     return;
   }
@@ -68,10 +48,10 @@ const checkElement = (el: HTMLElement, {recurse}: { recurse?: boolean} = { recur
   }
 
   if (isTransparent(fg)) {
-    fg = getParentFg(el);
+    fg = getParentFg(el, DEFAULT_FG);
   }
   if (isTransparent(bg)) {
-    bg = getParentBg(el);
+    bg = getParentBg(el, DEFAULT_BG);
   }
 
   if (fgClrDefined && bgClrDefined) {
@@ -114,13 +94,13 @@ const checkElement = (el: HTMLElement, {recurse}: { recurse?: boolean} = { recur
   // contrast. Need to continue checking child elements to ensure contrast is OK
 
   if (recurse === true) {
-    const {children} = el;
+    const { children } = el;
     const len = children.length;
 
     for (let i = 0; i < len; i += 1) {
       // Don't look at non-renderable elements
       if (!isInVisibleNode(el.children[i])) {
-        checkElement(el.children[i] as HTMLElement, {recurse});
+        checkElement(el.children[i] as HTMLElement, { recurse });
       }
     }
   }
@@ -148,7 +128,7 @@ const checkInputs = (root: Element = document.documentElement) => {
 
 const checkAll = () => {
   // Recursively check the document
-  checkElement(document.documentElement, {recurse: true});
+  checkElement(document.documentElement, { recurse: true });
 
   // Check input after
   checkInputs();
@@ -181,7 +161,7 @@ const checkParents = (el: HTMLElement) => {
     }
     parent = parent.parentElement;
   }
-  checkElement(el, {recurse: true});
+  checkElement(el, { recurse: true });
 };
 
 const stdEmbeds = (e: HTMLElement) => {
@@ -202,7 +182,7 @@ const stdEmbeds = (e: HTMLElement) => {
   }
 };
 
-browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
+browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
   setContrastRatio(items['tcfdt-cr']);
   checkAll();
 
@@ -246,10 +226,10 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
   });
 
   observer.observe(document, {
-    attributes:        true,
-    attributeFilter:   ['class', 'style'],
-    childList:         true,
-    subtree:           true,
+    attributes: true,
+    attributeFilter: ['class', 'style'],
+    childList: true,
+    subtree: true,
   });
 
   dataObserver.observe(document.body, {
@@ -260,7 +240,7 @@ browser.storage.local.get({'tcfdt-cr': 4.5}).then((items) => {
   });
 
   browser.runtime.onMessage.addListener((message: {}) => {
-    const request = (message as {request: 'off'}).request;
+    const request = (message as { request: 'off' }).request;
     if (request === 'off') {
       dataObserver.disconnect();
       clearOverrides(document);

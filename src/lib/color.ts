@@ -71,3 +71,23 @@ export function toRGB(s: string): Srgb {
 
   return rgb;
 }
+
+export function getParentFg(el: HTMLElement, fallback: Srgb): Srgb {
+  if (el.parentElement !== null) {
+    return toRGB(getComputedStyle(el.parentElement).getPropertyValue('color'));
+  }
+
+  return fallback;
+};
+
+export function getParentBg(el: HTMLElement, fallback: Srgb): Srgb {
+  while (el.parentElement !== null) {
+    const color = toRGB(getComputedStyle(el.parentElement).getPropertyValue('background-color'));
+    if (!isTransparent(color)) {
+      return color;
+    }
+    el = el.parentElement;
+  }
+
+  return fallback;
+};
