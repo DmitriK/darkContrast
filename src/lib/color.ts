@@ -53,7 +53,7 @@ export function setContrastRatio(x: number): void {
 
 export function toRGB(s: string): Srgb {
   if (!s || s === 'transparent') {
-    return {r: 0, g: 0, b: 0, a: 0};
+    return { r: 0, g: 0, b: 0, a: 0 };
   }
 
   const parts = s.split(',', 4);

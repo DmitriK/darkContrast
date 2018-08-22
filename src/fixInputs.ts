@@ -1,19 +1,25 @@
 /* Copyright (c) 2017 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
 
-import { getParentBg, getParentFg, isContrasty, isTransparent, setContrastRatio, Srgb, toRGB } from './lib/color';
-import { isFgDefined, isBgDefined, isBgImgDefined, isInputNode } from './lib/checks';
+import { getParentBg, getParentFg, isContrasty, isTransparent, setContrastRatio, toRGB } from './lib/color';
+import { isInputNode } from './lib/checks';
 import { clearOverrides } from './lib/contrast';
 
 declare function requestIdleCallback(callback: () => any, options?: { timeout: number }): CSSStyleDeclaration;
-declare function getDefaultComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
 
 let probe = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
 probe.style.color = '-moz-default-color';
 probe.style.backgroundColor = '-moz-default-background-color';
 
-const DEFAULT_FG: Srgb = toRGB(getComputedStyle(probe).getPropertyValue('color'));
-const DEFAULT_BG: Srgb = toRGB(getComputedStyle(probe).getPropertyValue('background-color'));
+const DEFAULT_FG = getComputedStyle(probe).getPropertyValue('color');
+const DEFAULT_BG = getComputedStyle(probe).getPropertyValue('background-color');
+
+probe = document.createElementNS('http://www.w3.org/1999/xhtml', 'input');
+probe.style.color = '-moz-default-color';
+probe.style.backgroundColor = '-moz-default-background-color';
+
+const DEFAULT_FG_INPUT = getComputedStyle(probe).getPropertyValue('color');
+const DEFAULT_BG_INPUT = getComputedStyle(probe).getPropertyValue('background-color');
 
 const checkElement = (el: HTMLElement): void => {
   // If element has already been examined before, don't do any processing
@@ -21,26 +27,28 @@ const checkElement = (el: HTMLElement): void => {
     return;
   }
 
-  const fgClrDefined = isFgDefined(el);
-  const bgClrDefined = isBgDefined(el);
-  const bgImgDefined = isBgImgDefined(el);
+  // Grab current and default styles
+  const compStyle = getComputedStyle(el);
+  let fg = compStyle.getPropertyValue('color');
+  let bg = compStyle.getPropertyValue('background-color');
 
-  let fg = toRGB(getComputedStyle(el).getPropertyValue('color'));
-  let bg = toRGB(getComputedStyle(el).getPropertyValue('background-color'));
+  // Check which styles have been overriden by site author
+  const fgClrDefined = fg !== DEFAULT_FG_INPUT;
+  const bgClrDefined = bg !== DEFAULT_BG_INPUT;
+  const bgImgDefined = compStyle.getPropertyValue('background-image') !== 'none';
 
-  if (!fgClrDefined) {
-    fg = toRGB(getDefaultComputedStyle(el).getPropertyValue('color'));
+  // Normalize styles (which could be something like 'transparent') to true rgba
+  // values.
+  let fg_rgba = toRGB(fg);
+  let bg_rgba = toRGB(bg);
+
+  // If color is transparent, recurse through all the parents to find a
+  // non-transparent color to assume as the current color
+  if (isTransparent(fg_rgba)) {
+    fg_rgba = getParentFg(el, toRGB(DEFAULT_FG));
   }
-
-  if (!bgClrDefined) {
-    bg = toRGB(getDefaultComputedStyle(el).getPropertyValue('background-color'));
-  }
-
-  if (isTransparent(fg)) {
-    fg = getParentFg(el, DEFAULT_FG);
-  }
-  if (isTransparent(bg)) {
-    bg = getParentBg(el, DEFAULT_BG);
+  if (isTransparent(bg_rgba)) {
+    bg_rgba = getParentBg(el, toRGB(DEFAULT_BG));
   }
 
   if (fgClrDefined && bgClrDefined) {
@@ -48,12 +56,12 @@ const checkElement = (el: HTMLElement): void => {
     el.dataset._extensionTextContrast = '';
   } else if (!fgClrDefined && bgClrDefined) {
     // Only set fg if original contrast is poor
-    if (!isContrasty(fg, bg)) {
+    if (!isContrasty(fg_rgba, bg_rgba)) {
       el.dataset._extensionTextContrast = 'fg';
     }
   } else if (fgClrDefined && !bgClrDefined) {
     // Only set bg if it will improve contrast
-    if (!isContrasty(fg, bg)) {
+    if (!isContrasty(fg_rgba, bg_rgba)) {
       el.dataset._extensionTextContrast = 'bg';
     }
   } else if (bgImgDefined) {

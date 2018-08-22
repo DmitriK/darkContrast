@@ -2,11 +2,9 @@
 /* See the file COPYING for copying permission. */
 /* globals getDefaultComputedStyle:false */
 
-import { getParentBg, getParentFg, isContrasty, isTransparent, setContrastRatio, Srgb, toRGB } from './lib/color';
-import { isFgDefined, isBgDefined, isBgImgDefined, isInputNode, isInVisibleNode, isSubDocNode } from './lib/checks';
+import { getParentBg, getParentFg, isContrasty, isTransparent, setContrastRatio, toRGB } from './lib/color';
+import { isInputNode, isInVisibleNode, isSubDocNode } from './lib/checks';
 import { clearOverrides } from './lib/contrast';
-
-declare function getDefaultComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
 
 declare function requestIdleCallback(callback: (idleDeadline: {
   didTimeout: boolean;
@@ -17,8 +15,15 @@ let probe = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
 probe.style.color = '-moz-default-color';
 probe.style.backgroundColor = '-moz-default-background-color';
 
-const DEFAULT_FG: Srgb = toRGB(getComputedStyle(probe).getPropertyValue('color'));
-const DEFAULT_BG: Srgb = toRGB(getComputedStyle(probe).getPropertyValue('background-color'));
+const DEFAULT_FG = getComputedStyle(probe).getPropertyValue('color');
+const DEFAULT_BG = getComputedStyle(probe).getPropertyValue('background-color');
+
+probe = document.createElementNS('http://www.w3.org/1999/xhtml', 'input');
+probe.style.color = '-moz-default-color';
+probe.style.backgroundColor = '-moz-default-background-color';
+
+const DEFAULT_FG_INPUT = getComputedStyle(probe).getPropertyValue('color');
+const DEFAULT_BG_INPUT = getComputedStyle(probe).getPropertyValue('background-color');
 
 let topElementFixed = false;
 
@@ -32,26 +37,30 @@ const checkElement = (el: HTMLElement, { recurse }: { recurse?: boolean } = { re
     return;
   }
 
-  const fgClrDefined = isFgDefined(el);
-  const bgClrDefined = isBgDefined(el);
-  const bgImgDefined = isBgImgDefined(el);
+  // Grab current and default styles
+  const compStyle = getComputedStyle(el);
+  let fg = compStyle.getPropertyValue('color');
+  let bg = compStyle.getPropertyValue('background-color');
+  const fg_default = isInputNode(el) ? DEFAULT_FG_INPUT : DEFAULT_FG;
+  const bg_default = isInputNode(el) ? DEFAULT_BG_INPUT : DEFAULT_BG;
 
-  let fg = toRGB(getComputedStyle(el).getPropertyValue('color'));
-  let bg = toRGB(getComputedStyle(el).getPropertyValue('background-color'));
+  // Check which styles have been overriden by site author
+  const fgClrDefined = fg !== fg_default;
+  const bgClrDefined = bg !== bg_default;
+  const bgImgDefined = compStyle.getPropertyValue('background-image') !== 'none';
 
-  if (!fgClrDefined) {
-    fg = toRGB(getDefaultComputedStyle(el).getPropertyValue('color'));
+  // Normalize styles (which could be something like 'transparent') to true rgba
+  // values.
+  let fg_rgba = toRGB(fg);
+  let bg_rgba = toRGB(bg);
+
+  // If color is transparent, recurse through all the parents to find a
+  // non-transparent color to assume as the current color
+  if (isTransparent(fg_rgba)) {
+    fg_rgba = getParentFg(el, toRGB(fg_default));
   }
-
-  if (!bgClrDefined) {
-    bg = toRGB(getDefaultComputedStyle(el).getPropertyValue('background-color'));
-  }
-
-  if (isTransparent(fg)) {
-    fg = getParentFg(el, DEFAULT_FG);
-  }
-  if (isTransparent(bg)) {
-    bg = getParentBg(el, DEFAULT_BG);
+  if (isTransparent(bg_rgba)) {
+    bg_rgba = getParentBg(el, toRGB(bg_default));
   }
 
   if (fgClrDefined && bgClrDefined) {
@@ -64,21 +73,21 @@ const checkElement = (el: HTMLElement, { recurse }: { recurse?: boolean } = { re
   } else if (!fgClrDefined && bgClrDefined) {
     // Note that if background image exists, it may be transparent, so we
     // can't afford to skip setting the color
-    if (!isContrasty(fg, bg) || bgImgDefined) {
+    if (!isContrasty(fg_rgba, bg_rgba) || bgImgDefined) {
       el.dataset._extensionTextContrast = 'fg';
       stdEmbeds(el);
 
       return;
     }
   } else if (fgClrDefined && !bgClrDefined) {
-    if (!isContrasty(fg, bg)) {
+    if (!isContrasty(fg_rgba, bg_rgba)) {
       el.dataset._extensionTextContrast = 'bg';
       stdEmbeds(el);
 
       return;
     }
   } else if (bgImgDefined) {
-    if (!isContrasty(fg, bg) || isInputNode(el)) {
+    if (!isContrasty(fg_rgba, bg_rgba) || isInputNode(el)) {
       // If bad contrast, set both colors in case background image is transparent
       el.dataset._extensionTextContrast = 'both';
     } else {
