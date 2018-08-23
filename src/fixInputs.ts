@@ -2,24 +2,31 @@
 /* See the file COPYING for copying permission. */
 
 import { getParentBg, getParentFg, isContrasty, isTransparent, setContrastRatio, toRGB } from './lib/color';
-import { isInputNode } from './lib/checks';
+import { INPUT_NODES, isInputNode } from './lib/checks';
 import { clearOverrides } from './lib/contrast';
 
 declare function requestIdleCallback(callback: () => any, options?: { timeout: number }): CSSStyleDeclaration;
 
-let probe = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
-probe.style.color = '-moz-default-color';
-probe.style.backgroundColor = '-moz-default-background-color';
+let DEFAULTS: { [key:string]: {fg:string, bg:string} } = {};
 
-const DEFAULT_FG = getComputedStyle(probe).getPropertyValue('color');
-const DEFAULT_BG = getComputedStyle(probe).getPropertyValue('background-color');
+let probe_frame = document.createElementNS('http://www.w3.org/1999/xhtml', 'iframe') as HTMLIFrameElement;
+probe_frame.src = 'about:blank';
+probe_frame.style.display = 'none';
+document.body.appendChild(probe_frame);
+let frame_doc = probe_frame.contentWindow!.document;
+// DEFAULTS['html'] = {fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color')};
+// Get default browser style, which should be the final non-transparent color
+frame_doc.body.style.color = '-moz-default-color';
+frame_doc.body.style.backgroundColor = '-moz-default-background-color';
+DEFAULTS['browser'] = {fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color')};
 
-probe = document.createElementNS('http://www.w3.org/1999/xhtml', 'input');
-probe.style.color = '-moz-default-color';
-probe.style.backgroundColor = '-moz-default-background-color';
+for (const node of INPUT_NODES) {
+  let probe = frame_doc.createElement(node);
+  frame_doc.body.appendChild(probe);
 
-const DEFAULT_FG_INPUT = getComputedStyle(probe).getPropertyValue('color');
-const DEFAULT_BG_INPUT = getComputedStyle(probe).getPropertyValue('background-color');
+  DEFAULTS[node] = {fg: getComputedStyle(probe).getPropertyValue('color'), bg: getComputedStyle(probe).getPropertyValue('background-color')}
+}
+document.body.removeChild(probe_frame);
 
 const checkElement = (el: HTMLElement): void => {
   // If element has already been examined before, don't do any processing
@@ -31,10 +38,12 @@ const checkElement = (el: HTMLElement): void => {
   const compStyle = getComputedStyle(el);
   let fg = compStyle.getPropertyValue('color');
   let bg = compStyle.getPropertyValue('background-color');
+  const fg_default = DEFAULTS[el.nodeName].fg;
+  const bg_default = DEFAULTS[el.nodeName].bg;
 
   // Check which styles have been overriden by site author
-  const fgClrDefined = fg !== DEFAULT_FG_INPUT;
-  const bgClrDefined = bg !== DEFAULT_BG_INPUT;
+  const fgClrDefined = fg !== fg_default;
+  const bgClrDefined = bg !== bg_default;
   const bgImgDefined = compStyle.getPropertyValue('background-image') !== 'none';
 
   // Normalize styles (which could be something like 'transparent') to true rgba
@@ -45,10 +54,10 @@ const checkElement = (el: HTMLElement): void => {
   // If color is transparent, recurse through all the parents to find a
   // non-transparent color to assume as the current color
   if (isTransparent(fg_rgba)) {
-    fg_rgba = getParentFg(el, toRGB(DEFAULT_FG));
+    fg_rgba = getParentFg(el, toRGB(DEFAULTS['browser'].fg));
   }
   if (isTransparent(bg_rgba)) {
-    bg_rgba = getParentBg(el, toRGB(DEFAULT_BG));
+    bg_rgba = getParentBg(el, toRGB(DEFAULTS['browser'].bg));
   }
 
   if (fgClrDefined && bgClrDefined) {
