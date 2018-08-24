@@ -1,6 +1,5 @@
 /* Copyright (c) 2017 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
-/* globals getDefaultComputedStyle:false */
 
 import { getParentBg, getParentFg, isContrasty, isTransparent, setContrastRatio, toRGB } from './lib/color';
 import { INPUT_NODES, isInputNode, isInVisibleNode, isSubDocNode } from './lib/checks';
@@ -13,28 +12,32 @@ declare function requestIdleCallback(callback: (idleDeadline: {
 
 let DEFAULTS: { [key:string]: {fg:string, bg:string} } = {};
 
-let probe_frame = document.createElementNS('http://www.w3.org/1999/xhtml', 'iframe') as HTMLIFrameElement;
-probe_frame.src = 'about:blank';
-probe_frame.style.display = 'none';
-document.body.appendChild(probe_frame);
-let frame_doc = probe_frame.contentWindow!.document;
-// Get default style for general elements
-DEFAULTS['html'] = {fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color')};
-// Get default browser style, which should be the final non-transparent color
-frame_doc.body.style.color = '-moz-default-color';
-frame_doc.body.style.backgroundColor = '-moz-default-background-color';
-DEFAULTS['browser'] = {fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color')};
-
-// Get colors for input nodes
-for (const node of INPUT_NODES) {
-  let probe = frame_doc.createElement(node);
-  frame_doc.body.appendChild(probe);
-
-  DEFAULTS[node] = {fg: getComputedStyle(probe).getPropertyValue('color'), bg: getComputedStyle(probe).getPropertyValue('background-color')}
-}
-document.body.removeChild(probe_frame);
-
 let topElementFixed = false;
+
+const getDefaultColors = () => {
+  let probe_frame = document.createElementNS('http://www.w3.org/1999/xhtml', 'iframe') as HTMLIFrameElement;
+  // probe_frame.src = 'about:blank';
+  probe_frame.style.display = 'none';
+  document.body.appendChild(probe_frame);
+  let frame_doc = probe_frame.contentWindow!.document;
+  // Get default style for general elements
+  let par = frame_doc.createElement('p');
+  frame_doc.body.appendChild(par);
+  DEFAULTS['html'] = {fg: getComputedStyle(par).getPropertyValue('color'), bg: getComputedStyle(par).getPropertyValue('background-color')};
+  // Get default browser style, which should be the final non-transparent color
+  frame_doc.body.style.color = '-moz-default-color';
+  frame_doc.body.style.backgroundColor = '-moz-default-background-color';
+  DEFAULTS['browser'] = {fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color')};
+
+  // Get colors for input nodes
+  for (const node of INPUT_NODES) {
+    let probe = frame_doc.createElement(node);
+    frame_doc.body.appendChild(probe);
+
+    DEFAULTS[node] = {fg: getComputedStyle(probe).getPropertyValue('color'), bg: getComputedStyle(probe).getPropertyValue('background-color')}
+  }
+  document.body.removeChild(probe_frame);
+}
 
 const checkElement = (el: HTMLElement, { recurse }: { recurse?: boolean } = { recurse: false }): void => {
   if (!el) {
@@ -201,6 +204,7 @@ const stdEmbeds = (e: HTMLElement) => {
 };
 
 browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
+  getDefaultColors();
   setContrastRatio(items['tcfdt-cr']);
   checkAll();
 

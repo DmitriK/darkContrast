@@ -9,24 +9,31 @@ declare function requestIdleCallback(callback: () => any, options?: { timeout: n
 
 let DEFAULTS: { [key:string]: {fg:string, bg:string} } = {};
 
-let probe_frame = document.createElementNS('http://www.w3.org/1999/xhtml', 'iframe') as HTMLIFrameElement;
-probe_frame.src = 'about:blank';
-probe_frame.style.display = 'none';
-document.body.appendChild(probe_frame);
-let frame_doc = probe_frame.contentWindow!.document;
-// DEFAULTS['html'] = {fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color')};
-// Get default browser style, which should be the final non-transparent color
-frame_doc.body.style.color = '-moz-default-color';
-frame_doc.body.style.backgroundColor = '-moz-default-background-color';
-DEFAULTS['browser'] = {fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color')};
+const getDefaultColors = () => {
+  let probe_frame = document.createElementNS('http://www.w3.org/1999/xhtml', 'iframe') as HTMLIFrameElement;
+  // probe_frame.src = 'about:blank';
+  probe_frame.style.display = 'none';
+  document.body.appendChild(probe_frame);
+  let frame_doc = probe_frame.contentWindow!.document;
+  // Get default style for general elements
+  let par = frame_doc.createElement('p');
+  frame_doc.body.appendChild(par);
+  // Don't need following default element colors since this extension mode does not use it.
+  // DEFAULTS['html'] = {fg: getComputedStyle(par).getPropertyValue('color'), bg: getComputedStyle(par).getPropertyValue('background-color')};
+  // Get default browser style, which should be the final non-transparent color
+  frame_doc.body.style.color = '-moz-default-color';
+  frame_doc.body.style.backgroundColor = '-moz-default-background-color';
+  DEFAULTS['browser'] = {fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color')};
 
-for (const node of INPUT_NODES) {
-  let probe = frame_doc.createElement(node);
-  frame_doc.body.appendChild(probe);
+  // Get colors for input nodes
+  for (const node of INPUT_NODES) {
+    let probe = frame_doc.createElement(node);
+    frame_doc.body.appendChild(probe);
 
-  DEFAULTS[node] = {fg: getComputedStyle(probe).getPropertyValue('color'), bg: getComputedStyle(probe).getPropertyValue('background-color')}
+    DEFAULTS[node] = {fg: getComputedStyle(probe).getPropertyValue('color'), bg: getComputedStyle(probe).getPropertyValue('background-color')}
+  }
+  document.body.removeChild(probe_frame);
 }
-document.body.removeChild(probe_frame);
 
 const checkElement = (el: HTMLElement): void => {
   // If element has already been examined before, don't do any processing
@@ -101,6 +108,7 @@ const checkInputs = (root: Element = document.documentElement) => {
 };
 
 browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
+  getDefaultColors();
   setContrastRatio(items['tcfdt-cr']);
   checkInputs();
 
