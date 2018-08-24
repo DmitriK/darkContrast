@@ -12,7 +12,8 @@ let DEFAULTS: { [key:string]: {fg:string, bg:string} } = {};
 const getDefaultColors = () => {
   let probe_frame = document.createElementNS('http://www.w3.org/1999/xhtml', 'iframe') as HTMLIFrameElement;
   // probe_frame.src = 'about:blank';
-  probe_frame.style.display = 'none';
+  probe_frame.style.width = '0';
+  probe_frame.style.height = '0';
   document.body.appendChild(probe_frame);
   let frame_doc = probe_frame.contentWindow!.document;
   // Get default style for general elements
