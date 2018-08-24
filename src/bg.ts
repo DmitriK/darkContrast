@@ -1,8 +1,7 @@
 /* Copyright (c) 2017 Dmitri Kourennyi */
 /* See the file COPYING for copying permission. */
 
-import { setContrastRatio } from './lib/color';
-import { checkUserInverted } from './lib/checks';
+import { isContrasty, setContrastRatio, toRGB } from './lib/color';
 
 interface WebNavDetails {
   tabId: number;
@@ -40,6 +39,23 @@ let optCache: OptsCache = {
 };
 refreshCache();
 
+let user_inverted = false;
+
+{
+  let probe_frame = document.createElementNS('http://www.w3.org/1999/xhtml', 'iframe') as HTMLIFrameElement;
+  probe_frame.src = 'about:blank';
+  document.body.appendChild(probe_frame);
+  let default_fg = toRGB(getComputedStyle(probe_frame.contentWindow!.document.body).getPropertyValue('color'));
+  document.body.removeChild(probe_frame);
+
+  if (!isContrasty(default_fg, { r: 255, g: 255, b: 255, a: 1 })) {
+    // Contrast check against what sites will assume to be default
+    // (black fg, white bg) failed, so user most likely has 'Use system
+    // colors' on
+    user_inverted = true;
+  }
+}
+
 runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.MessageSender) => {
   const request = msg.request;
 
@@ -66,7 +82,7 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
     }
   } else if (request === 'on') {
     clearAny(target, allFrames);
-    if (checkUserInverted()) {
+    if (user_inverted) {
       fixAll(target);
     } else {
       fixInputs(target);
@@ -258,7 +274,7 @@ const dispatchFixes = (details: WebNavDetails,
       return;
     }
 
-    if (checkUserInverted()) {
+    if (user_inverted) {
       if (inList(topUrl, lists.std)) {
         stdAll(details);
       } else {
