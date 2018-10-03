@@ -2,7 +2,7 @@
 /* See the file COPYING for copying permission. */
 
 import { getParentBg, getParentFg, isContrasty, isTransparent, setContrastRatio, toRGB } from './lib/color';
-import { INPUT_NODES, isInputNode, isInVisibleNode, isSubDocNode } from './lib/checks';
+import { INPUT_NODES, INPUT_PERMS, isInputNode, isInVisibleNode, isSubDocNode } from './lib/checks';
 import { clearOverrides } from './lib/contrast';
 
 declare function requestIdleCallback(callback: (idleDeadline: {
@@ -10,7 +10,7 @@ declare function requestIdleCallback(callback: (idleDeadline: {
   timeRemaining: () => number;
 }) => any, options?: { timeout: number }): number;
 
-let DEFAULTS: { [key:string]: {fg:string, bg:string} } = {};
+let DEFAULTS: { [key: string]: { fg: string, bg: string } } = {};
 
 let topElementFixed = false;
 
@@ -24,23 +24,38 @@ const getDefaultColors = () => {
   // Get default style for general elements
   let par = frame_doc.createElement('p');
   frame_doc.body.appendChild(par);
-  DEFAULTS['html'] = {fg: getComputedStyle(par).getPropertyValue('color'), bg: getComputedStyle(par).getPropertyValue('background-color')};
+  DEFAULTS['html'] = { fg: getComputedStyle(par).getPropertyValue('color'), bg: getComputedStyle(par).getPropertyValue('background-color') };
   // Get default browser style, which should be the final non-transparent color
   frame_doc.body.style.color = '-moz-default-color';
   frame_doc.body.style.backgroundColor = '-moz-default-background-color';
-  DEFAULTS['browser'] = {fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color')};
+  DEFAULTS['browser'] = { fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color') };
 
   // Get colors for input nodes
-  for (const node of INPUT_NODES) {
-    let probe = frame_doc.createElement(node);
+  for (const ip of INPUT_PERMS) {
+    let probe = frame_doc.createElement(ip.nodeName);
+    if (ip.props) {
+      for (const key in ip.props) {
+        (probe as any)[key] = ip.props[key];
+      }
+    }
+
     frame_doc.body.appendChild(probe);
 
-    DEFAULTS[node] = {fg: getComputedStyle(probe).getPropertyValue('color'), bg: getComputedStyle(probe).getPropertyValue('background-color')}
+    DEFAULTS[ip.cssSelector] = { fg: getComputedStyle(probe).getPropertyValue('color'), bg: getComputedStyle(probe).getPropertyValue('background-color') }
   }
   document.body.removeChild(probe_frame);
 }
 
-const checkElement = (el: HTMLElement, { recurse }: { recurse?: boolean } = { recurse: false }): void => {
+const getDefaultsForElement = (el: HTMLElement) => {
+  for (const { cssSelector } of INPUT_PERMS) {
+    if (el.matches(cssSelector)) {
+      return DEFAULTS[cssSelector];
+    }
+  }
+  return DEFAULTS['html'];
+}
+
+const checkElement = (el: HTMLElement | null, { recurse }: { recurse?: boolean } = { recurse: false }): void => {
   if (!el) {
     return;
   }
@@ -54,8 +69,16 @@ const checkElement = (el: HTMLElement, { recurse }: { recurse?: boolean } = { re
   const compStyle = getComputedStyle(el);
   let fg = compStyle.getPropertyValue('color');
   let bg = compStyle.getPropertyValue('background-color');
-  const fg_default = el.nodeName in DEFAULTS ? DEFAULTS[el.nodeName].fg : DEFAULTS['html'].fg;
-  const bg_default = el.nodeName in DEFAULTS ? DEFAULTS[el.nodeName].bg : DEFAULTS['html'].bg;
+  let fg_default;
+  let bg_default;
+  if (INPUT_NODES.indexOf(el.nodeName) !== -1) {
+    const def = getDefaultsForElement(el);
+    fg_default = def.fg;
+    bg_default = def.bg;
+  } else {
+    fg_default = DEFAULTS['html'].fg;
+    bg_default = DEFAULTS['html'].bg;
+  }
 
   // Check which styles have been overriden by site author
   const fgClrDefined = fg !== fg_default;
@@ -103,9 +126,6 @@ const checkElement = (el: HTMLElement, { recurse }: { recurse?: boolean } = { re
     if (!isContrasty(fg_rgba, bg_rgba) || isInputNode(el)) {
       // If bad contrast, set both colors in case background image is transparent
       el.dataset._extensionTextContrast = 'both';
-    } else {
-      // If existing bg color has good contrast, safe to only set foreground
-      el.dataset._extensionTextContrast = 'fg';
     }
     stdEmbeds(el);
 
@@ -129,7 +149,10 @@ const checkElement = (el: HTMLElement, { recurse }: { recurse?: boolean } = { re
 
 };
 
-const checkInputs = (root: Element = document.documentElement) => {
+const checkInputs = (root = document.documentElement) => {
+  if (!root) {
+    return;
+  }
   // Check all input elements
   const nodeIterator = document.createNodeIterator(
     root,
@@ -184,6 +207,7 @@ const checkParents = (el: HTMLElement) => {
     parent = parent.parentElement;
   }
   checkElement(el, { recurse: true });
+  checkInputs(el);
 };
 
 const stdEmbeds = (e: HTMLElement) => {
@@ -231,7 +255,9 @@ browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
         requestIdleCallback(() => { checkParents(changedNode as HTMLElement); });
 
         if (isInputNode(changedNode as HTMLElement)) {
-          requestIdleCallback(() => { checkElement(changedNode as HTMLElement); });
+          requestIdleCallback(() => {
+            checkElement(changedNode as HTMLElement);
+          });
         }
       } else if (mutations[i].type === 'childList') {
         const addLen = mutations[i].addedNodes.length;
@@ -240,7 +266,6 @@ browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
           if (!isInVisibleNode(newNode)) {
             requestIdleCallback(() => {
               checkParents(newNode as HTMLElement);
-              checkInputs(newNode as HTMLElement);
             });
           }
         }
@@ -285,6 +310,10 @@ browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
         // Likely failed due to cross-origin issues. Have no way of determining which frame element requested the check.
         // Only remaining option is to re-send directive for fixing to all frames that need it. Super-awkward and
         // flicker-y, but it works.
+        if (!document.documentElement) {
+          e.stopPropagation();
+          return;
+        }
         const nodeIterator = document.createNodeIterator(
           document.documentElement,
           NodeFilter.SHOW_ELEMENT,

@@ -2,12 +2,15 @@
 /* See the file COPYING for copying permission. */
 
 import { getParentBg, getParentFg, isContrasty, isTransparent, setContrastRatio, toRGB } from './lib/color';
-import { INPUT_NODES, isInputNode } from './lib/checks';
+import { INPUT_PERMS, isInputNode } from './lib/checks';
 import { clearOverrides } from './lib/contrast';
 
-declare function requestIdleCallback(callback: () => any, options?: { timeout: number }): CSSStyleDeclaration;
+declare function requestIdleCallback(callback: (idleDeadline: {
+  didTimeout: boolean;
+  timeRemaining: () => number;
+}) => any, options?: { timeout: number }): number;
 
-let DEFAULTS: { [key:string]: {fg:string, bg:string} } = {};
+let DEFAULTS: { [key: string]: { fg: string, bg: string } } = {};
 
 const getDefaultColors = () => {
   let probe_frame = document.createElementNS('http://www.w3.org/1999/xhtml', 'iframe') as HTMLIFrameElement;
@@ -20,20 +23,35 @@ const getDefaultColors = () => {
   let par = frame_doc.createElement('p');
   frame_doc.body.appendChild(par);
   // Don't need following default element colors since this extension mode does not use it.
-  // DEFAULTS['html'] = {fg: getComputedStyle(par).getPropertyValue('color'), bg: getComputedStyle(par).getPropertyValue('background-color')};
+  // DEFAULTS['html'] = { fg: getComputedStyle(par).getPropertyValue('color'), bg: getComputedStyle(par).getPropertyValue('background-color') };
   // Get default browser style, which should be the final non-transparent color
   frame_doc.body.style.color = '-moz-default-color';
   frame_doc.body.style.backgroundColor = '-moz-default-background-color';
-  DEFAULTS['browser'] = {fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color')};
+  DEFAULTS['browser'] = { fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color') };
 
   // Get colors for input nodes
-  for (const node of INPUT_NODES) {
-    let probe = frame_doc.createElement(node);
+  for (const ip of INPUT_PERMS) {
+    let probe = frame_doc.createElement(ip.nodeName);
+    if (ip.props) {
+      for (const key in ip.props) {
+        (probe as any)[key] = ip.props[key];
+      }
+    }
+
     frame_doc.body.appendChild(probe);
 
-    DEFAULTS[node] = {fg: getComputedStyle(probe).getPropertyValue('color'), bg: getComputedStyle(probe).getPropertyValue('background-color')}
+    DEFAULTS[ip.cssSelector] = { fg: getComputedStyle(probe).getPropertyValue('color'), bg: getComputedStyle(probe).getPropertyValue('background-color') }
   }
   document.body.removeChild(probe_frame);
+}
+
+const getDefaultsForElement = (el: HTMLElement) => {
+  for (const { cssSelector } of INPUT_PERMS) {
+    if (el.matches(cssSelector)) {
+      return DEFAULTS[cssSelector];
+    }
+  }
+  return {fg: 'rgb(0,0,0)', bg: 'rgb(255,255,255)'};
 }
 
 const checkElement = (el: HTMLElement): void => {
@@ -46,8 +64,9 @@ const checkElement = (el: HTMLElement): void => {
   const compStyle = getComputedStyle(el);
   let fg = compStyle.getPropertyValue('color');
   let bg = compStyle.getPropertyValue('background-color');
-  const fg_default = DEFAULTS[el.nodeName].fg;
-  const bg_default = DEFAULTS[el.nodeName].bg;
+  const def = getDefaultsForElement(el);
+  const fg_default = def.fg;
+  const bg_default = def.bg;
 
   // Check which styles have been overriden by site author
   const fgClrDefined = fg !== fg_default;
@@ -88,7 +107,10 @@ const checkElement = (el: HTMLElement): void => {
   }
 };
 
-const checkInputs = (root: Element = document.documentElement) => {
+const checkInputs = (root: Element | null = document.documentElement) => {
+  if (!root) {
+    return;
+  }
   // Check all input elements
   const nodeIterator = document.createNodeIterator(
     root,
@@ -132,9 +154,7 @@ browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
         // so this element also needs re-checking
         const changedNode = mutations[i].target as HTMLElement;
 
-        if (isInputNode(changedNode)) {
-          requestIdleCallback(() => { checkElement(changedNode); });
-        }
+        checkInputs(changedNode as Element);
       } else if (mutations[i].type === 'childList') {
         const addLen = mutations[i].addedNodes.length;
         for (let j = 0; j < addLen; j += 1) {

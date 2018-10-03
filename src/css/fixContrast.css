@@ -3,13 +3,29 @@
   color: rgb(0, 0, 0) !important;
 }
 
+[data-_extension-text-contrast='fg']:disabled {
+  color: rgb(127, 127, 127) !important;
+}
+
+/*select[data-_extension-text-contrast='fg'] option:disabled {
+  color: rgb(127, 127, 127) !important;
+}*/
+
 [data-_extension-text-contrast='bg'] {
   background-color: rgb(255, 255, 255) !important;
+}
+
+select[data-_extension-text-contrast='bg'] option:disabled {
+  color: rgb(127, 127, 127) !important;
 }
 
 [data-_extension-text-contrast='both']{
   color: rgb(0, 0, 0) !important;
   background-color: rgb(255, 255, 255) !important;
+}
+
+select[data-_extension-text-contrast='both'] option:disabled {
+  color: rgb(127, 127, 127) !important;
 }
 
 input[type='range'] {
