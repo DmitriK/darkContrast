@@ -1,0 +1,160 @@
+input {
+  background-color: -moz-Field;
+  color: -moz-FieldText;
+}
+
+textarea {
+  background-color: -moz-Field;
+  color: -moz-FieldText;
+}
+
+select {
+  background-color: -moz-Combobox;
+  color: -moz-ComboboxText;
+}
+
+select[size],
+select[multiple],
+select[size][multiple] {
+  background-color: -moz-Field;
+  color: -moz-FieldText;
+}
+
+select[size="0"],
+select[size="1"] {
+  background-color: -moz-Combobox;
+  color: -moz-ComboboxText;
+}
+
+option:checked {
+  background-color: -moz-html-cellhighlight !important;
+  color: -moz-html-cellhighlighttext !important;
+}
+
+select:focus > option:checked,
+select:focus > optgroup > option:checked {
+  background-color: Highlight ! important;
+  color: HighlightText ! important;
+}
+
+input:disabled,
+textarea:disabled,
+option:disabled,
+optgroup:disabled,
+select:disabled:disabled /* Need the pseudo-class twice to have the specificity
+                            be at least the same as select[size][multiple] above */
+{
+  color: GrayText;
+  background-color: ThreeDLightShadow;
+
+}
+
+option:disabled,
+optgroup:disabled {
+  background-color: transparent;
+}
+
+/* image buttons */
+input[type="image"] {
+  background-color: transparent;
+}
+
+/* file selector */
+input[type="file"] {
+  color: inherit;
+  background-color: transparent;
+}
+
+input[type="file"] > xul|label {
+  color: inherit;
+}
+
+/* common features of radio buttons and check boxes */
+
+input[type="radio"],
+input[type="checkbox"] {
+  background-color: unset;
+  color: unset;
+}
+
+button,
+input[type="color"],
+input[type="reset"],
+input[type="button"],
+input[type="submit"] {
+  background-color: ButtonFace;
+}
+
+button,
+input[type="reset"],
+input[type="button"],
+input[type="submit"] {
+  color: ButtonText;
+}
+
+button:hover,
+input[type="color"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover {
+  background-color: -moz-buttonhoverface;
+}
+
+button:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover {
+  color: -moz-buttonhovertext;
+}
+
+button:active:hover,
+input[type="color"]:active:hover,
+input[type="reset"]:active:hover,
+input[type="button"]:active:hover,
+input[type="submit"]:active:hover {
+  background-color: ButtonFace;
+}
+
+button:active:hover,
+input[type="reset"]:active:hover,
+input[type="button"]:active:hover,
+input[type="submit"]:active:hover {
+  color: ButtonText;
+}
+
+button:disabled:active, button:disabled,
+input[type="reset"]:disabled:active,
+input[type="reset"]:disabled,
+input[type="button"]:disabled:active,
+input[type="button"]:disabled,
+select:disabled > button,
+select:disabled > button,
+input[type="submit"]:disabled:active,
+input[type="submit"]:disabled {
+  color: GrayText;
+}
+
+output:-moz-ui-invalid {
+  color: red;
+}
+
+progress {
+  background-color: #e6e6e6;
+}
+
+::-moz-progress-bar {
+  background-color: #0064b4; /* blue */
+}
+
+input[type=range]::-moz-range-track {
+  background-color: #999;
+}
+
+input[type=range]::-moz-range-thumb {
+  background-color: #F0F0F0;
+}
+
+input[type="number"] > div > div > div:hover {
+  /* give some indication of hover state for the up/down buttons */
+  background-color: lightblue;
+}

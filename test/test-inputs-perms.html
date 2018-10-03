@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright ©2016 Dmitri Kourennyi
+See the file COPYING for copying permission.
+-->
+<head>
+  <title>DarkContrast Test Page</title>
+  <script>
+window.setTimeout(test_dynamic, 500);
+
+function test_dynamic() {
+  'use strict';
+
+  // Do dynamic class addition test
+  document.getElementById('dcc').classList.add("fg");
+}
+
+  </script>
+  <style>
+.sections {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+section {
+  margin: 0.5em 1em;
+}
+
+.fg, .fg form > * {
+  color: #543210;
+}
+
+.bg, .bg form > * {
+  background-color:#ABCDEF;
+}
+
+.bgImg, .bgImg form > * {
+  background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEWrze+83v+32CWOAAAAEElEQVR4AWNk+I8d/WfEigCAsxAJdjDJwwAAAABJRU5ErkJggg==);
+}
+
+.transparentImg, .transparentImg form > * {
+  background-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
+}
+
+.match-fg, .match-fg form > * {
+  color: rgb(255, 255, 255);
+}
+.match-bg , .match-fg form > * {
+  background-color: rgb(40, 40, 40);
+}
+.paired-match-fg, .paired-match-fg form > * {
+  color: rgb(255, 255, 255);
+}
+.paired-match-bg, .paired-match-fg form > * {
+  background-color: rgb(0, 0, 0);
+}
+
+.hidden-fg, .hidden-fg form > * { color:white; }
+.hidden-bg, .hidden-fg form > * { background-color:black; }
+
+  </style>
+</head>
+
+<body>
+  <h1>DarkContrast Check Page for weird input styles</h1>
+  <p>
+    <span class="fg">Explicit foreground color</span>
+    <span class="bg">Explicit background color</span>
+  </p>
+  <div class="sections" id="sections">
+    <section>
+      <h2>Nothing defined</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="fg">
+      <h2>FG only</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="bg">
+      <h2>BG only</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="fg bg">
+      <h2>FG and BG</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="bgImg">
+      <h2>BG image only</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="transparentImg">
+      <h2>Transparent BG image only</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="fg bgImg">
+      <h2>FG and BG image</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="fg transparentImg">
+      <h2>FG and Transparent BG image only</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section id="dcc">
+      <h2>Dynamic class change</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="match-fg">
+      <h2>Explicit Foreground that Matches</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="match-bg">
+      <h2>Explicit Background that Matches</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="match-fg match-bg">
+      <h2>Explicit Both that Match</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="match-fg paired-match-bg">
+      <h2>Matchy FG, contrasty BG</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="paired-match-fg match-bg">
+      <h2>Matchy BG, contrasty FG</h2>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="hidden-fg">
+      <h2>Hidden Foreground</h2>
+      <p>
+        Will be (incorrectly) visible with extension enabled. Should be hidden
+        if standard colors are forced (currently fails due to Firefox styling
+        strangeness).
+      </p>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+    <section class="hidden-bg">
+      <h2>Hidden Background</h2>
+      <p>
+        Will be (incorrectly) visible with extension enabled. Should be hidden
+        if standard colors are forced (currently fails due to Firefox styling
+        strangeness).
+      </p>
+      <form>
+        <input size="4" value="Input" />
+        <textarea>Textarea</textarea>
+        <select>
+          <option>Select</option>
+        </select>
+        <select size="2">
+          <option>Select Size</option>
+        </select>
+        <select multiple="1">
+          <option>Select Multiple</option>
+          <option selected="selected">Checked Option</option>
+        </select>
+        <select size="2" multiple="1">
+          <option>Select Size/Multiple</option>
+        </select>
+        <select size="0">
+          <option>Select Size 0</option>
+        </select>
+        <select size="1">
+          <option>Select Size 1</option>
+        </select>
+        <input size="4" value="Disabled" disabled="1"/>
+        <textarea disabled="1">Disabled Textarea</textarea>
+        <select disabled="1">
+          <option>Disabled select</option>
+        </select>
+        <select  size="2">
+          <option disabled="1">Disabled option</option>
+        </select>
+        <select disabled="1" size="2" multiple="1">
+          <option disabled="1">Disabled select and option</option>
+        </select>
+        <input size="4" type="image" value="input image"/>
+        <input size="4" type="file"/>
+        <input size="4" type="radio"/>
+        <input size="4" type="checkbox"/>
+        <button>Button</button>
+        <input size="4" type="color"/>
+        <input size="4" type="reset"/>
+        <input size="4" type="button" value="input button"/>
+        <input size="4" type="submit"/>
+        <progress value="0.5" max="1"></progress>
+        <input size="4" type="range"/>
+        <input size="4" type="number" value="1.23"/>
+      </form>
+    </section>
+  </div>
+</body>
+
+</html>
