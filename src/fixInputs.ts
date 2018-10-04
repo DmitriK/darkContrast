@@ -51,7 +51,7 @@ const getDefaultsForElement = (el: HTMLElement) => {
       return DEFAULTS[cssSelector];
     }
   }
-  return {fg: 'rgb(0,0,0)', bg: 'rgb(255,255,255)'};
+  return { fg: 'rgb(0,0,0)', bg: 'rgb(255,255,255)' };
 }
 
 const checkElement = (el: HTMLElement): void => {

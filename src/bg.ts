@@ -29,7 +29,7 @@ interface Target {
   frameId: number;
 }
 
-const {browserAction, runtime, storage, tabs, webNavigation} = browser;
+const { browserAction, runtime, storage, tabs, webNavigation } = browser;
 
 let optCache: OptsCache = {
   ovrList: [],
@@ -59,7 +59,7 @@ let user_inverted = false;
 runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.MessageSender) => {
   const request = msg.request;
 
-  let target = {tabId: 0, frameId: 0};
+  let target = { tabId: 0, frameId: 0 };
 
   let allFrames = msg.allFrames ? msg.allFrames : false;
 
@@ -78,7 +78,7 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
   if (request === 'off') {
     clearAny(target, allFrames);
     if (target.frameId === 0) {
-      browserAction.setBadgeText({text: 'off', tabId: target.tabId});
+      browserAction.setBadgeText({ text: 'off', tabId: target.tabId });
     }
   } else if (request === 'on') {
     clearAny(target, allFrames);
@@ -93,41 +93,41 @@ runtime.onMessage.addListener((msg: PopupMessage, sender: browser.runtime.Messag
       // Applying to all frames
       tabs.insertCSS(target.tabId, {
         cssOrigin: 'author',
-        file:      '/stdAll.css',
-        runAt:     'document_start',
+        file: '/stdAll.css',
+        runAt: 'document_start',
       });
 
-      webNavigation.getAllFrames({tabId: target.tabId}).then((frames) => {
+      webNavigation.getAllFrames({ tabId: target.tabId }).then((frames) => {
         for (let frame of frames) {
           tabs.insertCSS(target.tabId, {
             cssOrigin: 'author',
-            file:      '/stdFgOnly.css',
-            runAt:     'document_start',
-            frameId:   frame.frameId,
+            file: '/stdFgOnly.css',
+            runAt: 'document_start',
+            frameId: frame.frameId,
           });
         }
       });
     } else {
       tabs.insertCSS(target.tabId, {
         cssOrigin: 'author',
-        file:      '/stdFgOnly.css',
-        runAt:     'document_start',
-        frameId:   target.frameId
+        file: '/stdFgOnly.css',
+        runAt: 'document_start',
+        frameId: target.frameId
       });
     }
     if (target.frameId === 0) {
-      browserAction.setBadgeText({text: 'std', tabId: target.tabId});
+      browserAction.setBadgeText({ text: 'std', tabId: target.tabId });
     }
   } else if (request === 'stdFg') {
     clearAny(target, allFrames);
     // Insert std css into all frames of tab
     tabs.insertCSS(target.tabId,
-                   {
-                     cssOrigin: 'author',
-                     file:      '/stdFgOnly.css',
-                     runAt:     'document_start',
-                     frameId:   target.frameId,
-                   },
+      {
+        cssOrigin: 'author',
+        file: '/stdFgOnly.css',
+        runAt: 'document_start',
+        frameId: target.frameId,
+      },
     );
   }
 });
@@ -136,25 +136,25 @@ const fixInputs = (target: Target) => {
   tabs.insertCSS(
     target.tabId,
     {
-      frameId:   target.frameId,
+      frameId: target.frameId,
       cssOrigin: 'author',
-      file:      '/fixContrast.css',
-      runAt:     'document_end',
+      file: '/fixContrast.css',
+      runAt: 'document_end',
     }
   );
   tabs.executeScript(
     target.tabId,
     {
-      file:    '/fixInputs.js',
+      file: '/fixInputs.js',
       frameId: target.frameId,
-      runAt:   'document_end',
+      runAt: 'document_end',
     }
   );
   if (target.frameId === 0) {
     browserAction.setBadgeText({
-        text: '',
-        tabId: target.tabId,
-      });
+      text: '',
+      tabId: target.tabId,
+    });
   }
 };
 
@@ -162,17 +162,17 @@ const stdInputs = (details: WebNavDetails) => {
   tabs.insertCSS(
     details.tabId,
     {
-      frameId:   details.frameId,
+      frameId: details.frameId,
       cssOrigin: 'user',
-      file:      '/stdInputs.css',
-      runAt:     'document_end',
+      file: '/stdInputs.css',
+      runAt: 'document_end',
     }
   );
   if (details.frameId === 0) {
     browserAction.setBadgeText({
-            text: 'std',
-            tabId: details.tabId,
-          });
+      text: 'std',
+      tabId: details.tabId,
+    });
   }
 };
 
@@ -180,25 +180,25 @@ const fixAll = (target: Target) => {
   tabs.insertCSS(
     target.tabId,
     {
-      frameId:   target.frameId,
+      frameId: target.frameId,
       cssOrigin: 'author',
-      file:      '/fixContrast.css',
-      runAt:     'document_end',
+      file: '/fixContrast.css',
+      runAt: 'document_end',
     }
   );
   tabs.executeScript(
     target.tabId,
     {
-      file:    '/fixAll.js',
+      file: '/fixAll.js',
       frameId: target.frameId,
-      runAt:   'document_end',
+      runAt: 'document_end',
     }
   );
   if (target.frameId === 0) {
     browserAction.setBadgeText({
-        text: '',
-        tabId: target.tabId,
-      });
+      text: '',
+      tabId: target.tabId,
+    });
   }
 };
 
@@ -206,17 +206,17 @@ const stdAll = (details: WebNavDetails) => {
   tabs.insertCSS(
     details.tabId,
     {
-      frameId:   details.frameId,
+      frameId: details.frameId,
       cssOrigin: 'author',
-      file:      '/stdAll.css',
-      runAt:     'document_start',
+      file: '/stdAll.css',
+      runAt: 'document_start',
     }
   );
   if (details.frameId === 0) {
     browserAction.setBadgeText({
-            text: 'std',
-            tabId: details.tabId,
-          });
+      text: 'std',
+      tabId: details.tabId,
+    });
   }
 };
 
@@ -239,7 +239,7 @@ const clearAny = (target: Target, allFrames: boolean) => {
     file: '/stdFgOnly.css',
   }));
 
-  tabs.sendMessage(target.tabId, {request: 'off'}, !allFrames ? {frameId: target.frameId} : {});
+  tabs.sendMessage(target.tabId, { request: 'off' }, !allFrames ? { frameId: target.frameId } : {});
 };
 
 const inList = (url: string | undefined, list: string[]) => {
@@ -257,8 +257,8 @@ const inList = (url: string | undefined, list: string[]) => {
 };
 
 const dispatchFixes = (details: WebNavDetails,
-                       lists: { off: string[]; std: string[]; wMode: boolean } =
-                              { off: [],       std: [],       wMode: false}) => {
+  lists: { off: string[]; std: string[]; wMode: boolean } =
+    { off: [], std: [], wMode: false }) => {
   tabs.get(details.tabId).then((tabInfo) => {
     let topUrl = tabInfo.url;
 
@@ -308,11 +308,11 @@ const dispatchFixes = (details: WebNavDetails,
 
 function refreshCache() {
   storage.local.get({
-    'tcfdt-cr':            4.5,
+    'tcfdt-cr': 4.5,
     'tcfdt-list-disabled': [],
     'tcfdt-list-standard': [],
-    'tcfdt-wlist'        : false,
-    'tcfdt-dl'           : 0
+    'tcfdt-wlist': false,
+    'tcfdt-dl': 0
   }).then((items) => {
     optCache = {
       ovrList: items['tcfdt-list-disabled'],
@@ -347,9 +347,9 @@ webNavigation.onDOMContentLoaded.addListener((details: WebNavDetails) => {
     tabs.executeScript(
       details.tabId,
       {
-        file:    '/frameListener.js',
+        file: '/frameListener.js',
         frameId: details.frameId,
-        runAt:   'document_start',
+        runAt: 'document_start',
       },
     );
   }
@@ -358,19 +358,19 @@ webNavigation.onDOMContentLoaded.addListener((details: WebNavDetails) => {
 webNavigation.onCompleted.addListener((details: WebNavDetails) => {
   if (optCache.delay === 0) {
     dispatchFixes(details,
-                  {
-                    off: optCache.ovrList,
-                    std: optCache.stdList,
-                    wMode: optCache.wMode,
-                  });
+      {
+        off: optCache.ovrList,
+        std: optCache.stdList,
+        wMode: optCache.wMode,
+      });
   } else {
     setTimeout(() => {
-        dispatchFixes(details,
-                      {
-                        off: optCache.ovrList,
-                        std: optCache.stdList,
-                        wMode: optCache.wMode,
-                      });
-      }, optCache.delay);
+      dispatchFixes(details,
+        {
+          off: optCache.ovrList,
+          std: optCache.stdList,
+          wMode: optCache.wMode,
+        });
+    }, optCache.delay);
   }
 });
