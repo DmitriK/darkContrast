@@ -135,13 +135,22 @@ browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
   setContrastRatio(items['tcfdt-cr']);
   checkInputs();
 
-  const dataObserver = new MutationObserver((mutations) => {
+  const dataObserver = new MutationObserver((mutations, observer) => {
     mutations.forEach((mutation) => {
       if (mutation.oldValue !== null) {
         // Something in the author JS has erased the previous attribute, so
         // restore it.
+        // Disable ourselves, otherwise this enters infinite loop
+        observer.disconnect();
         const element = mutation.target as HTMLElement;
         element.dataset._extensionTextContrast = mutation.oldValue;
+        // Restore observer now that we are done
+        observer.observe(document.body, {
+          attributes: true,
+          attributeFilter: ['data-_extension-text-contrast'],
+          subtree: true,
+          attributeOldValue: true,
+        });
       }
     });
   });
