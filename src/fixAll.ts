@@ -126,10 +126,10 @@ const checkElement = (el: HTMLElement | null, { recurse }: { recurse?: boolean }
     if (!isContrasty(fg_rgba, bg_rgba) || isInputNode(el)) {
       // If bad contrast, set both colors in case background image is transparent
       el.dataset._extensionTextContrast = 'both';
-    }
-    stdEmbeds(el);
+      stdEmbeds(el);
 
-    return;
+      return;
+    }
   }
 
   // If here, then either no colors were defined, or those that were still have
