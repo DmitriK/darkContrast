@@ -89,14 +89,20 @@ const checkElement = (el: HTMLElement | null, { recurse }: { recurse?: boolean }
   // values.
   let fg_rgba = toRGB(fg);
   let bg_rgba = toRGB(bg);
+  let bg_fallback = true;
 
   // If color is transparent, recurse through all the parents to find a
   // non-transparent color to assume as the current color
   if (isTransparent(fg_rgba)) {
-    fg_rgba = getParentFg(el, toRGB(DEFAULTS['browser'].fg));
+    let clr = getParentFg(el);
+    fg_rgba = clr === null ? toRGB(DEFAULTS['browser'].fg) : clr;
   }
   if (isTransparent(bg_rgba)) {
-    bg_rgba = getParentBg(el, toRGB(DEFAULTS['browser'].bg));
+    let clr = getParentBg(el);
+    bg_rgba = clr === null ? toRGB(DEFAULTS['browser'].bg) : clr;
+
+    // Remember if we had to use a fallback color here for later use
+    bg_fallback = clr === null;
   }
 
   if (fgClrDefined && bgClrDefined) {
@@ -123,8 +129,14 @@ const checkElement = (el: HTMLElement | null, { recurse }: { recurse?: boolean }
       return;
     }
   } else if (bgImgDefined) {
-    if (!isContrasty(fg_rgba, bg_rgba) || isInputNode(el)) {
-      // If bad contrast, set both colors in case background image is transparent
+    if (bg_fallback || !isContrasty(fg_rgba, bg_rgba) || isInputNode(el)) {
+      // The image may or may not be transparent, and we can't really tell. If
+      // the fallback background color was set above, then the author has never
+      // defined a background color of their own, and so we should force a fix.
+      // If the author has set the background before, the image may have
+      // transparency effects that are relied on, so we only do the fix if
+      // contrast is bad. Input elements don't really inherit correctly, so we
+      // always apply the fix for those.
       el.dataset._extensionTextContrast = 'both';
       stdEmbeds(el);
 

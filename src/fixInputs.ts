@@ -81,10 +81,12 @@ const checkElement = (el: HTMLElement): void => {
   // If color is transparent, recurse through all the parents to find a
   // non-transparent color to assume as the current color
   if (isTransparent(fg_rgba)) {
-    fg_rgba = getParentFg(el, toRGB(DEFAULTS['browser'].fg));
+    let clr = getParentFg(el);
+    fg_rgba = clr === null ? toRGB(DEFAULTS['browser'].fg) : clr;
   }
   if (isTransparent(bg_rgba)) {
-    bg_rgba = getParentBg(el, toRGB(DEFAULTS['browser'].bg));
+    let clr = getParentBg(el);
+    bg_rgba = clr === null ? toRGB(DEFAULTS['browser'].bg) : clr;
   }
 
   if (fgClrDefined && bgClrDefined) {

@@ -72,15 +72,15 @@ export function toRGB(s: string): Srgb {
   return rgb;
 }
 
-export function getParentFg(el: HTMLElement, fallback: Srgb): Srgb {
+export function getParentFg(el: HTMLElement): Srgb | null {
   if (el.parentElement !== null) {
     return toRGB(getComputedStyle(el.parentElement).getPropertyValue('color'));
   }
 
-  return fallback;
+  return null;
 };
 
-export function getParentBg(el: HTMLElement, fallback: Srgb): Srgb {
+export function getParentBg(el: HTMLElement): Srgb | null {
   while (el.parentElement !== null) {
     const color = toRGB(getComputedStyle(el.parentElement).getPropertyValue('background-color'));
     if (!isTransparent(color)) {
@@ -89,5 +89,5 @@ export function getParentBg(el: HTMLElement, fallback: Srgb): Srgb {
     el = el.parentElement;
   }
 
-  return fallback;
+  return null;
 };
