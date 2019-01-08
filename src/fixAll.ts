@@ -2,7 +2,7 @@
 /* See the file COPYING for copying permission. */
 
 import { getParentBg, getParentFg, isContrasty, isTransparent, setContrastRatio, toRGB } from './lib/color';
-import { INPUT_NODES, INPUT_PERMS, isInputNode, isInVisibleNode, isSubDocNode } from './lib/checks';
+import { INPUT_NODES, INPUT_PERMS, isDontRecurseNode, isInputNode, isInVisibleNode, isSubDocNode } from './lib/checks';
 import { clearOverrides } from './lib/contrast';
 
 declare function requestIdleCallback(callback: (idleDeadline: {
@@ -146,8 +146,7 @@ const checkElement = (el: HTMLElement | null, { recurse }: { recurse?: boolean }
 
   // If here, then either no colors were defined, or those that were still have
   // contrast. Need to continue checking child elements to ensure contrast is OK
-
-  if (recurse === true) {
+  if (recurse === true && !isDontRecurseNode(el)) {
     const { children } = el;
     const len = children.length;
 
