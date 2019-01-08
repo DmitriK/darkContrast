@@ -190,7 +190,7 @@ const checkAll = () => {
   checkInputs();
 };
 
-const checkParents = (el: HTMLElement) => {
+const checkParents = (el: HTMLElement, { recurse }: { recurse: boolean }) => {
   let parent = el.parentElement;
 
   if (topElementFixed) {
@@ -206,7 +206,7 @@ const checkParents = (el: HTMLElement) => {
 
       if (parent === document.documentElement || parent === document.body) {
         // Style is already defined in top level document or body element, so all child elements (except for inputs)
-        // will be ok. We cna avoid this check for all subsequent element additions or changes.
+        // will be ok. We can avoid this check for all subsequent element additions or changes.
         topElementFixed = true;
       }
 
@@ -217,8 +217,7 @@ const checkParents = (el: HTMLElement) => {
     }
     parent = parent.parentElement;
   }
-  checkElement(el, { recurse: true });
-  checkInputs(el);
+  checkElement(el, { recurse });
 };
 
 const stdEmbeds = (e: HTMLElement) => {
@@ -272,7 +271,8 @@ browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
         // so this element also needs re-checking
         const changedNode = mutations[i].target;
 
-        requestIdleCallback(() => { checkParents(changedNode as HTMLElement); });
+        // Recurse here, as changed style may have effects farther down the tree
+        requestIdleCallback(() => { checkParents(changedNode as HTMLElement, {recurse: true}); });
 
         if (isInputNode(changedNode as HTMLElement)) {
           requestIdleCallback(() => {
@@ -285,7 +285,8 @@ browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
           const newNode = mutations[i].addedNodes[j];
           if (!isInVisibleNode(newNode)) {
             requestIdleCallback(() => {
-              checkParents(newNode as HTMLElement);
+              // Don't recurse here, as added nodes are probably all considered here (unsure)
+              checkParents(newNode as HTMLElement, {recurse: false});
             });
           }
         }
