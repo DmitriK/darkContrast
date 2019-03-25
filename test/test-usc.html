@@ -9,17 +9,25 @@ See the file COPYING for copying permission.
 <head>
   <title>Test Use System Colors fixes</title>
   <meta charset="utf-8" />
-  <script>
-  window.setTimeout(test_dynamic, 500);
+<script>
+window.setTimeout(test_dynamic, 500);
+window.setInterval(test_mutation, 1500);
 
-  function test_dynamic() {
+function test_dynamic() {
     'use strict';
     let div = document.createElement('div');
     div.classList.add('bg');
     div.textContent = 'Dynamic - Light background child on dark background parent.';
     document.getElementById('dynamic_dark_bg').appendChild(div);
-  }
-  </script>
+}
+function test_mutation() {
+    'use strict';
+
+    const getRandClr = () => Math.floor(Math.random() * 255);
+    document.getElementById('mutate_target').style.color =
+        'rgb(' + getRandClr() + ',' + getRandClr() + ',' + getRandClr() + ')';
+}
+</script>
   <style>
 
 body {
@@ -63,6 +71,10 @@ body> div {
   <div>
     Test transparent root element.<br/>
     <iframe src="root_bg_img.html"></iframe>
+  </div>
+
+  <div id="mutate_target">
+    Mutations
   </div>
 
 </body>
