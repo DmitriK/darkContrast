@@ -30,7 +30,7 @@ p {
 }
 
 .simple_opts .opt {
-  flex: 1 1 32rem;
+  flex: 1 1;
   margin: 0.25rem;
 }
 
