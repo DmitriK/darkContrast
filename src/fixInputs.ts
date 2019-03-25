@@ -193,6 +193,7 @@ browser.storage.local.get({ 'tcfdt-cr': 4.5 }).then((items) => {
     const request = (message as { request: 'off' }).request;
     if (request === 'off') {
       dataObserver.disconnect();
+      observer.disconnect();
       clearOverrides(document);
     }
   });
