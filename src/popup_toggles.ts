@@ -65,7 +65,7 @@ window.addEventListener('load', () => {
     ]) {
       let btn = (document.getElementById(id) as HTMLButtonElement);
       btn.addEventListener('click', (e: Event) => {
-        let idStr: string = (e.target as HTMLButtonElement).id;
+        let idStr: string = (e.currentTarget as HTMLButtonElement).id;
         let [, part, list] = idStr.split('_');
 
         let entry: string;
@@ -101,6 +101,8 @@ window.addEventListener('load', () => {
           let newStore: { [key: string]: string[] } = {};
           newStore[tObj] = list;
           storage.local.set(newStore);
+        }, (err) => {
+          console.log("Failed to save entry ", entry, " into list ", list, " : ", err);
         });
       });
     }
