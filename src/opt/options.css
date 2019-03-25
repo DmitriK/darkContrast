@@ -34,7 +34,24 @@ p {
   margin: 0.25rem;
 }
 
-.cols {
+.lists {
+  display: flex;
+  flex-grow: 1;
+  flex-flow: row nowrap;
+}
+
+.lists > div {
+  flex: 1 50%;
+  display:flex;
+  flex-flow: column nowrap;
+  margin: 0 1rem;
+}
+
+textarea {
+  flex-grow: 1;
+}
+
+/*.cols {
   flex-grow: 1;
   display:flex;
   flex-flow: row nowrap;
@@ -51,11 +68,11 @@ p {
   display:flex;
   flex-flow: column nowrap;
   flex-grow: 1;
-}
+}*/
 
-label textarea {
+/*label textarea {
   flex-grow: 1;
-}
+}*/
 
 .button-row {
   display:flex;

@@ -12,7 +12,7 @@
   <h1>Text Contrast for Dark Themes Options</h1>
   <div class="simple_opts">
     <div class="opt">
-      <h2>Contrast Threshold (Beta)</h2>
+      <h2>Contrast Threshold</h2>
       <details>
         <p>
           Minimum contrast required for recoloring elements. Extension only
@@ -35,7 +35,7 @@
       <button type="button" id="setCR" disabled>Set</button>
     </div>
     <div class="opt">
-      <h2>Delay (Beta)</h2>
+      <h2>Delay</h2>
       <details>
         <p>
           Optional delay for operation of extension. This may be needed if another
@@ -49,47 +49,52 @@
       <button type="button" id="setDelay" disabled>Set</button>
     </div>
   </div>
-  <h2>Override Lists</h2>
-  <p>
-    Ideally, this extension shouldn't break sites, so if you find yourself
-    adding a site to the 'Disable extension' section to deal with an issue,
-    consider filing a bug at
-    <a href="https://github.com/DmitriK/darkContrast/issues">
-      https://github.com/DmitriK/darkContrast/issues
-    </a>
-  </p>
-  <p>
-    Type a match string into the text boxes, one per line. Press 'Save' when
-    done. Extension will do simple matching against the site URL.
-  </p>
-
-  <label>
-    <input type="checkbox" id="wlist" disabled/>
-    Treat list as opt-in (whitelist)
-  </label>
-
-  <div class="cols">
+  <section class="lists">
     <div>
-      <label><div><span id="list-mode-title">Disable</span> extension:<br/>
-        (for sites that break with extension enabled)</div>
-        <textarea id="blacklist" disabled></textarea>
+      <h2><span id="list-mode-title">Disable</span> extension</h2>
+      <details>
+        <p>For sites that break with extension enabled. Prevents or allows extension from doing anything at all</p>
+        <p>
+          Ideally, this extension shouldn't break sites, so if you find yourself
+          adding a site to the 'Disable extension' section to deal with an issue,
+          consider filing a bug at
+          <a href="https://github.com/DmitriK/darkContrast/issues">
+            https://github.com/DmitriK/darkContrast/issues
+          </a>
+        </p>
+        <p>
+          Type a match string into the text boxes, one per line. Press 'Save' when
+          done. Extension will do simple matching against the site URL.
+        </p>
+      </details>
+
+      <label>
+        <input type="checkbox" id="wlist" disabled/>
+        Treat list as opt-in (whitelist)
       </label>
+      <textarea id="blacklist" disabled></textarea>
       <div class="button-row">
         <button type="button" id="save-dis" disabled>Save</button>
         <button type="button" class="revert-btn" id="revert-dis" disabled>Revert</button>
       </div>
     </div>
     <div>
-      <label>Force standard colors:<br/>
-        (for sites that work but look ugly with extension enabled)
-        <textarea id="standardlist" disabled></textarea>
-      </label>
+      <h2>Force standard colors</h2>
+      <details>
+        <p>For sites that work but look ugly with extension enabled. Extension forces black text on white background as default for all elements.</p>
+        <p>
+          Type a match string into the text boxes, one per line. Press 'Save' when
+          done. Extension will do simple matching against the site URL.
+        </p>
+      </details>
+      <textarea id="standardlist" disabled></textarea>
       <div class="button-row">
         <button type="button" id="save-std" disabled>Save</button>
         <button type="button" class="revert-btn" id="revert-std" disabled>Revert</button>
       </div>
     </div>
   </div>
+  </section>
 </body>
 
 </html>
