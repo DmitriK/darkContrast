@@ -146,10 +146,13 @@ const checkElement = (el: HTMLElement | null, { recurse }: { recurse?: boolean }
       // contrast is bad. Input elements don't really inherit correctly, so we
       // always apply the fix for those.
       el.dataset._extensionTextContrast = 'both';
-      stdEmbeds(el);
-
-      return;
+    } else {
+      // Otherwise, the FG needs to at least be set since we don't know about
+      // the background image state.
+      el.dataset._extensionTextContrast = 'fg';
     }
+    stdEmbeds(el);
+    return;
   }
 
   // If here, then either no colors were defined, or those that were still have
