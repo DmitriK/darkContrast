@@ -19,16 +19,24 @@ const getDefaultColors = () => {
   // probe_frame.src = 'about:blank';
   probe_frame.style.width = '0';
   probe_frame.style.height = '0';
-  document.body.appendChild(probe_frame);
+  document.documentElement.appendChild(probe_frame);
   let frame_doc = probe_frame.contentWindow!.document;
   // Get default style for general elements
   let par = frame_doc.createElement('p');
+  par.style.color = "initial";
+  par.style.backgroundColor = "initial";
   frame_doc.body.appendChild(par);
-  DEFAULTS['html'] = { fg: getComputedStyle(par).getPropertyValue('color'), bg: getComputedStyle(par).getPropertyValue('background-color') };
+  DEFAULTS['html'] = {
+    fg: getComputedStyle(par).getPropertyValue('color'),
+    bg: getComputedStyle(par).getPropertyValue('background-color')
+  };
   // Get default browser style, which should be the final non-transparent color
   frame_doc.body.style.color = '-moz-default-color';
   frame_doc.body.style.backgroundColor = '-moz-default-background-color';
-  DEFAULTS['browser'] = { fg: getComputedStyle(frame_doc.body).getPropertyValue('color'), bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color') };
+  DEFAULTS['browser'] = {
+    fg: getComputedStyle(frame_doc.body).getPropertyValue('color'),
+    bg: getComputedStyle(frame_doc.body).getPropertyValue('background-color')
+  };
 
   // Get colors for input nodes
   for (const ip of INPUT_PERMS) {
@@ -43,7 +51,7 @@ const getDefaultColors = () => {
 
     DEFAULTS[ip.cssSelector] = { fg: getComputedStyle(probe).getPropertyValue('color'), bg: getComputedStyle(probe).getPropertyValue('background-color') }
   }
-  document.body.removeChild(probe_frame);
+  document.documentElement.removeChild(probe_frame);
 }
 
 const getDefaultsForElement = (el: HTMLElement) => {
