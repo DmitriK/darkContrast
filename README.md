@@ -2,6 +2,8 @@
 
 Firefox extension that fixes low contrast text when using a dark desktop theme.
 
+Avaible on AMO here: https://addons.mozilla.org/firefox/addon/text-contrast-for-dark-themes/
+
 For users who don't want *any* native theming in web content, Firefox has a
 built-in solution. In `about:config`, verify that
 `widget.content.allow-gtk-dark-theme` is `false`. If you use a theme that does
@@ -45,7 +47,7 @@ Elements with both colors defined or both colors undefined remain unchanged.
 Elements which already have good contrast (e.g. author is running their own dark
 styling) are also unchanged.
 
-In comparison to UserStyles.css or similar fixes, this extension tries to
+In comparison to userContent.css/userChrome.css or similar fixes, this extension tries to
 minimize changes that fix the contrast issue. Thus native styles are retained if
 possible.
 
@@ -149,7 +151,7 @@ Some site authors deliberately set a foreground or a background color with the
 intention of hiding text. When this extension encounters such an element, it has
 no way of knowing the poor contrast is intentional, and thus will fix the
 element. The extension should either be disabled for that specific site, or
-custom CSS fixing the offending element should be applied via UserStyles.css or
+custom CSS fixing the offending element should be applied via userContent.css or
 similar.
 
 ## SVG
